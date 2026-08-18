@@ -1,16 +1,24 @@
 {
   "name": "FinTrack Personal Finance",
   "short_name": "FinTrack",
-  "start_url": "/fintrack-app/",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#0d1718",
   "theme_color": "#15806c",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Indian_Rupee_symbol.svg/512px-Indian_Rupee_symbol.svg.png",
+      "src": "https://raw.githubusercontent.com/google/material-design-icons/master/png/action/account_balance_wallet/white/2x/baseline_account_balance_wallet_white_48dp.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://raw.githubusercontent.com/google/material-design-icons/master/png/action/account_balance_wallet/white/2x/baseline_account_balance_wallet_white_48dp.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
