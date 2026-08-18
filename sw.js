@@ -1,15 +1,6 @@
-const CACHE_NAME = 'fintrack-v3';
+const CACHE_NAME = 'fintrack-v4';
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll([
-        './',
-        './index.html',
-        './manifest.json'
-      ]);
-    })
-  );
   self.skipWaiting();
 });
 
@@ -23,13 +14,24 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Always fetch fresh data from Google Apps Script
+  // Ignore API calls to Google
   if (event.request.url.includes('script.google.com')) {
     event.respondWith(fetch(event.request));
     return;
   }
-  // Try network first, fall back to offline cache
+  
+  // Network-First Auto-Caching Strategy
   event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
+    fetch(event.request)
+      .then((response) => {
+        // Clone the response and save it to cache automatically
+        const resClone = response.clone();
+        caches.open(CACHE_NAME).then((cache) => cache.put(event.request, resClone));
+        return response;
+      })
+      .catch(() => {
+        // If internet drops, serve from cache to pass Chrome's offline test
+        return caches.match(event.request);
+      })
   );
 });
