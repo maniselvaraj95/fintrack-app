@@ -8,12 +8,12 @@
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "https://via.placeholder.com/192/15806c/ffffff.png?text=F",
+      "src": "https://ui-avatars.com/api/?name=%E2%82%B9&background=15806c&color=fff&size=192",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "https://via.placeholder.com/512/15806c/ffffff.png?text=F",
+      "src": "https://ui-avatars.com/api/?name=%E2%82%B9&background=15806c&color=fff&size=512",
       "sizes": "512x512",
       "type": "image/png"
     }
