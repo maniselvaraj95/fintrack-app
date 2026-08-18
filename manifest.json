@@ -1,10 +1,10 @@
 {
   "name": "FinTrack Personal Finance",
   "short_name": "FinTrack",
-  "start_url": "./index.html",
+  "start_url": "/fintrack-app/",
   "display": "standalone",
   "background_color": "#0d1718",
-  "theme_color": "#122b2c",
+  "theme_color": "#15806c",
   "orientation": "portrait-primary",
   "icons": [
     {
