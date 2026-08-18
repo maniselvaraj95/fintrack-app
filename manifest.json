@@ -1,24 +1,21 @@
 {
   "name": "FinTrack Personal Finance",
   "short_name": "FinTrack",
-  "start_url": "/fintrack-app/",
-  "scope": "/fintrack-app/",
+  "start_url": ".",
   "display": "standalone",
   "background_color": "#0d1718",
   "theme_color": "#15806c",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "https://raw.githubusercontent.com/mdn/pwa-examples/main/js13kpwa/icons/icon-192.png",
+      "src": "https://via.placeholder.com/192/15806c/ffffff.png?text=F",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     },
     {
-      "src": "https://raw.githubusercontent.com/mdn/pwa-examples/main/js13kpwa/icons/icon-512.png",
+      "src": "https://via.placeholder.com/512/15806c/ffffff.png?text=F",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ]
 }
