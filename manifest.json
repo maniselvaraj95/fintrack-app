@@ -1,0 +1,16 @@
+{
+  "name": "FinTrack Personal Finance",
+  "short_name": "FinTrack",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0d1718",
+  "theme_color": "#122b2c",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Indian_Rupee_symbol.svg/512px-Indian_Rupee_symbol.svg.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
