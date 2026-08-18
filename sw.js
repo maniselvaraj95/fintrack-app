@@ -1,6 +1,15 @@
-const CACHE_NAME = 'fintrack-v2';
+const CACHE_NAME = 'fintrack-v3';
 
 self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll([
+        './',
+        './index.html',
+        './manifest.json'
+      ]);
+    })
+  );
   self.skipWaiting();
 });
 
@@ -14,12 +23,13 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Google Apps Script API calls must always bypass cache
+  // Always fetch fresh data from Google Apps Script
   if (event.request.url.includes('script.google.com')) {
     event.respondWith(fetch(event.request));
     return;
   }
+  // Try network first, fall back to offline cache
   event.respondWith(
-    caches.match(event.request).then((cached) => cached || fetch(event.request))
+    fetch(event.request).catch(() => caches.match(event.request))
   );
 });
