@@ -5,17 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0, viewport-fit=cover">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="theme-color" content="#f4f7f9" id="theme-color-meta">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="FinTrack">
+  <meta name="theme-color" content="#15806c" id="theme-color-meta">
   <link rel="manifest" href="manifest.json">
   <title>FinTrack</title>
   
+  <!-- Custom SVG Teal Favicon & App Icons -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%2315806c'/%3E%3Cpath d='M6 7h12M6 11h12m-12 4 8.5 6M6 15h3M9 15c6.667 0 6.667-8 0-8' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
   <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%2315806c'/%3E%3Cpath d='M6 7h12M6 11h12m-12 4 8.5 6M6 15h3M9 15c6.667 0 6.667-8 0-8' fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 
-  <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(e=>console.error(e)));}</script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(e => console.error(e));
+      });
+    }
+  </script>
+
   <style>#crash-log{display:none;padding:20px;color:#ef4444;background:#fee2e2;font-family:monospace;font-size:12px;font-weight:bold;height:100vh;width:100vw;overflow:auto;}</style>
   <script>window.onerror=function(m,s,l,c,e){document.getElementById('crash-log').style.display='block';document.getElementById('crash-log').innerHTML+='<p>💥 ERROR: '+m+' (Line: '+l+')</p>';};</script>
-  <script>try{if(localStorage.getItem('theme')==='dark'||(!('theme' in localStorage)&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');let m=document.getElementById('theme-color-meta');if(m)m.setAttribute("content","#0d1718");}else{document.documentElement.classList.remove('dark');let m=document.getElementById('theme-color-meta');if(m)m.setAttribute("content","#f4f7f9");}}catch(e){}</script>
+  <script>try{if(localStorage.getItem('theme')==='dark'||(!('theme' in localStorage)&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');let m=document.getElementById('theme-color-meta');if(m)m.setAttribute("content","#0d1718");}else{document.documentElement.classList.remove('dark');let m=document.getElementById('theme-color-meta');if(m)m.setAttribute("content","#15806c");}}catch(e){}</script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config={darkMode:'class',theme:{extend:{colors:{brand:{bgLight:'#f4f7f9',bgDark:'#0d1718',sidebar:'#122b2c',sidebarHover:'#183839',cardLight:'#ffffff',cardDark:'#121e1f',teal:'#15806c',tealHover:'#116a59',expense:'#cb5a42',income:'#1d8b4e',transfer:'#2563eb'}}}}}</script>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -26,16 +36,24 @@
 <body class="bg-brand-bgLight dark:bg-brand-bgDark text-slate-900 dark:text-slate-100 transition-colors duration-300">
   <div id="crash-log"></div>
   <div id="root"></div>
+
   <script type="text/babel">
     const { useState, useMemo, useEffect, useRef } = React;
 
     let GLOBAL_API_URL = "";
     let GLOBAL_API_KEY = "";
-    try { GLOBAL_API_URL = localStorage.getItem('API_URL') || ""; GLOBAL_API_KEY = localStorage.getItem('API_KEY') || ""; } catch(e) {}
+    try {
+        GLOBAL_API_URL = localStorage.getItem('API_URL') || "";
+        GLOBAL_API_KEY = localStorage.getItem('API_KEY') || "";
+    } catch(e) {}
 
     const apiCall = async (action, data = {}) => {
         if (!GLOBAL_API_URL || !GLOBAL_API_KEY) throw new Error("Missing Credentials.");
-        const response = await fetch(GLOBAL_API_URL, { method: 'POST', body: JSON.stringify({ action, apiKey: GLOBAL_API_KEY, ...data }) });
+        const response = await fetch(GLOBAL_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: JSON.stringify({ action, apiKey: GLOBAL_API_KEY, ...data })
+        });
         const result = await response.json();
         if (result.status === 'error') throw new Error(result.message);
         return result.data;
@@ -87,14 +105,22 @@
     }
 
     function SetupScreen({ onSave }) {
-        const [u, setU] = useState(''); const [k, setK] = useState('');
-        const [loading, setLoading] = useState(false); const [errMsg, setErrMsg] = useState('');
+        const [u, setU] = useState('');
+        const [k, setK] = useState('');
+        const [loading, setLoading] = useState(false);
+        const [errMsg, setErrMsg] = useState('');
         
         const handle = async (e) => {
-            e.preventDefault(); if(!u.trim() || !k.trim()) return;
-            setLoading(true); setErrMsg('');
+            e.preventDefault();
+            if (!u.trim() || !k.trim()) return;
+            setLoading(true);
+            setErrMsg('');
             try {
-                const res = await fetch(u.trim(), { method: 'POST', body: JSON.stringify({ action: 'GET_DATA', apiKey: k.trim() }) });
+                const res = await fetch(u.trim(), {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                    body: JSON.stringify({ action: 'GET_DATA', apiKey: k.trim() })
+                });
                 const result = await res.json();
                 if (result.status === 'error') throw new Error(result.message);
                 onSave(u.trim(), k.trim(), result.data);
@@ -122,7 +148,8 @@
     }
 
     function LockScreen({ correctPin, onUnlock }) {
-      const [input, setInput] = useState(''); const [error, setError] = useState(false);
+      const [input, setInput] = useState('');
+      const [error, setError] = useState(false);
       const handlePress = (n) => { setInput(prev => { if (error || prev.length >= correctPin.length) return prev; const newVal = prev + n; if (newVal === correctPin) setTimeout(() => onUnlock(), 150); else if (newVal.length === correctPin.length) { setError(true); setTimeout(() => { setInput(''); setError(false); }, 400); } return newVal; }); };
       const handleBackspace = () => setInput(p => error || p.length===0 ? p : p.slice(0, -1));
       useEffect(() => { const hk = (e) => { if (error) return; if(e.key>='0'&&e.key<='9') handlePress(e.key); else if(e.key==='Backspace'||e.key==='Delete') handleBackspace(); }; window.addEventListener('keydown', hk); return () => window.removeEventListener('keydown', hk); }, [error, correctPin]);
@@ -136,7 +163,9 @@
     }
 
     function SearchableSelect({ options, value, onChange, placeholder, compact = false }) {
-      const [isOpen, setIsOpen] = useState(false); const [search, setSearch] = useState(''); const wrapperRef = useRef(null);
+      const [isOpen, setIsOpen] = useState(false);
+      const [search, setSearch] = useState('');
+      const wrapperRef = useRef(null);
       useEffect(() => { function h(e) { if (wrapperRef.current && !wrapperRef.current.contains(e.target)) { setIsOpen(false); setSearch(''); } } document.addEventListener("mousedown", h); return () => document.removeEventListener("mousedown", h); }, []);
       const filtered = (options||[]).filter(o => String(o).toLowerCase().includes(String(search).toLowerCase()));
       return (
@@ -146,7 +175,7 @@
           </div>
           {isOpen && (
             <div className="absolute z-[100] w-full mt-2 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg max-h-48 overflow-y-auto hide-scrollbar">
-              {compact && <div className="sticky top-0 bg-white dark:bg-brand-cardDark border-b border-slate-100 dark:border-slate-800 p-2 z-10"><input type="text" autoFocus value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search..." className="w-full bg-slate-50 dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-xs font-semibold outline-none text-slate-900 dark:text-white transition-all" /></div>}
+              {compact && <div className="sticky top-0 bg-white dark:bg-brand-cardDark border-b border-slate-100 dark:border-slate-800 p-2 z-10"><input type="text" autoFocus value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search..." className="w-full bg-slate-50 dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-xs font-semibold outline-none text-slate-900 dark:text-white" /></div>}
               {filtered.length > 0 ? filtered.map(o => ( <div key={o} onClick={(e) => { e.stopPropagation(); onChange(o); setIsOpen(false); setSearch(''); }} className="px-4 py-3 border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer text-sm font-bold text-slate-700 dark:text-slate-300 transition-colors last:border-0">{o}</div> )) : <div className="px-4 py-3 text-sm text-slate-400 font-medium text-center">No matches found</div>}
             </div>
           )}
@@ -289,15 +318,47 @@
     }
 
     function TransactionModal({ isOpen, onClose, onSave, settings, editData, allAvailableTags, setIsBackgroundSyncing }) {
-      if (!isOpen) return null;
-      const [type, setType] = useState('EXPENSE'); const [date, setDate] = useState(''); const [amount, setAmount] = useState(''); const [description, setDescription] = useState(''); const [category, setCategory] = useState(''); const [account, setAccount] = useState(''); const [transferTo, setTransferTo] = useState(''); const [tags, setTags] = useState(''); const [notes, setNotes] = useState(''); const [errorMsg, setErrorMsg] = useState('');
-      const safeIncomeCats = settings?.incomeCats||[]; const safeExpenseCats = settings?.expenseCats||[]; const safeAccounts = settings?.accounts||[];
+      const [type, setType] = useState('EXPENSE');
+      const [date, setDate] = useState('');
+      const [amount, setAmount] = useState('');
+      const [description, setDescription] = useState('');
+      const [category, setCategory] = useState('');
+      const [account, setAccount] = useState('');
+      const [transferTo, setTransferTo] = useState('');
+      const [tags, setTags] = useState('');
+      const [notes, setNotes] = useState('');
+      const [errorMsg, setErrorMsg] = useState('');
+
+      const safeIncomeCats = settings?.incomeCats||[];
+      const safeExpenseCats = settings?.expenseCats||[];
+      const safeAccounts = settings?.accounts||[];
 
       useEffect(() => {
-        if (editData) { setType(editData.rawType||'EXPENSE'); setDate(editData.date||new Date().toISOString().split('T')[0]); setAmount(editData.amount||''); setDescription(editData.description?String(editData.description):''); setCategory(editData.category||''); setAccount(editData.account||''); setTransferTo(editData.transfer_to||''); setTags(editData.tags||''); setNotes(editData.notes||''); } 
-        else { setType('EXPENSE'); setDate(new Date().toISOString().split('T')[0]); setAmount(''); setDescription(''); setCategory(''); setAccount(''); setTransferTo(''); setTags(''); setNotes(''); }
+        if (editData) {
+          setType(editData.rawType||'EXPENSE');
+          setDate(editData.date||new Date().toISOString().split('T')[0]);
+          setAmount(editData.amount||'');
+          setDescription(editData.description?String(editData.description):'');
+          setCategory(editData.category||'');
+          setAccount(editData.account||'');
+          setTransferTo(editData.transfer_to||'');
+          setTags(editData.tags||'');
+          setNotes(editData.notes||'');
+        } else {
+          setType('EXPENSE');
+          setDate(new Date().toISOString().split('T')[0]);
+          setAmount('');
+          setDescription('');
+          setCategory('');
+          setAccount('');
+          setTransferTo('');
+          setTags('');
+          setNotes('');
+        }
         setErrorMsg('');
       }, [editData, isOpen, settings]);
+
+      if (!isOpen) return null;
 
       const handleSubmit = (e) => {
         e.preventDefault(); 
@@ -316,8 +377,16 @@
             return { ...prev, transactions: newTxns };
         });
         
-        setIsBackgroundSyncing(true); onClose();
-        apiCall('SAVE_TRANSACTION', { data: payload }).then(res => { onSave(res); setIsBackgroundSyncing(false); }).catch(e => { console.error(e); setIsBackgroundSyncing(false); alert("Save failed: " + e.message); });
+        setIsBackgroundSyncing(true);
+        onClose();
+        apiCall('SAVE_TRANSACTION', { data: payload }).then(res => {
+            onSave(res);
+            setIsBackgroundSyncing(false);
+        }).catch(e => {
+            console.error(e);
+            setIsBackgroundSyncing(false);
+            alert("Save failed: " + e.message);
+        });
       };
 
       const appendTag = (t) => { const cur = extractTags(tags); if(!cur.includes(t)) setTags([...cur, t].join(', ')); };
@@ -349,19 +418,41 @@
     }
 
     function SettingsView({ appData, onSave, appPin, autoLockTime }) {
-      const safeIncomeCats = appData?.settings?.incomeCats||[]; const safeExpenseCats = appData?.settings?.expenseCats||[]; const safeAccounts = appData?.settings?.accounts||[];
-      const [exCats, setExCats] = useState(appData.excludedCats||[]); const [bals, setBals] = useState(appData.balances||[]); const [incCats, setIncCats] = useState(safeIncomeCats); const [expCats, setExpCats] = useState(safeExpenseCats);
-      const [pin, setPin] = useState(appPin||''); const [showPin, setShowPin] = useState(false); const [lockTime, setLockTime] = useState(autoLockTime||'0'); const [saving, setSaving] = useState(false);
+      const safeIncomeCats = appData?.settings?.incomeCats||[];
+      const safeExpenseCats = appData?.settings?.expenseCats||[];
+      const safeAccounts = appData?.settings?.accounts||[];
+      const [exCats, setExCats] = useState(appData.excludedCats||[]);
+      const [bals, setBals] = useState(appData.balances||[]);
+      const [incCats, setIncCats] = useState(safeIncomeCats);
+      const [expCats, setExpCats] = useState(safeExpenseCats);
+      const [pin, setPin] = useState(appPin||'');
+      const [showPin, setShowPin] = useState(false);
+      const [lockTime, setLockTime] = useState(autoLockTime||'0');
+      const [saving, setSaving] = useState(false);
 
-      useEffect(() => { setIncCats(appData?.settings?.incomeCats||[]); setExpCats(appData?.settings?.expenseCats||[]); setExCats(appData.excludedCats||[]); setBals(appData.balances||[]); }, [appData]);
+      useEffect(() => {
+        setIncCats(appData?.settings?.incomeCats||[]);
+        setExpCats(appData?.settings?.expenseCats||[]);
+        setExCats(appData.excludedCats||[]);
+        setBals(appData.balances||[]);
+      }, [appData]);
+
       const sharedDate = bals.length > 0 && bals[0]?.date ? bals[0].date : new Date().toISOString().split('T')[0];
 
       const handleSave = () => {
-         setSaving(true); const renames = [];
+         setSaving(true);
+         const renames = [];
          incCats.forEach((nC, i) => { const oC = safeIncomeCats[i]; if(oC && oC!==nC && nC.trim()!=='') renames.push({old:oC, new:nC}); });
          expCats.forEach((nC, i) => { const oC = safeExpenseCats[i]; if(oC && oC!==nC && nC.trim()!=='') renames.push({old:oC, new:nC}); });
          const payload = { excludedCats: exCats, balances: bals, incomeCats: incCats.filter(c=>c.trim()!==''), expenseCats: expCats.filter(c=>c.trim()!==''), categoryRenames: renames, appPin: pin, autoLockTime: lockTime };
-         apiCall('SAVE_SETTINGS', { payload }).then(res => { onSave(res); setSaving(false); }).catch(e => { console.error(e); setSaving(false); alert("Settings save failed"); });
+         apiCall('SAVE_SETTINGS', { payload }).then(res => {
+             onSave(res);
+             setSaving(false);
+         }).catch(e => {
+             console.error(e);
+             setSaving(false);
+             alert("Settings save failed");
+         });
       };
 
       return (
@@ -396,13 +487,35 @@
     }
 
     function BulkActionModal({ isOpen, action, count, onClose, onConfirm, allCategories }) {
-      if (!isOpen) return null;
       const [val, setVal] = useState('');
-      const handleSubmit = (e) => { e.preventDefault(); if (action === 'CATEGORY' && !val) return alert("Select Category"); let up={}; if(action==='CATEGORY')up.category=val; if(action==='TAGS')up.tags=val; if(action==='DESC')up.description=val; onConfirm(up); };
-      let t="", l="", inp=null;
-      if(action==='CATEGORY'){t="Recategorise";l="Select new category:";inp=<SearchableSelect options={allCategories} value={val} onChange={setVal} placeholder="Select..."/>;}
-      else if(action==='TAGS'){t="Overwrite Tags";l="Enter new tags:";inp=<input type="text" placeholder="#vacation" value={val} onChange={e=>setVal(e.target.value)} className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-bold outline-none"/>;}
-      else if(action==='DESC'){t="Redescribe";l="Enter description:";inp=<input type="text" placeholder="e.g. Swiggy" value={val} onChange={e=>setVal(e.target.value)} className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-bold outline-none"/>;}
+      
+      useEffect(() => {
+        if (!isOpen) setVal('');
+      }, [isOpen]);
+
+      if (!isOpen) return null;
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        if (action === 'CATEGORY' && !val) return alert("Select Category");
+        let up = {};
+        if (action === 'CATEGORY') up.category = val;
+        if (action === 'TAGS') up.tags = val;
+        if (action === 'DESC') up.description = val;
+        onConfirm(up);
+      };
+
+      let t = "", l = "", inp = null;
+      if (action === 'CATEGORY') {
+        t = "Recategorise"; l = "Select new category:";
+        inp = <SearchableSelect options={allCategories} value={val} onChange={setVal} placeholder="Select..." />;
+      } else if (action === 'TAGS') {
+        t = "Overwrite Tags"; l = "Enter new tags:";
+        inp = <input type="text" placeholder="#vacation" value={val} onChange={e=>setVal(e.target.value)} className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-bold outline-none" />;
+      } else if (action === 'DESC') {
+        t = "Redescribe"; l = "Enter description:";
+        inp = <input type="text" placeholder="e.g. Swiggy" value={val} onChange={e=>setVal(e.target.value)} className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-2.5 text-sm font-bold outline-none" />;
+      }
 
       return (
         <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
@@ -419,36 +532,110 @@
 
     function App() {
       const [appData, setAppData] = useState({ transactions: [], settings: { incomeCats: [], expenseCats: [], accounts: [] }, balances: [], excludedCats: [], appPin: '', autoLockTime: '0' });
-      const [isLoading, setIsLoading] = useState(true); const [isBackgroundSyncing, setIsBackgroundSyncing] = useState(false);
-      const [activeTab, setActiveTab] = useState('overview'); const [period, setPeriod] = useState('This Month');
-      const [isModalOpen, setIsModalOpen] = useState(false); const [editTxn, setEditTxn] = useState(null); 
-      const [searchQ, setSearchQ] = useState(''); const [ledgerCategoryFilter, setLedgerCategoryFilter] = useState('All'); const [ledgerTagFilter, setLedgerTagFilter] = useState(null); const [ledgerTypeFilter, setLedgerTypeFilter] = useState('ALL'); 
-      const [analyticsCategory, setAnalyticsCategory] = useState('All Categories'); const [selectedRows, setSelectedRows] = useState([]);
-      const [bulkModal, setBulkModal] = useState({ isOpen: false, action: null }); const [deleteModalId, setDeleteModalId] = useState(null); 
-      const [balancesExpanded, setBalancesExpanded] = useState(false); const [customFrom, setCustomFrom] = useState(''); const [customTo, setCustomTo] = useState('');
-      const [expandedGroups, setExpandedGroups] = useState({}); const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
-      const [isAuthenticated, setIsAuthenticated] = useState(false); const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'desc' });
-      
+      const [isLoading, setIsLoading] = useState(true);
+      const [isBackgroundSyncing, setIsBackgroundSyncing] = useState(false);
+      const [activeTab, setActiveTab] = useState('overview');
+      const [period, setPeriod] = useState('This Month');
+      const [isModalOpen, setIsModalOpen] = useState(false);
+      const [editTxn, setEditTxn] = useState(null); 
+      const [searchQ, setSearchQ] = useState('');
+      const [ledgerCategoryFilter, setLedgerCategoryFilter] = useState('All');
+      const [ledgerTagFilter, setLedgerTagFilter] = useState(null);
+      const [ledgerTypeFilter, setLedgerTypeFilter] = useState('ALL'); 
+      const [analyticsCategory, setAnalyticsCategory] = useState('All Categories');
+      const [selectedRows, setSelectedRows] = useState([]);
+      const [bulkModal, setBulkModal] = useState({ isOpen: false, action: null });
+      const [deleteModalId, setDeleteModalId] = useState(null); 
+      const [balancesExpanded, setBalancesExpanded] = useState(false);
+      const [customFrom, setCustomFrom] = useState('');
+      const [customTo, setCustomTo] = useState('');
+      const [expandedGroups, setExpandedGroups] = useState({});
+      const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
+      const [isAuthenticated, setIsAuthenticated] = useState(false);
+      const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'desc' });
       const [isSetupComplete, setIsSetupComplete] = useState(!!(GLOBAL_API_URL && GLOBAL_API_KEY));
-
-      const handleManualRefresh = () => { setIsBackgroundSyncing(true); apiCall('GET_DATA').then(res => { setAppData(res); try{localStorage.setItem('finTrackerCache',JSON.stringify(res));}catch(e){} setIsBackgroundSyncing(false); }).catch(e => { console.error(e); setTimeout(()=>setIsBackgroundSyncing(false),800); }); };
-      const handleSort = (k) => setSortConfig(p => ({ key: k, direction: p.key===k&&p.direction==='desc'?'asc':'desc' }));
-      const SortIcon = ({ colKey }) => sortConfig.key !== colKey ? <div className="w-3 h-3 opacity-0"></div> : (sortConfig.direction === 'asc' ? <ChevronUp c="w-3 h-3 text-brand-teal" /> : <ChevronDown c="w-3 h-3 text-brand-teal" />);
       
       const [isDarkMode, setIsDarkMode] = useState(() => { try { return localStorage.getItem('theme') === 'dark'; } catch(e) { return false; } });
       const [isPrivacyMode, setIsPrivacyMode] = useState(() => { try { const s = localStorage.getItem('privacyMode'); return s !== null ? s === 'true' : true; } catch(e) { return true; } });
 
-      useEffect(() => { let aT; const rT = () => { if(aT)clearTimeout(aT); if(appData.autoLockTime&&appData.autoLockTime!=='0'&&isAuthenticated){ aT=setTimeout(()=>{setIsAuthenticated(false);},parseInt(appData.autoLockTime)*60000); } }; const hA=()=>rT(); ['mousemove','keydown','touchstart','scroll','click'].forEach(e=>window.addEventListener(e,hA)); rT(); return ()=>{ ['mousemove','keydown','touchstart','scroll','click'].forEach(e=>window.removeEventListener(e,hA)); if(aT)clearTimeout(aT); }; }, [appData.autoLockTime, isAuthenticated]);
+      useEffect(() => {
+        let aT;
+        const rT = () => {
+          if (aT) clearTimeout(aT);
+          if (appData.autoLockTime && appData.autoLockTime !== '0' && isAuthenticated) {
+            aT = setTimeout(() => { setIsAuthenticated(false); }, parseInt(appData.autoLockTime) * 60000);
+          }
+        };
+        const hA = () => rT();
+        ['mousemove','keydown','touchstart','scroll','click'].forEach(e => window.addEventListener(e, hA));
+        rT();
+        return () => {
+          ['mousemove','keydown','touchstart','scroll','click'].forEach(e => window.removeEventListener(e, hA));
+          if (aT) clearTimeout(aT);
+        };
+      }, [appData.autoLockTime, isAuthenticated]);
       
       useEffect(() => { 
           if (!isSetupComplete) return;
-          try { const c = localStorage.getItem('finTrackerCache'); if(c){ setAppData(JSON.parse(c)); setIsLoading(false); setIsBackgroundSyncing(true); } } catch(e) {} 
-          apiCall('GET_DATA').then(res => { setAppData(res); try{localStorage.setItem('finTrackerCache',JSON.stringify(res));}catch(e){} setIsLoading(false); setIsBackgroundSyncing(false); }).catch(e => { console.error(e); setIsLoading(false); setIsBackgroundSyncing(false); }); 
+          try {
+            const c = localStorage.getItem('finTrackerCache');
+            if (c) { setAppData(JSON.parse(c)); setIsLoading(false); setIsBackgroundSyncing(true); }
+          } catch(e) {} 
+          apiCall('GET_DATA').then(res => {
+            setAppData(res);
+            try { localStorage.setItem('finTrackerCache', JSON.stringify(res)); } catch(e) {}
+            setIsLoading(false);
+            setIsBackgroundSyncing(false);
+          }).catch(e => {
+            console.error(e);
+            setIsLoading(false);
+            setIsBackgroundSyncing(false);
+          }); 
       }, [isSetupComplete]);
 
-      useEffect(() => { if(appData.transactions.length>0) try{localStorage.setItem('finTrackerCache',JSON.stringify(appData));}catch(e){} }, [appData]);
-      useEffect(() => { const m = document.getElementById("theme-color-meta"); if (isDarkMode) { document.documentElement.classList.add('dark'); try{localStorage.setItem('theme','dark');}catch(e){} if(m)m.setAttribute("content","#0d1718"); } else { document.documentElement.classList.remove('dark'); try{localStorage.setItem('theme','light');}catch(e){} if(m)m.setAttribute("content","#f4f7f9"); } }, [isDarkMode]);
-      useEffect(() => { if (isPrivacyMode) { document.body.classList.add('privacy-active'); try{localStorage.setItem('privacyMode','true');}catch(e){} } else { document.body.classList.remove('privacy-active'); try{localStorage.setItem('privacyMode','false');}catch(e){} } }, [isPrivacyMode]);
+      useEffect(() => {
+        if (appData.transactions.length > 0) {
+          try { localStorage.setItem('finTrackerCache', JSON.stringify(appData)); } catch(e) {}
+        }
+      }, [appData]);
+
+      useEffect(() => {
+        const m = document.getElementById("theme-color-meta");
+        if (isDarkMode) {
+          document.documentElement.classList.add('dark');
+          try { localStorage.setItem('theme','dark'); } catch(e) {}
+          if (m) m.setAttribute("content","#0d1718");
+        } else {
+          document.documentElement.classList.remove('dark');
+          try { localStorage.setItem('theme','light'); } catch(e) {}
+          if (m) m.setAttribute("content","#15806c");
+        }
+      }, [isDarkMode]);
+
+      useEffect(() => {
+        if (isPrivacyMode) {
+          document.body.classList.add('privacy-active');
+          try { localStorage.setItem('privacyMode','true'); } catch(e) {}
+        } else {
+          document.body.classList.remove('privacy-active');
+          try { localStorage.setItem('privacyMode','false'); } catch(e) {}
+        }
+      }, [isPrivacyMode]);
+
+      const handleManualRefresh = () => {
+        setIsBackgroundSyncing(true);
+        apiCall('GET_DATA').then(res => {
+          setAppData(res);
+          try { localStorage.setItem('finTrackerCache', JSON.stringify(res)); } catch(e) {}
+          setIsBackgroundSyncing(false);
+        }).catch(e => {
+          console.error(e);
+          setTimeout(() => setIsBackgroundSyncing(false), 800);
+        });
+      };
+
+      const handleSort = (k) => setSortConfig(p => ({ key: k, direction: p.key===k && p.direction==='desc' ? 'asc' : 'desc' }));
+      const SortIcon = ({ colKey }) => sortConfig.key !== colKey ? <div className="w-3 h-3 opacity-0"></div> : (sortConfig.direction === 'asc' ? <ChevronUp c="w-3 h-3 text-brand-teal" /> : <ChevronDown c="w-3 h-3 text-brand-teal" />);
 
       const parsedData = useMemo(() => appData.transactions.map((r, i) => { const d = new Date(r.date); return { ...r, id: i, amount: parseAmt(r.amount), monthIdx: isNaN(d.getMonth()) ? -1 : d.getMonth(), year: isNaN(d.getFullYear()) ? -1 : d.getFullYear(), rawType: String(r.type||'').toUpperCase() }; }).filter(r => r.amount > 0 && r.year !== -1).sort((a,b) => new Date(b.date) - new Date(a.date)), [appData.transactions]);
       const activeData = useMemo(() => { const ex = appData.excludedCats || []; return parsedData.filter(t => !ex.includes(t.category)); }, [parsedData, appData.excludedCats]);
@@ -457,19 +644,37 @@
       const latestInfo = useMemo(() => activeData.length ? { year: activeData[0].year, monthIdx: activeData[0].monthIdx } : { year: new Date().getFullYear(), monthIdx: new Date().getMonth() }, [activeData]);
       
       const monthlyAggsForAllTime = useMemo(() => {
-          const aggs = {}; activeData.forEach(r => { const k = `${r.year}-${String(r.monthIdx).padStart(2,'0')}`; if(!aggs[k]) aggs[k] = { year: r.year, monthIdx: r.monthIdx, label: MONTH_NAMES[r.monthIdx], in: 0, out: 0, inv: 0 }; if(r.rawType === 'INCOME') aggs[k].in += r.amount; else if(r.category && String(r.category).toLowerCase() === 'investment') aggs[k].inv += r.amount; else if(r.rawType === 'EXPENSE') aggs[k].out += r.amount; });
-          let run = 0; return Object.keys(aggs).sort().map(k => { const m = aggs[k]; const avail = run + m.in; run += (m.in - m.out - m.inv); return { ...m, avail, key: k }; });
+          const aggs = {};
+          activeData.forEach(r => {
+            const k = `${r.year}-${String(r.monthIdx).padStart(2,'0')}`;
+            if (!aggs[k]) aggs[k] = { year: r.year, monthIdx: r.monthIdx, label: MONTH_NAMES[r.monthIdx], in: 0, out: 0, inv: 0 };
+            if (r.rawType === 'INCOME') aggs[k].in += r.amount;
+            else if (r.category && String(r.category).toLowerCase() === 'investment') aggs[k].inv += r.amount;
+            else if (r.rawType === 'EXPENSE') aggs[k].out += r.amount;
+          });
+          let run = 0;
+          return Object.keys(aggs).sort().map(k => {
+            const m = aggs[k];
+            const avail = run + m.in;
+            run += (m.in - m.out - m.inv);
+            return { ...m, avail, key: k };
+          });
       }, [activeData]);
 
       const filterByPeriod = (dStr, y, mIdx) => {
-          const d = parseDateLocal(dStr); const { year, monthIdx } = latestInfo;
+          const d = parseDateLocal(dStr);
+          const { year, monthIdx } = latestInfo;
           if (period === 'This Month') return y === year && mIdx === monthIdx;
           if (period === 'Last Month') return y === (monthIdx === 0 ? year-1 : year) && mIdx === (monthIdx === 0 ? 11 : monthIdx-1);
           if (period === '3M') return d >= new Date(year, monthIdx - 2, 1) && d <= new Date(year, monthIdx + 1, 0);
           if (period === '6M') return d >= new Date(year, monthIdx - 5, 1) && d <= new Date(year, monthIdx + 1, 0);
           if (period === 'YTD') return y === year && mIdx <= monthIdx;
           if (period === '12M') return d >= new Date(year, monthIdx - 11, 1) && d <= new Date(year, monthIdx + 1, 0);
-          if (period === 'Custom') { if(customFrom && d < parseDateLocal(customFrom)) return false; if(customTo && d > parseDateLocal(customTo)) return false; return true; }
+          if (period === 'Custom') {
+            if (customFrom && d < parseDateLocal(customFrom)) return false;
+            if (customTo && d > parseDateLocal(customTo)) return false;
+            return true;
+          }
           return true;
       };
 
@@ -480,23 +685,52 @@
         if (ledgerTypeFilter !== 'ALL') f = f.filter(r => r.rawType === ledgerTypeFilter);
         if (ledgerCategoryFilter !== 'All') f = f.filter(r => r.category === ledgerCategoryFilter);
         if (ledgerTagFilter) f = f.filter(r => extractTags(r.tags).includes(ledgerTagFilter));
-        if (searchQ) { const q = searchQ.toLowerCase(); f = f.filter(r => `${String(r.description||'')} ${String(r.category||'')} ${String(r.tags||'')} ${String(r.notes||'')} ${String(r.account||'')} ${String(r.transfer_to||'')}`.toLowerCase().includes(q)); }
+        if (searchQ) {
+          const q = searchQ.toLowerCase();
+          f = f.filter(r => `${String(r.description||'')} ${String(r.category||'')} ${String(r.tags||'')} ${String(r.notes||'')} ${String(r.account||'')} ${String(r.transfer_to||'')}`.toLowerCase().includes(q));
+        }
         return f;
       }, [parsedData, searchQ, ledgerCategoryFilter, ledgerTagFilter, ledgerTypeFilter]);
 
       const selectedSum = useMemo(() => ledgerFiltered.filter(t => selectedRows.includes(t.row_index)).reduce((s, t) => s + (t.rawType === 'INCOME' ? t.amount : -t.amount), 0), [selectedRows, ledgerFiltered]);
 
       const groupedLedger = useMemo(() => {
-          const grps = {}; const cy = new Date().getFullYear()*100 + new Date().getMonth();
-          ledgerFiltered.forEach(t => { const d = parseDateLocal(t.date); const y = isNaN(d.getTime()) ? '' : d.getFullYear(); const lbl = isNaN(d.getTime()) ? 'Unknown' : `${MONTH_NAMES_FULL[d.getMonth()]} ${y}`; const sK = isNaN(d.getTime()) ? 0 : y*100+d.getMonth(); if (!grps[lbl]) grps[lbl] = { label: lbl, sortKey: sK, isCurrentMonth: sK===cy, entries: [], count: 0, spent: 0, invested: 0 }; grps[lbl].entries.push(t); grps[lbl].count++; if (t.rawType==='EXPENSE') { if(t.category&&String(t.category).toLowerCase()==='investment') grps[lbl].invested+=t.amount; else grps[lbl].spent+=t.amount; } });
+          const grps = {};
+          const cy = new Date().getFullYear()*100 + new Date().getMonth();
+          ledgerFiltered.forEach(t => {
+            const d = parseDateLocal(t.date);
+            const y = isNaN(d.getTime()) ? '' : d.getFullYear();
+            const lbl = isNaN(d.getTime()) ? 'Unknown' : `${MONTH_NAMES_FULL[d.getMonth()]} ${y}`;
+            const sK = isNaN(d.getTime()) ? 0 : y*100+d.getMonth();
+            if (!grps[lbl]) grps[lbl] = { label: lbl, sortKey: sK, isCurrentMonth: sK===cy, entries: [], count: 0, spent: 0, invested: 0 };
+            grps[lbl].entries.push(t);
+            grps[lbl].count++;
+            if (t.rawType==='EXPENSE') {
+              if (t.category && String(t.category).toLowerCase()==='investment') grps[lbl].invested += t.amount;
+              else grps[lbl].spent += t.amount;
+            }
+          });
           const arr = Object.values(grps).sort((a,b) => b.sortKey - a.sortKey);
-          arr.forEach(g => g.entries.sort((a,b) => { let vA = a[sortConfig.key]; let vB = b[sortConfig.key]; if(sortConfig.key==='amount'){ vA=parseFloat(vA)||0; vB=parseFloat(vB)||0; } else if(sortConfig.key==='date'){ vA=new Date(vA).getTime(); vB=new Date(vB).getTime(); } else { vA=String(vA||'').toLowerCase(); vB=String(vB||'').toLowerCase(); } if(vA<vB) return sortConfig.direction==='asc'?-1:1; if(vA>vB) return sortConfig.direction==='asc'?1:-1; return 0; }));
+          arr.forEach(g => g.entries.sort((a,b) => {
+            let vA = a[sortConfig.key];
+            let vB = b[sortConfig.key];
+            if (sortConfig.key==='amount') { vA = parseFloat(vA)||0; vB = parseFloat(vB)||0; }
+            else if (sortConfig.key==='date') { vA = new Date(vA).getTime(); vB = new Date(vB).getTime(); }
+            else { vA = String(vA||'').toLowerCase(); vB = String(vB||'').toLowerCase(); }
+            if (vA < vB) return sortConfig.direction==='asc' ? -1 : 1;
+            if (vA > vB) return sortConfig.direction==='asc' ? 1 : -1;
+            return 0;
+          }));
           return arr;
       }, [ledgerFiltered, sortConfig]);
 
-      useEffect(() => { if(groupedLedger.length>0 && Object.keys(expandedGroups).length===0) setExpandedGroups({[groupedLedger[0].label]:true}); }, [groupedLedger]);
+      useEffect(() => {
+        if (groupedLedger.length > 0 && Object.keys(expandedGroups).length === 0) {
+          setExpandedGroups({ [groupedLedger[0].label]: true });
+        }
+      }, [groupedLedger]);
 
-      const toggleGroup = (label) => { setExpandedGroups(prev => ({...prev, [label]: !prev[label]})); };
+      const toggleGroup = (label) => { setExpandedGroups(prev => ({ ...prev, [label]: !prev[label] })); };
 
       const mIN = analyticsFiltered.filter(r => r.rawType === 'INCOME').reduce((a,b) => a + b.amount, 0);
       const mINV = analyticsFiltered.filter(r => r.category && String(r.category).toLowerCase() === 'investment').reduce((a,b) => a + b.amount, 0);
@@ -504,19 +738,74 @@
       const savRate = mIN > 0 ? (((mIN - mOUT) / mIN) * 100).toFixed(1) : 0;
 
       const accountBalances = useMemo(() => {
-        const bals = {}; let gD = new Date('1970-01-01'); const sB = appData.balances || []; if (sB[0]?.date) gD = parseDateLocal(sB[0].date);
-        (appData?.settings?.accounts||[]).forEach(a => bals[a] = { current: (sB.find(b=>b.account===a)||{}).balance?parseFloat((sB.find(b=>b.account===a)).balance):0, startDate: gD });
-        activeData.forEach(t => { const d = parseDateLocal(t.date); if(bals[t.account] && d>=bals[t.account].startDate){ if(t.rawType==='INCOME') bals[t.account].current+=t.amount; else if(t.rawType==='EXPENSE'||t.rawType==='TRANSFER') bals[t.account].current-=t.amount; } if(t.rawType==='TRANSFER' && bals[t.transfer_to] && d>=bals[t.transfer_to].startDate) bals[t.transfer_to].current+=t.amount; });
+        const bals = {};
+        let gD = new Date('1970-01-01');
+        const sB = appData.balances || [];
+        if (sB[0]?.date) gD = parseDateLocal(sB[0].date);
+        (appData?.settings?.accounts||[]).forEach(a => bals[a] = { current: (sB.find(b=>b.account===a)||{}).balance ? parseFloat((sB.find(b=>b.account===a)).balance) : 0, startDate: gD });
+        activeData.forEach(t => {
+          const d = parseDateLocal(t.date);
+          if (bals[t.account] && d >= bals[t.account].startDate) {
+            if (t.rawType === 'INCOME') bals[t.account].current += t.amount;
+            else if (t.rawType === 'EXPENSE' || t.rawType === 'TRANSFER') bals[t.account].current -= t.amount;
+          }
+          if (t.rawType === 'TRANSFER' && bals[t.transfer_to] && d >= bals[t.transfer_to].startDate) {
+            bals[t.transfer_to].current += t.amount;
+          }
+        });
         return bals;
       }, [activeData, appData.balances, appData.settings]);
+
       const totalBalance = Object.values(accountBalances).reduce((s, a) => s + a.current, 0);
-
       const chartData = useMemo(() => monthlyAggsForAllTime.filter(r => filterByPeriod(new Date(r.year, r.monthIdx, 1), r.year, r.monthIdx)), [monthlyAggsForAllTime, period, latestInfo, customFrom, customTo]);
-      const topMerchants = useMemo(() => { const m={}; analyticsFiltered.filter(r=>r.rawType==='EXPENSE'&&(!r.category||String(r.category).toLowerCase()!=='investment')).forEach(r=>{ const d=String(r.description||'Unknown'); if(!m[d]) m[d]={name:d,cat:r.category,total:0}; m[d].total+=r.amount; }); return Object.values(m).sort((a,b)=>b.total-a.total).slice(0,8); }, [analyticsFiltered]);
+      const topMerchants = useMemo(() => {
+        const m = {};
+        analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => {
+          const d = String(r.description || 'Unknown');
+          if (!m[d]) m[d] = { name: d, cat: r.category, total: 0 };
+          m[d].total += r.amount;
+        });
+        return Object.values(m).sort((a,b) => b.total - a.total).slice(0,8);
+      }, [analyticsFiltered]);
 
-      const categorySplitData = useMemo(() => { const map = {}; analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { const cat = String(r.category || 'Uncategorized'); map[cat] = (map[cat] || 0) + r.amount; }); const colors = ['#15806c', '#cb5a42', '#1d8b4e', '#f59e0b', '#2563eb', '#ec4899', '#8b5cf6', '#14b8a6']; return Object.entries(map).map(([name, value], idx) => ({ name, value, color: colors[idx % colors.length] })).sort((a, b) => b.value - a.value); }, [analyticsFiltered]);
-      const accountSplitData = useMemo(() => { const map = {}; analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { const acc = String(r.account || 'Cash/Other'); map[acc] = (map[acc] || 0) + r.amount; }); return Object.entries(map).map(([acc, total]) => ({ acc, total })).sort((a, b) => b.total - a.total); }, [analyticsFiltered]);
-      const heatmapData = useMemo(() => { let expenses = analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')); if (analyticsCategory !== 'All Categories') expenses = expenses.filter(r => String(r.category || 'Uncategorized') === analyticsCategory); if (!expenses.length) return { topCategories: [], monthCols: [], matrix: {}, maxVal: 0 }; const catTotals = {}; const catMonthMatrix = {}; expenses.forEach(row => { const cat = String(row.category || 'Uncategorized'); if (!catTotals[cat]) { catTotals[cat] = 0; catMonthMatrix[cat] = {}; } catTotals[cat] += row.amount; const mKey = MONTH_NAMES[row.monthIdx]; if (!catMonthMatrix[cat][mKey]) catMonthMatrix[cat][mKey] = 0; catMonthMatrix[cat][mKey] += row.amount; }); const topCategories = Object.keys(catTotals).sort((a, b) => catTotals[b] - catTotals[a]).slice(0, 10); const activeMonthIndices = Array.from(new Set(expenses.map(r => r.monthIdx))).sort((a,b) => a - b); const monthCols = activeMonthIndices.map(mIdx => ({ index: mIdx, key: MONTH_NAMES[mIdx], label: MONTH_NAMES[mIdx] })); let maxVal = 0; topCategories.forEach(cat => { monthCols.forEach(m => { const val = (catMonthMatrix[cat] && catMonthMatrix[cat][m.key]) || 0; if (val > maxVal) maxVal = val; }); }); return { topCategories, monthCols, matrix: catMonthMatrix, maxVal }; }, [analyticsFiltered, analyticsCategory]);
+      const categorySplitData = useMemo(() => {
+        const map = {};
+        analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { 
+            const cat = String(r.category || 'Uncategorized'); if (!map[cat]) map[cat] = 0; map[cat] += r.amount; 
+        });
+        const colors = ['#15806c', '#cb5a42', '#1d8b4e', '#f59e0b', '#2563eb', '#ec4899', '#8b5cf6', '#14b8a6'];
+        return Object.entries(map).map(([name, value], idx) => ({ name, value, color: colors[idx % colors.length] })).sort((a, b) => b.value - a.value);
+      }, [analyticsFiltered]);
+
+      const accountSplitData = useMemo(() => {
+        const map = {};
+        analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { 
+            const acc = String(r.account || 'Cash/Other'); if (!map[acc]) map[acc] = 0; map[acc] += r.amount; 
+        });
+        return Object.entries(map).map(([acc, total]) => ({ acc, total })).sort((a, b) => b.total - a.total);
+      }, [analyticsFiltered]);
+
+      const heatmapData = useMemo(() => {
+        let expenses = analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment'));
+        if (analyticsCategory !== 'All Categories') expenses = expenses.filter(r => String(r.category || 'Uncategorized') === analyticsCategory);
+        if (!expenses.length) return { topCategories: [], monthCols: [], matrix: {}, maxVal: 0 };
+        
+        const catTotals = {}; const catMonthMatrix = {};
+        expenses.forEach(row => {
+          const cat = String(row.category || 'Uncategorized');
+          if (!catTotals[cat]) { catTotals[cat] = 0; catMonthMatrix[cat] = {}; }
+          catTotals[cat] += row.amount; const mKey = MONTH_NAMES[row.monthIdx];
+          if (!catMonthMatrix[cat][mKey]) catMonthMatrix[cat][mKey] = 0; catMonthMatrix[cat][mKey] += row.amount;
+        });
+        
+        const topCategories = Object.keys(catTotals).sort((a, b) => catTotals[b] - catTotals[a]).slice(0, 10);
+        const activeMonthIndices = Array.from(new Set(expenses.map(r => r.monthIdx))).sort((a,b) => a - b);
+        const monthCols = activeMonthIndices.map(mIdx => ({ index: mIdx, key: MONTH_NAMES[mIdx], label: MONTH_NAMES[mIdx] }));
+        
+        let maxVal = 0;
+        topCategories.forEach(cat => { monthCols.forEach(m => { const val = (catMonthMatrix[cat] && catMonthMatrix[cat][m.key]) || 0; if (val > maxVal) maxVal = val; }); });
+        return { topCategories, monthCols, matrix: catMonthMatrix, maxVal };
+      }, [analyticsFiltered, analyticsCategory]);
 
       const handleOpenNewTxn = () => { setEditTxn(null); setIsModalOpen(true); };
       const handleOpenEditTxn = (txn) => { setEditTxn(txn); setIsModalOpen(true); };
@@ -524,16 +813,32 @@
       const handleSelectAll = (e) => setSelectedRows(e.target.checked ? ledgerFiltered.map(t=>t.row_index) : []);
 
       const executeBulkAction = (updates) => {
-        setIsBackgroundSyncing(true); const isDel = bulkModal.action === 'DELETE';
-        setAppData(p => { let n = [...p.transactions]; if (isDel) n = n.filter(t => !selectedRows.includes(t.row_index)); else n = n.map(t => selectedRows.includes(t.row_index) ? {...t, ...updates} : t); return { ...p, transactions: n }; });
-        setBulkModal({ isOpen: false, action: null }); setSelectedRows([]); setIsActionsMenuOpen(false);
-        apiCall('BULK_ACTION', { actionType: isDel ? 'DELETE' : 'UPDATE', rowIndices: selectedRows, updates: updates || {} }).then(res => { setAppData(res); setIsBackgroundSyncing(false); }).catch(e => setIsBackgroundSyncing(false));
+        setIsBackgroundSyncing(true);
+        const isDel = bulkModal.action === 'DELETE';
+        setAppData(p => {
+          let n = [...p.transactions];
+          if (isDel) n = n.filter(t => !selectedRows.includes(t.row_index));
+          else n = n.map(t => selectedRows.includes(t.row_index) ? { ...t, ...updates } : t);
+          return { ...p, transactions: n };
+        });
+        setBulkModal({ isOpen: false, action: null });
+        setSelectedRows([]);
+        setIsActionsMenuOpen(false);
+        apiCall('BULK_ACTION', { actionType: isDel ? 'DELETE' : 'UPDATE', rowIndices: selectedRows, updates: updates || {} })
+          .then(res => { setAppData(res); setIsBackgroundSyncing(false); })
+          .catch(e => setIsBackgroundSyncing(false));
       };
 
       const executeDeleteSingle = () => {
-         if (!deleteModalId) return; setIsBackgroundSyncing(true); const id = deleteModalId;
-         setAppData(p => ({ ...p, transactions: p.transactions.filter(t => t.row_index !== id) })); setSelectedRows(p => p.filter(r => r !== id)); setDeleteModalId(null);
-         apiCall('BULK_ACTION', { actionType: 'DELETE', rowIndices: [id], updates: {} }).then(res => { setAppData(res); setIsBackgroundSyncing(false); }).catch(e => setIsBackgroundSyncing(false));
+         if (!deleteModalId) return;
+         setIsBackgroundSyncing(true);
+         const id = deleteModalId;
+         setAppData(p => ({ ...p, transactions: p.transactions.filter(t => t.row_index !== id) }));
+         setSelectedRows(p => p.filter(r => r !== id));
+         setDeleteModalId(null);
+         apiCall('BULK_ACTION', { actionType: 'DELETE', rowIndices: [id], updates: {} })
+          .then(res => { setAppData(res); setIsBackgroundSyncing(false); })
+          .catch(e => setIsBackgroundSyncing(false));
       };
 
       const allCatArray = useMemo(() => Array.from(new Set([...(appData?.settings?.incomeCats||[]), ...(appData?.settings?.expenseCats||[]), 'TRANSFER'])).sort(), [appData]);
