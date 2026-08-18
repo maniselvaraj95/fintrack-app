@@ -29,16 +29,12 @@
   <script type="text/babel">
     const { useState, useMemo, useEffect, useRef } = React;
 
-    // GLOBAL DEVICE-LEVEL CREDENTIALS
     let GLOBAL_API_URL = "";
     let GLOBAL_API_KEY = "";
-    try {
-        GLOBAL_API_URL = localStorage.getItem('API_URL') || "";
-        GLOBAL_API_KEY = localStorage.getItem('API_KEY') || "";
-    } catch(e) {}
+    try { GLOBAL_API_URL = localStorage.getItem('API_URL') || ""; GLOBAL_API_KEY = localStorage.getItem('API_KEY') || ""; } catch(e) {}
 
     const apiCall = async (action, data = {}) => {
-        if (!GLOBAL_API_URL || !GLOBAL_API_KEY) throw new Error("Missing API Credentials. Please connect your device.");
+        if (!GLOBAL_API_URL || !GLOBAL_API_KEY) throw new Error("Missing Credentials.");
         const response = await fetch(GLOBAL_API_URL, { method: 'POST', body: JSON.stringify({ action, apiKey: GLOBAL_API_KEY, ...data }) });
         const result = await response.json();
         if (result.status === 'error') throw new Error(result.message);
@@ -74,7 +70,6 @@
 
     const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const MONTH_NAMES_FULL = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-    
     const parseDateLocal = (s) => { if (!s) return new Date(); const p=String(s).split('-'); return p.length===3 ? new Date(p[0],p[1]-1,p[2]) : new Date(s); };
     const formatDateStr = (s) => { const d=parseDateLocal(s); return isNaN(d)?'':`${String(d.getDate()).padStart(2,'0')}-${MONTH_NAMES[d.getMonth()]}-${String(d.getFullYear()).slice(-2)}`; };
     const parseAmt = (v) => { const n=parseFloat(String(v).replace(/[^\d.-]/g, '')); return isNaN(n)?0:n; };
@@ -93,17 +88,33 @@
 
     function SetupScreen({ onSave }) {
         const [u, setU] = useState(''); const [k, setK] = useState('');
-        const handle = (e) => { e.preventDefault(); if(u.trim()&&k.trim()) onSave(u.trim(), k.trim()); };
+        const [loading, setLoading] = useState(false); const [errMsg, setErrMsg] = useState('');
+        
+        const handle = async (e) => {
+            e.preventDefault(); if(!u.trim() || !k.trim()) return;
+            setLoading(true); setErrMsg('');
+            try {
+                const res = await fetch(u.trim(), { method: 'POST', body: JSON.stringify({ action: 'GET_DATA', apiKey: k.trim() }) });
+                const result = await res.json();
+                if (result.status === 'error') throw new Error(result.message);
+                onSave(u.trim(), k.trim(), result.data);
+            } catch(error) {
+                setErrMsg("Connection Failed: Incorrect URL or Secret Key.");
+                setLoading(false);
+            }
+        };
+
         return (
-            <div className="fixed inset-0 z-[300] flex items-center justify-center bg-brand-bgLight dark:bg-brand-bgDark p-4">
+            <div className="fixed inset-0 z-[300] flex items-center justify-center bg-brand-bgLight dark:bg-brand-bgDark p-4 transition-colors duration-300">
                 <div className="modern-card max-w-sm w-full p-8 animate-slide-up border border-slate-200 dark:border-slate-800 shadow-2xl">
                     <div className="flex justify-center mb-6"><div className="w-16 h-16 bg-brand-teal rounded-2xl flex items-center justify-center text-white shadow-sm"><IndianRupee c="w-8 h-8"/></div></div>
                     <h2 className="text-2xl font-black text-slate-800 dark:text-white text-center mb-2">FinTrack Setup</h2>
-                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 text-center mb-8">Link your secure Google Sheet to this device.</p>
-                    <form onSubmit={handle} className="space-y-5">
+                    <p className="text-xs font-bold text-slate-500 dark:text-slate-400 text-center mb-6">Link your secure Google Sheet to this device.</p>
+                    {errMsg && <div className="mb-4 p-3 bg-rose-50 text-brand-expense rounded-xl text-xs font-bold text-center border border-rose-100">{errMsg}</div>}
+                    <form onSubmit={handle} className="space-y-4">
                         <div><label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest mb-1.5">Web App URL</label><input type="url" required value={u} onChange={e=>setU(e.target.value)} placeholder="https://script.google.com/..." className="w-full bg-slate-50 dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-1 focus:border-brand-teal dark:text-white" /></div>
                         <div><label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest mb-1.5">Secret Key</label><input type="password" required value={k} onChange={e=>setK(e.target.value)} placeholder="Enter your secret key" className="w-full bg-slate-50 dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-1 focus:border-brand-teal dark:text-white tracking-widest" /></div>
-                        <button type="submit" className="w-full py-3.5 rounded-xl font-black text-white bg-brand-teal hover:bg-brand-tealHover shadow-sm transition-colors mt-2">Connect Device</button>
+                        <button type="submit" disabled={loading} className="w-full py-3.5 rounded-xl font-black text-white bg-brand-teal hover:bg-brand-tealHover shadow-sm transition-colors mt-2">{loading ? 'Verifying...' : 'Connect Device'}</button>
                     </form>
                 </div>
             </div>
@@ -523,7 +534,7 @@
 
       const allCatArray = useMemo(() => Array.from(new Set([...(appData?.settings?.incomeCats||[]), ...(appData?.settings?.expenseCats||[]), 'TRANSFER'])).sort(), [appData]);
 
-      if (!isSetupComplete) return <SetupScreen onSave={(u, k) => { GLOBAL_API_URL=u; GLOBAL_API_KEY=k; try{localStorage.setItem('API_URL',u);localStorage.setItem('API_KEY',k);}catch(e){} setIsSetupComplete(true); }} />;
+      if (!isSetupComplete) return <SetupScreen onSave={(u, k, data) => { GLOBAL_API_URL=u; GLOBAL_API_KEY=k; try{localStorage.setItem('API_URL',u);localStorage.setItem('API_KEY',k); if(data)localStorage.setItem('finTrackerCache',JSON.stringify(data));}catch(e){} if(data)setAppData(data); setIsSetupComplete(true); }} />;
       if (isLoading) return ( <div className="h-screen w-full flex flex-col items-center justify-center bg-brand-bgLight dark:bg-brand-bgDark transition-colors duration-300"><div className="w-10 h-10 border-4 border-slate-200 dark:border-slate-800 border-t-brand-teal rounded-full animate-spin"></div><p className="mt-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest animate-pulse">Initializing...</p></div> );
       if (appData.appPin && !isAuthenticated) return <LockScreen correctPin={appData.appPin} onUnlock={() => setIsAuthenticated(true)} />;
 
@@ -574,7 +585,7 @@
                  <button onClick={() => setIsPrivacyMode(!isPrivacyMode)} className={`p-2.5 rounded-full transition-colors ${isPrivacyMode ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50'}`} title="Privacy Mode">{isPrivacyMode ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/>}</button>
                  <button onClick={() => setIsDarkMode(!isDarkMode)} className="p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50" title="Toggle Theme">{isDarkMode ? <Sun c="w-4 h-4"/> : <Moon c="w-4 h-4"/>}</button>
                  <button onClick={() => setActiveTab('settings')} className={`p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50'}`} title="Settings"><SettingsIcon c="w-4 h-4"/></button>
-                 <button onClick={handleOpenNewTxn} className="nav-item relative ml-2 bg-brand-teal hover:bg-brand-tealHover text-white font-bold py-2 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors text-sm shadow-sm h-[38px]"><Plus c="w-4 h-4"/> Add entry <span className="nav-tooltip-bottom">New transaction</span></button>
+                 <button onClick={handleOpenNewTxn} className="nav-item relative ml-2 bg-brand-teal hover:bg-brand-tealHover text-white font-bold w-10 h-10 rounded-xl flex items-center justify-center shadow-sm"><Plus c="w-5 h-5"/> <span className="nav-tooltip-bottom">New transaction</span></button>
               </div>
             </header>
 
@@ -667,8 +678,6 @@
              </div>
           )}
 
-          <TransactionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={setAppData} settings={appData.settings} editData={editTxn} allAvailableTags={allAvailableTags} setIsBackgroundSyncing={setIsBackgroundSyncing} />
-          <BulkActionModal isOpen={bulkModal.isOpen} action={bulkModal.action} count={selectedRows.length} onClose={() => setBulkModal({isOpen: false, action: null})} onConfirm={executeBulkAction} allCategories={allCatArray} />
           <ConfirmDialog isOpen={deleteModalId !== null} onCancel={() => setDeleteModalId(null)} onConfirm={executeDeleteSingle} title="Delete Transaction" message="Are you sure you want to delete this transaction permanently? This cannot be undone." />
         </div>
       );
