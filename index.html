@@ -26,8 +26,7 @@
   <script>window.onerror=function(m,s,l,c,e){document.getElementById('crash-log').style.display='block';document.getElementById('crash-log').innerHTML+='<p>💥 ERROR: '+m+' (Line: '+l+')</p>';};</script>
   <script>try{if(localStorage.getItem('theme')==='dark'||(!('theme' in localStorage)&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');let m=document.getElementById('theme-color-meta');if(m)m.setAttribute("content","#1c1917");}else{document.documentElement.classList.remove('dark');let m=document.getElementById('theme-color-meta');if(m)m.setAttribute("content","#e06c53");}}catch(e){}</script>
   
-  <!-- TAILWIND & COLOR CONFIGURATION (Fixed Script Tags) -->
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script crossorigin="anonymous" src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       darkMode: 'class',
@@ -53,9 +52,9 @@
     }
   </script>
 
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script crossorigin="anonymous" src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin="anonymous" src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script crossorigin="anonymous" src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
     body{font-family:'Plus Jakarta Sans',sans-serif;-webkit-font-smoothing:antialiased;transition:background-color .3s,color .3s;}
@@ -76,10 +75,8 @@
     .custom-check:checked::before{transform:scale(1);}
     .dark input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.8;cursor:pointer;}
     
-    /* Beautiful Privacy Blur Effect */
     .privacy-active .blur-money{filter:blur(6px);opacity:0.6;user-select:none;pointer-events:none;transition:all 0.3s ease;}
     
-    /* Responsive Tooltips supporting Hover AND Hold Gestures */
     .nav-tooltip, .nav-tooltip-bottom { position:absolute; padding:6px 12px; background-color:#334155; color:white; font-size:11px; font-weight:700; border-radius:8px; white-space:nowrap; opacity:0; pointer-events:none; transition:all .2s; z-index:50; text-transform:uppercase; }
     @media (min-width: 768px) {
       .nav-tooltip { left:calc(100% + 12px); top:50%; transform:translateY(-50%); }
@@ -931,8 +928,8 @@
                  <div className="flex xl:hidden items-center gap-1.5 shrink-0">
                     <button onClick={handleManualRefresh} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><RefreshCw c={`w-4 h-4 ${isBackgroundSyncing ? 'animate-spin text-brand-teal' : ''}`}/><span className="nav-tooltip-bottom">Refresh</span></button>
                     {appData.appPin && <button onClick={() => setIsAuthenticated(false)} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><LockIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Lock App</span></button>}
-                    <button onClick={() => setIsPrivacyMode(!isPrivacyMode)} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${isPrivacyMode ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`}>{isPrivacyMode ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/><span className="nav-tooltip-bottom">Privacy</span>}</button>
-                    <button onClick={() => setIsDarkMode(!isDarkMode)} className="nav-item focus:outline-none relative p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800">{isDarkMode ? <Sun c="w-4 h-4"/> : <Moon c="w-4 h-4"/><span className="nav-tooltip-bottom">Theme</span>}</button>
+                    <button onClick={() => setIsPrivacyMode(!isPrivacyMode)} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${isPrivacyMode ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`}>{isPrivacyMode ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Privacy</span></button>
+                    <button onClick={() => setIsDarkMode(!isDarkMode)} className="nav-item focus:outline-none relative p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800">{isDarkMode ? <Sun c="w-4 h-4"/> : <Moon c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Theme</span></button>
                     <button onClick={() => setActiveTab('settings')} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`}><SettingsIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Settings</span></button>
                  </div>
               </div>
@@ -953,8 +950,8 @@
               <div className="hidden xl:flex items-center gap-2 shrink-0 ml-auto">
                  <button onClick={handleManualRefresh} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50`}><RefreshCw c={`w-4 h-4 ${isBackgroundSyncing ? 'animate-spin text-brand-teal' : ''}`}/><span className="nav-tooltip-bottom">Refresh</span></button>
                  {appData.appPin && <button onClick={() => setIsAuthenticated(false)} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50`}><LockIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Lock App</span></button>}
-                 <button onClick={() => setIsPrivacyMode(!isPrivacyMode)} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${isPrivacyMode ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50'}`}>{isPrivacyMode ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/><span className="nav-tooltip-bottom">Privacy Mode</span></button>
-                 <button onClick={() => setIsDarkMode(!isDarkMode)} className="nav-item focus:outline-none relative p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50">{isDarkMode ? <Sun c="w-4 h-4"/> : <Moon c="w-4 h-4"/><span className="nav-tooltip-bottom">Toggle Theme</span></button>
+                 <button onClick={() => setIsPrivacyMode(!isPrivacyMode)} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${isPrivacyMode ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50'}`}>{isPrivacyMode ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Privacy Mode</span></button>
+                 <button onClick={() => setIsDarkMode(!isDarkMode)} className="nav-item focus:outline-none relative p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50">{isDarkMode ? <Sun c="w-4 h-4"/> : <Moon c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Toggle Theme</span></button>
                  <button onClick={() => setActiveTab('settings')} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50'}`}><SettingsIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Settings</span></button>
                  <button onClick={handleOpenNewTxn} className="nav-item focus:outline-none relative ml-2 bg-brand-teal hover:bg-brand-tealHover text-white font-bold py-2 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors text-sm shadow-sm h-[38px]"><Plus c="w-4 h-4"/> Add entry <span className="nav-tooltip-bottom">New transaction</span></button>
               </div>
