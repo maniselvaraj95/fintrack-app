@@ -27,7 +27,30 @@
   <script>window.onerror=function(m,s,l,c,e){document.getElementById('crash-log').style.display='block';document.getElementById('crash-log').innerHTML+='<p>💥 ERROR: '+m+' (Line: '+l+')</p>';};</script>
   <script>try{if(localStorage.getItem('theme')==='dark'||(!('theme' in localStorage)&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');let m=document.getElementById('theme-color-meta');if(m)m.setAttribute("content","#0d1718");}else{document.documentElement.classList.remove('dark');let m=document.getElementById('theme-color-meta');if(m)m.setAttribute("content","#15806c");}}catch(e){}</script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script>tailwind.config={darkMode:'class',theme:{extend:{colors:{brand:{bgLight:'#f4f7f9',bgDark:'#0d1718',sidebar:'#122b2c',sidebarHover:'#183839',cardLight:'#ffffff',cardDark:'#121e1f',teal:'#15806c',tealHover:'#116a59',expense:'#cb5a42',income:'#1d8b4e',transfer:'#2563eb'}}}}}</script>
+  <script><script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          brand: {
+            bgLight: '#faf6f3',      /* Warm pearl/off-white */
+            bgDark: '#1c1917',       /* Deep warm stone */
+            sidebar: '#292524',      /* Slightly lighter stone */
+            sidebarHover: '#44403c', /* Warm grey hover */
+            cardLight: '#ffffff',
+            cardDark: '#292524',     /* Matches sidebar for a seamless look */
+            teal: '#e06c53',         /* The new primary color: Warm Terracotta */
+            tealHover: '#c2553d',    /* Darker terracotta for button clicks */
+            expense: '#ef4444',      /* Crisp red */
+            income: '#22c55e',       /* Crisp green */
+            transfer: '#f59e0b'      /* Warm amber */
+          }
+        }
+      }
+    }
+  }
+</script></script>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
