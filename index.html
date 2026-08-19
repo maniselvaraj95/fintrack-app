@@ -27,7 +27,7 @@
   <script>window.onerror=function(m,s,l,c,e){document.getElementById('crash-log').style.display='block';document.getElementById('crash-log').innerHTML+='<p>💥 ERROR: '+m+' (Line: '+l+')</p>';};</script>
   <script>try{if(localStorage.getItem('theme')==='dark'||(!('theme' in localStorage)&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');let m=document.getElementById('theme-color-meta');if(m)m.setAttribute("content","#0d1718");}else{document.documentElement.classList.remove('dark');let m=document.getElementById('theme-color-meta');if(m)m.setAttribute("content","#15806c");}}catch(e){}</script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script><script>
+  <script>
   tailwind.config = {
     darkMode: 'class',
     theme: {
@@ -50,11 +50,44 @@
       }
     }
   }
-</script></script>
+</script>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <style>@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');body{font-family:'Plus Jakarta Sans',sans-serif;-webkit-font-smoothing:antialiased;transition:background-color .3s,color .3s;}.modern-card{background:#ffffff;border-radius:1.25rem;box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);border:1px solid #e2e8f0;transition:all .3s;}.dark .modern-card{background:#121e1f;box-shadow:0 10px 25px -5px rgba(0,0,0,0.3);border:1px solid #1a2e2f;}.hide-scrollbar::-webkit-scrollbar{display:none;}.hide-scrollbar{-ms-overflow-style:none;scrollbar-width:none;}.animate-fade-in{animation:fadeIn .3s forwards;}.animate-slide-up{animation:slideUp .4s forwards;}@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}@keyframes slideUp{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}.custom-check{appearance:none;background-color:#f1f5f9;width:1.25em;height:1.25em;border-radius:4px;display:grid;place-content:center;cursor:pointer;border:1px solid #cbd5e1;}.dark .custom-check{background-color:#1a2e2f;border-color:#274041;}.custom-check::before{content:"";width:.65em;height:.65em;transform:scale(0);transition:120ms transform ease-in-out;box-shadow:inset 1em 1em white;background-color:white;clip-path:polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0%,43% 62%);}.custom-check:checked{background-color:#15806c;border-color:#15806c;}.dark .custom-check:checked{background-color:#15806c;border-color:#15806c;}.custom-check:checked::before{transform:scale(1);}.dark input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.8;cursor:pointer;}.privacy-active .blur-money{user-select:none;pointer-events:none;}.nav-tooltip,.nav-tooltip-bottom{position:absolute;padding:6px 12px;background-color:#334155;color:white;font-size:11px;font-weight:700;border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:all .2s;z-index:50;text-transform:uppercase;}.nav-tooltip{left:calc(100% + 12px);top:50%;transform:translateY(-50%);}.nav-tooltip-bottom{top:calc(100% + 12px);left:50%;transform:translateX(-50%);}.nav-item:hover .nav-tooltip{opacity:1;left:calc(100% + 16px);}.nav-item:hover .nav-tooltip-bottom{opacity:1;top:calc(100% + 16px);}.dark .nav-tooltip,.dark .nav-tooltip-bottom{background-color:#1e293b;border:1px solid #334155;}</style>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+    body{font-family:'Plus Jakarta Sans',sans-serif;-webkit-font-smoothing:antialiased;transition:background-color .3s,color .3s;}
+    .modern-card{background:#ffffff;border-radius:1.25rem;box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);border:1px solid #e2e8f0;transition:all .3s;}
+    .dark .modern-card{background:#121e1f;box-shadow:0 10px 25px -5px rgba(0,0,0,0.3);border:1px solid #1a2e2f;}
+    .hide-scrollbar::-webkit-scrollbar{display:none;}
+    .hide-scrollbar{-ms-overflow-style:none;scrollbar-width:none;}
+    .animate-fade-in{animation:fadeIn .3s forwards;}
+    .animate-slide-up{animation:slideUp .4s forwards;}
+    @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
+    .custom-check{appearance:none;background-color:#f1f5f9;width:1.25em;height:1.25em;border-radius:4px;display:grid;place-content:center;cursor:pointer;border:1px solid #cbd5e1;}
+    .dark .custom-check{background-color:#1a2e2f;border-color:#274041;}
+    .custom-check::before{content:"";width:.65em;height:.65em;transform:scale(0);transition:120ms transform ease-in-out;box-shadow:inset 1em 1em white;background-color:white;clip-path:polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0%,43% 62%);}
+    .custom-check:checked{background-color:#15806c;border-color:#15806c;}
+    .dark .custom-check:checked{background-color:#15806c;border-color:#15806c;}
+    .custom-check:checked::before{transform:scale(1);}
+    .dark input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.8;cursor:pointer;}
+    .privacy-active .blur-money{user-select:none;pointer-events:none;}
+    
+    /* Responsive Tooltips supporting Hover AND Hold Gestures */
+    .nav-tooltip, .nav-tooltip-bottom { position:absolute; padding:6px 12px; background-color:#334155; color:white; font-size:11px; font-weight:700; border-radius:8px; white-space:nowrap; opacity:0; pointer-events:none; transition:all .2s; z-index:50; text-transform:uppercase; }
+    @media (min-width: 768px) {
+      .nav-tooltip { left:calc(100% + 12px); top:50%; transform:translateY(-50%); }
+      .nav-item:hover .nav-tooltip, .nav-item:active .nav-tooltip, .nav-item:focus .nav-tooltip { opacity:1; left:calc(100% + 16px); }
+    }
+    @media (max-width: 767px) {
+      .nav-tooltip { bottom:calc(100% + 12px); left:50%; transform:translateX(-50%); }
+      .nav-item:hover .nav-tooltip, .nav-item:active .nav-tooltip, .nav-item:focus .nav-tooltip { opacity:1; bottom:calc(100% + 16px); }
+    }
+    .nav-tooltip-bottom { top:calc(100% + 12px); left:50%; transform:translateX(-50%); }
+    .nav-item:hover .nav-tooltip-bottom, .nav-item:active .nav-tooltip-bottom, .nav-item:focus .nav-tooltip-bottom { opacity:1; top:calc(100% + 16px); }
+    .dark .nav-tooltip, .dark .nav-tooltip-bottom { background-color:#1e293b; border:1px solid #334155; }
+  </style>
 </head>
 <body class="bg-brand-bgLight dark:bg-brand-bgDark text-slate-900 dark:text-slate-100 transition-colors duration-300">
   <div id="crash-log"></div>
@@ -875,11 +908,11 @@
 
           <nav className="shrink-0 w-full md:w-[76px] md:h-full bg-white dark:bg-brand-cardDark md:bg-brand-sidebar md:dark:bg-brand-sidebar z-40 flex flex-row md:flex-col items-center shadow-[0_-10px_40px_rgba(0,0,0,0.03)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.4)] md:shadow-none transition-colors border-t border-slate-200 dark:border-slate-800 md:border-t-0 md:border-r py-2 md:py-6 pb-safe justify-around md:justify-start gap-0 md:gap-4 overflow-visible fixed md:relative bottom-0 left-0">
             <div className="hidden md:flex mb-8 w-full justify-center"><div className="w-10 h-10 bg-brand-teal rounded-xl flex items-center justify-center text-white font-black text-xl shadow-sm"><IndianRupee c="w-5 h-5"/></div></div>
-            <button onClick={() => setActiveTab('overview')} className={`nav-item relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'overview' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-sidebarHover md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:hover:text-white md:hover:bg-brand-sidebarHover/50'}`}><Activity c="w-6 h-6 sm:w-5 sm:h-5"/><span className="hidden md:block nav-tooltip">Dashboard</span></button>
-            <button onClick={() => setActiveTab('analytics')} className={`nav-item relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'analytics' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-sidebarHover md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:hover:text-white md:hover:bg-brand-sidebarHover/50'}`}><PieChart c="w-6 h-6 sm:w-5 sm:h-5"/><span className="hidden md:block nav-tooltip">Analytics</span></button>
+            <button onClick={() => setActiveTab('overview')} className={`nav-item focus:outline-none relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'overview' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-sidebarHover md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:hover:text-white md:hover:bg-brand-sidebarHover/50'}`}><Activity c="w-6 h-6 sm:w-5 sm:h-5"/><span className="nav-tooltip">Dashboard</span></button>
+            <button onClick={() => setActiveTab('analytics')} className={`nav-item focus:outline-none relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'analytics' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-sidebarHover md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:hover:text-white md:hover:bg-brand-sidebarHover/50'}`}><PieChart c="w-6 h-6 sm:w-5 sm:h-5"/><span className="nav-tooltip">Analytics</span></button>
             <div className="md:hidden relative w-16 h-12 flex justify-center items-center"><button onClick={handleOpenNewTxn} className="absolute -top-6 w-14 h-14 bg-brand-teal text-white rounded-full flex items-center justify-center shadow-[0_8px_16px_rgba(21,128,108,0.3)] transition-transform active:scale-95 border-4 border-brand-bgLight dark:border-brand-bgDark z-50"><Plus c="w-6 h-6"/></button></div>
-            <button onClick={() => setActiveTab('ledger')} className={`nav-item relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'ledger' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-sidebarHover md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:hover:text-white md:hover:bg-brand-sidebarHover/50'}`}><List c="w-6 h-6 sm:w-5 sm:h-5"/><span className="hidden md:block nav-tooltip">Transactions</span></button>
-            <button onClick={() => setActiveTab('insights')} className={`nav-item relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'insights' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-sidebarHover md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:hover:text-white md:hover:bg-brand-sidebarHover/50'}`}><Sparkles c="w-6 h-6 sm:w-5 sm:h-5"/><span className="hidden md:block nav-tooltip">Insights</span></button>
+            <button onClick={() => setActiveTab('ledger')} className={`nav-item focus:outline-none relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'ledger' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-sidebarHover md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:hover:text-white md:hover:bg-brand-sidebarHover/50'}`}><List c="w-6 h-6 sm:w-5 sm:h-5"/><span className="nav-tooltip">Transactions</span></button>
+            <button onClick={() => setActiveTab('insights')} className={`nav-item focus:outline-none relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'insights' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-sidebarHover md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:hover:text-white md:hover:bg-brand-sidebarHover/50'}`}><Sparkles c="w-6 h-6 sm:w-5 sm:h-5"/><span className="nav-tooltip">Insights</span></button>
           </nav>
 
           <main className="flex-1 h-full overflow-y-auto hide-scrollbar relative pb-24 md:pb-0">
@@ -889,12 +922,14 @@
                     <div className="w-8 h-8 rounded-lg bg-brand-teal text-white flex items-center justify-center shrink-0 md:hidden"><IndianRupee c="w-4 h-4"/></div>
                     <h2 className="text-xl font-black text-slate-800 dark:text-white capitalize tracking-tight truncate">{activeTab === 'overview' ? 'Dashboard' : activeTab === 'ledger' ? 'Transactions' : activeTab === 'analytics' ? 'Analytics' : activeTab === 'insights' ? 'Insights' : 'Settings'}</h2>
                  </div>
+                 
+                 {/* MOBILE HEADER BUTTONS */}
                  <div className="flex xl:hidden items-center gap-1.5 shrink-0">
-                    <button onClick={handleManualRefresh} className="p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800" title="Refresh"><RefreshCw c={`w-4 h-4 ${isBackgroundSyncing ? 'animate-spin text-brand-teal' : ''}`}/></button>
-                    {appData.appPin && <button onClick={() => setIsAuthenticated(false)} className="p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800" title="Lock App"><LockIcon c="w-4 h-4"/></button>}
-                    <button onClick={() => setIsPrivacyMode(!isPrivacyMode)} className={`p-2.5 rounded-full transition-colors ${isPrivacyMode ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`}>{isPrivacyMode ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/>}</button>
-                    <button onClick={() => setIsDarkMode(!isDarkMode)} className="p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><Moon c="w-4 h-4"/></button>
-                    <button onClick={() => setActiveTab('settings')} className={`p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`}><SettingsIcon c="w-4 h-4"/></button>
+                    <button onClick={handleManualRefresh} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><RefreshCw c={`w-4 h-4 ${isBackgroundSyncing ? 'animate-spin text-brand-teal' : ''}`}/><span className="nav-tooltip-bottom">Refresh</span></button>
+                    {appData.appPin && <button onClick={() => setIsAuthenticated(false)} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><LockIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Lock App</span></button>}
+                    <button onClick={() => setIsPrivacyMode(!isPrivacyMode)} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${isPrivacyMode ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`}>{isPrivacyMode ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/><span className="nav-tooltip-bottom">Privacy</span>}</button>
+                    <button onClick={() => setIsDarkMode(!isDarkMode)} className="nav-item focus:outline-none relative p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800">{isDarkMode ? <Sun c="w-4 h-4"/> : <Moon c="w-4 h-4"/><span className="nav-tooltip-bottom">Theme</span>}</button>
+                    <button onClick={() => setActiveTab('settings')} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`}><SettingsIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Settings</span></button>
                  </div>
               </div>
 
@@ -911,13 +946,14 @@
                 </div>
               )}
 
+              {/* DESKTOP HEADER BUTTONS */}
               <div className="hidden xl:flex items-center gap-2 shrink-0 ml-auto">
-                 <button onClick={handleManualRefresh} className={`p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50`} title="Refresh Data"><RefreshCw c={`w-4 h-4 ${isBackgroundSyncing ? 'animate-spin text-brand-teal' : ''}`}/></button>
-                 {appData.appPin && <button onClick={() => setIsAuthenticated(false)} className={`p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50`} title="Lock App"><LockIcon c="w-4 h-4"/></button>}
-                 <button onClick={() => setIsPrivacyMode(!isPrivacyMode)} className={`p-2.5 rounded-full transition-colors ${isPrivacyMode ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50'}`} title="Privacy Mode">{isPrivacyMode ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/>}</button>
-                 <button onClick={() => setIsDarkMode(!isDarkMode)} className="p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50" title="Toggle Theme">{isDarkMode ? <Sun c="w-4 h-4"/> : <Moon c="w-4 h-4"/>}</button>
-                 <button onClick={() => setActiveTab('settings')} className={`p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50'}`} title="Settings"><SettingsIcon c="w-4 h-4"/></button>
-                 <button onClick={handleOpenNewTxn} className="nav-item relative ml-2 bg-brand-teal hover:bg-brand-tealHover text-white font-bold py-2 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors text-sm shadow-sm h-[38px]"><Plus c="w-4 h-4"/> Add entry <span className="nav-tooltip-bottom">New transaction</span></button>
+                 <button onClick={handleManualRefresh} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50`}><RefreshCw c={`w-4 h-4 ${isBackgroundSyncing ? 'animate-spin text-brand-teal' : ''}`}/><span className="nav-tooltip-bottom">Refresh</span></button>
+                 {appData.appPin && <button onClick={() => setIsAuthenticated(false)} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50`}><LockIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Lock App</span></button>}
+                 <button onClick={() => setIsPrivacyMode(!isPrivacyMode)} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${isPrivacyMode ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50'}`}>{isPrivacyMode ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/><span className="nav-tooltip-bottom">Privacy Mode</span></button>
+                 <button onClick={() => setIsDarkMode(!isDarkMode)} className="nav-item focus:outline-none relative p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50">{isDarkMode ? <Sun c="w-4 h-4"/> : <Moon c="w-4 h-4"/><span className="nav-tooltip-bottom">Toggle Theme</span></button>
+                 <button onClick={() => setActiveTab('settings')} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50'}`}><SettingsIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Settings</span></button>
+                 <button onClick={handleOpenNewTxn} className="nav-item focus:outline-none relative ml-2 bg-brand-teal hover:bg-brand-tealHover text-white font-bold py-2 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors text-sm shadow-sm h-[38px]"><Plus c="w-4 h-4"/> Add entry <span className="nav-tooltip-bottom">New transaction</span></button>
               </div>
             </header>
 
