@@ -1,4 +1,4 @@
-const CACHE_NAME = 'fintrack-v6';
+const CACHE_NAME = 'fintrack-v7';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
