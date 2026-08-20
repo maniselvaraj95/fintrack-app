@@ -1,9 +1,9 @@
 {
-"name": "FinTrack Personal Finance",
+  "name": "FinTrack Personal Finance",
   "short_name": "FinTrack",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#1c1917",
+  "background_color": "#f1e6d3",
   "theme_color": "#1c1917",
   "orientation": "portrait-primary",
   "icons": [
