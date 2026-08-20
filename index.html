@@ -11,7 +11,6 @@
   <link rel="manifest" href="manifest.json">
   <title>FinTrack</title>
   
-  <!-- UPDATED: Fixed capitalization to resolve laptop PWA icon issue -->
   <link rel="icon" type="image/png" href="Icon-192.png">
   <link rel="apple-touch-icon" href="Icon-192.png">
 
@@ -42,16 +41,24 @@
     .animate-slide-up{animation:slideUp .4s forwards;}
     @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
     @keyframes slideUp{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
-    .custom-check{appearance:none;background-color:#f1f5f9;width:1.25em;height:1.25em;border-radius:4px;display:grid;place-content:center;cursor:pointer;border:1px solid #cbd5e1;}
-    .dark .custom-check{background-color:#44403c;border-color:#57534e;}
-    .custom-check::before{content:"";width:.65em;height:.65em;transform:scale(0);transition:120ms transform ease-in-out;box-shadow:inset 1em 1em white;background-color:white;clip-path:polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0%,43% 62%);}
-    .custom-check:checked{background-color:#e06c53;border-color:#e06c53;}
-    .dark .custom-check:checked{background-color:#e06c53;border-color:#e06c53;}
-    .custom-check:checked::before{transform:scale(1);}
-    .dark input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.8;cursor:pointer;}
     .privacy-active .blur-money{user-select:none;pointer-events:none;}
     
-    /* UPDATED: Responsive Tooltip Design System - Strict hover for Desktop */
+    /* Animated SVG Checkbox (Replaces old custom-check) */
+    .check-anim { cursor: pointer; position: relative; margin: auto; width: 18px; height: 18px; -webkit-tap-highlight-color: transparent; transform: translate3d(0, 0, 0); }
+    .check-anim:before { content: ""; position: absolute; top: -15px; left: -15px; width: 48px; height: 48px; border-radius: 50%; background: rgba(224,108,83,0.08); opacity: 0; transition: opacity 0.2s ease; }
+    .check-anim svg { position: relative; z-index: 1; fill: none; stroke-linecap: round; stroke-linejoin: round; stroke: #cbd5e1; stroke-width: 1.8; transform: translate3d(0, 0, 0); transition: all 0.2s ease; }
+    .dark .check-anim svg { stroke: #57534e; }
+    .check-anim svg path { stroke-dasharray: 60; stroke-dashoffset: 0; }
+    .check-anim svg polyline { stroke-dasharray: 22; stroke-dashoffset: 66; }
+    .check-anim:hover:before { opacity: 1; }
+    .check-anim:hover svg { stroke: #e06c53; }
+    .dark .check-anim:hover svg { stroke: #e06c53; }
+    input[type="checkbox"]:checked + .check-anim svg { stroke: #e06c53; }
+    .dark input[type="checkbox"]:checked + .check-anim svg { stroke: #e06c53; }
+    input[type="checkbox"]:checked + .check-anim svg path { stroke-dashoffset: 60; transition: all 0.3s linear; }
+    input[type="checkbox"]:checked + .check-anim svg polyline { stroke-dashoffset: 42; transition: all 0.2s linear; transition-delay: 0.15s; }
+
+    /* Desktop Tooltip Hover System */
     .nav-tooltip, .nav-tooltip-bottom {
       position: absolute;
       padding: 6px 12px;
@@ -78,7 +85,7 @@
       .nav-item:hover .nav-tooltip-bottom { opacity: 1; top: calc(100% + 16px); }
     }
     @media (max-width: 767px) {
-      /* Disable purely CSS tooltips on mobile. Handled explicitly via React long-press */
+      /* Hide native CSS tooltips on mobile. Replaced by React delay-tooltip */
       .nav-tooltip, .nav-tooltip-bottom { display: none; }
     }
   </style>
@@ -123,6 +130,7 @@
     const SearchIcon = ({c}) => <Icon c={c}><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></Icon>;
     const ChevronDown = ({c}) => <Icon c={c}><path d="m6 9 6 6 6-6"/></Icon>;
     const ChevronUp = ({c}) => <Icon c={c}><path d="m18 15-6-6-6 6"/></Icon>;
+    const ChevronsUpDown = ({c}) => <Icon c={c}><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></Icon>;
     const X = ({c}) => <Icon c={c}><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></Icon>;
     const Wallet = ({c}) => <Icon c={c}><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4M3 5v14a2 2 0 0 0 2 2h16v-5M18 12a2 2 0 0 0 0 4h4v-4Z"/></Icon>;
     const EditPencil = ({c}) => <Icon c={c}><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></Icon>;
@@ -135,6 +143,19 @@
     const Moon = ({c}) => <Icon c={c}><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></Icon>;
     const Eye = ({c}) => <Icon c={c}><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></Icon>;
     const EyeOff = ({c}) => <Icon c={c}><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22"/></Icon>;
+
+    // New Reusable Checkbox Component
+    const AnimatedCheckbox = ({ checked, onChange }) => (
+      <div className="inline-block relative w-[18px] h-[18px] shrink-0" onClick={(e) => e.stopPropagation()}>
+        <input type="checkbox" checked={checked} onChange={onChange} className="hidden absolute" />
+        <div className="check-anim block" onClick={(e) => { e.preventDefault(); onChange({target:{checked:!checked}}); }}>
+          <svg width="18px" height="18px" viewBox="0 0 18 18">
+            <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path>
+            <polyline points="1 9 7 14 15 4"></polyline>
+          </svg>
+        </div>
+      </div>
+    );
 
     const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const MONTH_NAMES_FULL = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -629,25 +650,29 @@
       const [isDarkMode, setIsDarkMode] = useState(() => { try { return localStorage.getItem('theme') === 'dark'; } catch(e) { return false; } });
       const [isPrivacyMode, setIsPrivacyMode] = useState(() => { try { const s = localStorage.getItem('privacyMode'); return s !== null ? s === 'true' : true; } catch(e) { return true; } });
 
-      // UPDATED: Mobile Tooltip React Logic (Press-and-Hold)
-      const [mobileTooltip, setMobileTooltip] = useState({ text: '', x: 0, y: 0, visible: false });
-      const touchTimerRef = useRef(null);
+      // Mobile Delayed Tooltip System
+      const [mobileTooltip, setMobileTooltip] = useState({ text: '', x: 0, y: 0, visible: false, pos: 'top' });
+      const touchShowTimer = useRef(null);
+      const touchHideTimer = useRef(null);
 
-      const handleTouchStart = (text, e) => {
+      const handleTouchStart = (text, e, pos = 'top') => {
+        if (touchHideTimer.current) clearTimeout(touchHideTimer.current);
         const touch = e.touches[0];
         const clientX = touch.clientX;
         const clientY = touch.clientY;
-        touchTimerRef.current = setTimeout(() => {
-          setMobileTooltip({ text, x: clientX, y: clientY - 45, visible: true });
+        touchShowTimer.current = setTimeout(() => {
+          setMobileTooltip({ text, x: clientX, y: pos === 'top' ? clientY - 45 : clientY + 35, visible: true, pos });
         }, 400);
       };
 
       const handleTouchEnd = () => {
-        if (touchTimerRef.current) { 
-          clearTimeout(touchTimerRef.current); 
-          touchTimerRef.current = null; 
+        if (touchShowTimer.current) {
+          clearTimeout(touchShowTimer.current);
+          touchShowTimer.current = null;
         }
-        setMobileTooltip(prev => ({ ...prev, visible: false }));
+        touchHideTimer.current = setTimeout(() => {
+          setMobileTooltip(prev => ({ ...prev, visible: false }));
+        }, 1500);
       };
 
       useEffect(() => {
@@ -784,7 +809,6 @@
         return f;
       }, [parsedData, searchQ, ledgerCategoryFilter, ledgerTagFilter, ledgerTypeFilter]);
 
-      // UPDATED: Exclude internal TRANSFER amounts from the bulk selected net sum
       const selectedSum = useMemo(() => ledgerFiltered.filter(t => selectedRows.includes(t.row_index)).reduce((s, t) => {
         if (t.rawType === 'TRANSFER') return s;
         return s + (t.rawType === 'INCOME' ? t.amount : -t.amount);
@@ -828,7 +852,6 @@
 
       const toggleGroup = (label) => { setExpandedGroups(prev => ({ ...prev, [label]: !prev[label] })); };
 
-      // UPDATED: Global Master Toggle Logic for Expand/Collapse All
       const isAllCollapsed = groupedLedger.length > 0 && groupedLedger.every(g => !expandedGroups[g.label]);
       const toggleExpandCollapseAll = () => {
         if (isAllCollapsed || Object.values(expandedGroups).filter(v=>v).length === 0) {
@@ -956,25 +979,22 @@
       if (appData.appPin && !isAuthenticated) return <LockScreen correctPin={appData.appPin} onUnlock={() => setIsAuthenticated(true)} />;
 
       return (
-        <div className="flex flex-col md:flex-row h-screen overflow-hidden bg-brand-bgLight dark:bg-brand-bgDark transition-colors duration-300">
+        <div className="flex flex-col md:flex-row h-screen overflow-hidden bg-brand-bgLight dark:bg-brand-bgDark transition-colors duration-300 relative">
 
-          {/* UPDATED: Mobile Tooltip Render */}
+          {/* Floating Mobile Delay Tooltip */}
           {mobileTooltip.visible && (
-            <div 
-              className="fixed z-[150] px-2.5 py-1.5 bg-slate-800 dark:bg-slate-700 text-white text-[11px] font-bold tracking-wider uppercase rounded-md shadow-lg pointer-events-none -translate-x-1/2"
-              style={{ left: `${mobileTooltip.x}px`, top: `${mobileTooltip.y}px` }}
-            >
+            <div className="fixed z-[150] px-2.5 py-1.5 bg-slate-800 dark:bg-slate-700 text-white text-[11px] font-bold tracking-wider uppercase rounded-md shadow-lg pointer-events-none -translate-x-1/2 transition-opacity duration-200" style={{ left: `${mobileTooltip.x}px`, top: `${mobileTooltip.y}px` }}>
               {mobileTooltip.text}
             </div>
           )}
 
           <nav className="shrink-0 w-full md:w-[76px] md:h-full bg-white dark:bg-brand-cardDark md:bg-white md:dark:bg-brand-sidebar z-40 flex flex-row md:flex-col items-center shadow-[0_-10px_40px_rgba(0,0,0,0.03)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.4)] md:shadow-none transition-colors border-t border-slate-200 dark:border-slate-800 md:border-t-0 md:border-r py-2 md:py-6 pb-safe justify-around md:justify-start gap-0 md:gap-4 overflow-visible fixed md:relative bottom-0 left-0">
             <div className="hidden md:flex mb-8 w-full justify-center"><div className="w-10 h-10 bg-brand-teal rounded-xl flex items-center justify-center text-white font-black text-xl shadow-sm"><IndianRupee c="w-5 h-5"/></div></div>
-            <button onClick={() => setActiveTab('overview')} onTouchStart={(e) => handleTouchStart('Dashboard', e)} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'overview' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-teal/10 md:text-brand-teal dark:md:bg-brand-sidebarHover dark:md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:text-slate-400 md:hover:text-slate-800 md:hover:bg-slate-100 dark:md:hover:text-white dark:md:hover:bg-brand-sidebarHover/50'}`}><Activity c="w-6 h-6 sm:w-5 sm:h-5"/><span className="nav-tooltip">Dashboard</span></button>
-            <button onClick={() => setActiveTab('analytics')} onTouchStart={(e) => handleTouchStart('Analytics', e)} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'analytics' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-teal/10 md:text-brand-teal dark:md:bg-brand-sidebarHover dark:md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:text-slate-400 md:hover:text-slate-800 md:hover:bg-slate-100 dark:md:hover:text-white dark:md:hover:bg-brand-sidebarHover/50'}`}><PieChart c="w-6 h-6 sm:w-5 sm:h-5"/><span className="nav-tooltip">Analytics</span></button>
+            <button onClick={() => setActiveTab('overview')} onTouchStart={(e) => handleTouchStart('Dashboard', e, 'top')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'overview' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-teal/10 md:text-brand-teal dark:md:bg-brand-sidebarHover dark:md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:text-slate-400 md:hover:text-slate-800 md:hover:bg-slate-100 dark:md:hover:text-white dark:md:hover:bg-brand-sidebarHover/50'}`}><Activity c="w-6 h-6 sm:w-5 sm:h-5"/><span className="nav-tooltip">Dashboard</span></button>
+            <button onClick={() => setActiveTab('analytics')} onTouchStart={(e) => handleTouchStart('Analytics', e, 'top')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'analytics' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-teal/10 md:text-brand-teal dark:md:bg-brand-sidebarHover dark:md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:text-slate-400 md:hover:text-slate-800 md:hover:bg-slate-100 dark:md:hover:text-white dark:md:hover:bg-brand-sidebarHover/50'}`}><PieChart c="w-6 h-6 sm:w-5 sm:h-5"/><span className="nav-tooltip">Analytics</span></button>
             <div className="md:hidden relative w-16 h-12 flex justify-center items-center"><button onClick={handleOpenNewTxn} className="absolute -top-6 w-14 h-14 bg-brand-teal text-white rounded-full flex items-center justify-center shadow-[0_8px_16px_rgba(224,108,83,0.3)] transition-transform active:scale-95 border-4 border-brand-bgLight dark:border-brand-bgDark z-50"><Plus c="w-6 h-6"/></button></div>
-            <button onClick={() => setActiveTab('ledger')} onTouchStart={(e) => handleTouchStart('Transactions', e)} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'ledger' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-teal/10 md:text-brand-teal dark:md:bg-brand-sidebarHover dark:md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:text-slate-400 md:hover:text-slate-800 md:hover:bg-slate-100 dark:md:hover:text-white dark:md:hover:bg-brand-sidebarHover/50'}`}><List c="w-6 h-6 sm:w-5 sm:h-5"/><span className="nav-tooltip">Transactions</span></button>
-            <button onClick={() => setActiveTab('insights')} onTouchStart={(e) => handleTouchStart('Insights', e)} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'insights' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-teal/10 md:text-brand-teal dark:md:bg-brand-sidebarHover dark:md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:text-slate-400 md:hover:text-slate-800 md:hover:bg-slate-100 dark:md:hover:text-white dark:md:hover:bg-brand-sidebarHover/50'}`}><Sparkles c="w-6 h-6 sm:w-5 sm:h-5"/><span className="nav-tooltip">Insights</span></button>
+            <button onClick={() => setActiveTab('ledger')} onTouchStart={(e) => handleTouchStart('Transactions', e, 'top')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'ledger' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-teal/10 md:text-brand-teal dark:md:bg-brand-sidebarHover dark:md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:text-slate-400 md:hover:text-slate-800 md:hover:bg-slate-100 dark:md:hover:text-white dark:md:hover:bg-brand-sidebarHover/50'}`}><List c="w-6 h-6 sm:w-5 sm:h-5"/><span className="nav-tooltip">Transactions</span></button>
+            <button onClick={() => setActiveTab('insights')} onTouchStart={(e) => handleTouchStart('Insights', e, 'top')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'insights' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-teal/10 md:text-brand-teal dark:md:bg-brand-sidebarHover dark:md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:text-slate-400 md:hover:text-slate-800 md:hover:bg-slate-100 dark:md:hover:text-white dark:md:hover:bg-brand-sidebarHover/50'}`}><Sparkles c="w-6 h-6 sm:w-5 sm:h-5"/><span className="nav-tooltip">Insights</span></button>
           </nav>
 
           <main className="flex-1 h-full overflow-y-auto hide-scrollbar relative pb-24 md:pb-0">
@@ -985,11 +1005,11 @@
                     <h2 className="text-xl font-black text-slate-800 dark:text-white capitalize tracking-tight truncate">{activeTab === 'overview' ? 'Dashboard' : activeTab === 'ledger' ? 'Transactions' : activeTab === 'analytics' ? 'Analytics' : activeTab === 'insights' ? 'Insights' : 'Settings'}</h2>
                  </div>
                  <div className="flex xl:hidden items-center gap-1.5 shrink-0">
-                    <button onClick={handleManualRefresh} onTouchStart={(e) => handleTouchStart('Refresh', e)} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><RefreshCw c={`w-4 h-4 ${isBackgroundSyncing ? 'animate-spin text-brand-teal' : ''}`}/><span className="nav-tooltip-bottom">Refresh</span></button>
-                    {appData.appPin && <button onClick={() => setIsAuthenticated(false)} onTouchStart={(e) => handleTouchStart('Lock App', e)} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><LockIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Lock App</span></button>}
-                    <button onClick={() => setIsPrivacyMode(!isPrivacyMode)} onTouchStart={(e) => handleTouchStart('Privacy Mode', e)} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${isPrivacyMode ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`}>{isPrivacyMode ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Privacy</span></button>
-                    <button onClick={() => setIsDarkMode(!isDarkMode)} onTouchStart={(e) => handleTouchStart('Toggle Theme', e)} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800">{isDarkMode ? <Sun c="w-4 h-4"/> : <Moon c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Theme</span></button>
-                    <button onClick={() => setActiveTab('settings')} onTouchStart={(e) => handleTouchStart('Settings', e)} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`}><SettingsIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Settings</span></button>
+                    <button onClick={handleManualRefresh} onTouchStart={(e) => handleTouchStart('Refresh', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><RefreshCw c={`w-4 h-4 ${isBackgroundSyncing ? 'animate-spin text-brand-teal' : ''}`}/><span className="nav-tooltip-bottom">Refresh</span></button>
+                    {appData.appPin && <button onClick={() => setIsAuthenticated(false)} onTouchStart={(e) => handleTouchStart('Lock App', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><LockIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Lock App</span></button>}
+                    <button onClick={() => setIsPrivacyMode(!isPrivacyMode)} onTouchStart={(e) => handleTouchStart('Privacy Mode', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${isPrivacyMode ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`}>{isPrivacyMode ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Privacy</span></button>
+                    <button onClick={() => setIsDarkMode(!isDarkMode)} onTouchStart={(e) => handleTouchStart('Toggle Theme', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800">{isDarkMode ? <Sun c="w-4 h-4"/> : <Moon c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Theme</span></button>
+                    <button onClick={() => setActiveTab('settings')} onTouchStart={(e) => handleTouchStart('Settings', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`}><SettingsIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Settings</span></button>
                  </div>
               </div>
 
@@ -1042,32 +1062,45 @@
 
               {activeTab === 'ledger' && (
                 <div className="animate-fade-in space-y-4">
-                  {/* UPDATED: Type Filters - Standardized Terracotta Highlight styling */}
-                  <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1">{['ALL', 'EXPENSE', 'INCOME', 'TRANSFER'].map(tab => (<button key={tab} onClick={() => setLedgerTypeFilter(tab)} className={`px-5 py-2 rounded-xl text-xs uppercase tracking-widest whitespace-nowrap transition-colors border shadow-sm ${ledgerTypeFilter === tab ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30 font-bold' : 'font-bold bg-white dark:bg-brand-cardDark text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>{tab}</button>))}</div>
+                  {/* Pill Shape Type Filters */}
+                  <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1">{['ALL', 'EXPENSE', 'INCOME', 'TRANSFER'].map(tab => (<button key={tab} onClick={() => setLedgerTypeFilter(tab)} className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-colors border shadow-sm ${ledgerTypeFilter === tab ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-white dark:bg-brand-cardDark text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>{tab}</button>))}</div>
                   
                   <div className="modern-card p-3 flex flex-col sm:flex-row items-center justify-between gap-3 border border-slate-200 dark:border-slate-800"><div className="relative w-full flex items-center bg-brand-bgLight dark:bg-brand-bgDark rounded-xl px-3 flex-1 border border-slate-100 dark:border-slate-800"><SearchIcon c="w-5 h-5 text-slate-400 shrink-0" /><input type="text" placeholder="Search transactions..." value={searchQ} onChange={e => setSearchQ(e.target.value)} className="w-full bg-transparent border-none outline-none py-3 pl-3 text-sm font-bold text-slate-800 dark:text-white placeholder-slate-400" /></div><div className="w-full sm:w-64 shrink-0 z-20"><SearchableSelect options={['All Categories', ...allUniqueCategories]} value={ledgerCategoryFilter === 'All' ? 'All Categories' : ledgerCategoryFilter} onChange={(val) => setLedgerCategoryFilter(val === 'All Categories' ? 'All' : val)} placeholder="Filter Category..." compact={true} /></div></div>
                   
-                  {/* UPDATED: Tag Filters - Standardized Terracotta Highlight styling */}
-                  <div className="flex flex-wrap items-center gap-2 pb-1 px-1"><button onClick={() => setLedgerTagFilter(null)} className={`px-4 py-1.5 rounded-full text-xs whitespace-nowrap transition-colors border shadow-sm ${!ledgerTagFilter ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30 font-bold' : 'font-bold bg-white dark:bg-brand-cardDark text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>All Tags</button>{allAvailableTags.map(tag => (<button key={tag} onClick={() => setLedgerTagFilter(tag === ledgerTagFilter ? null : tag)} className={`px-4 py-1.5 rounded-full text-xs whitespace-nowrap transition-colors border shadow-sm ${tag === ledgerTagFilter ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30 font-bold' : 'font-bold bg-white dark:bg-brand-cardDark text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>{tag}</button>))}</div>
+                  {/* Pill Shape Tag Filters */}
+                  <div className="flex flex-wrap items-center gap-2 pb-1 px-1"><button onClick={() => setLedgerTagFilter(null)} className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors border shadow-sm ${!ledgerTagFilter ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-white dark:bg-brand-cardDark text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>All Tags</button>{allAvailableTags.map(tag => (<button key={tag} onClick={() => setLedgerTagFilter(tag === ledgerTagFilter ? null : tag)} className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors border shadow-sm ${tag === ledgerTagFilter ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-white dark:bg-brand-cardDark text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>{tag}</button>))}</div>
                   
-                  {/* UPDATED: Neutral Modern Select All Banner + Global Toggle */}
-                  {ledgerFiltered.length > 0 && (
-                    <div className="modern-card px-4 py-3 flex items-center justify-between shadow-sm bg-white dark:bg-brand-cardDark border-slate-200 dark:border-slate-800 animate-fade-in">
-                      <label className="flex items-center gap-3 cursor-pointer select-none">
-                        <input type="checkbox" checked={selectedRows.length > 0 && selectedRows.length === ledgerFiltered.length} onChange={handleSelectAll} className="custom-check shrink-0 border-slate-300 dark:border-slate-600" />
-                        <span className="text-xs font-bold tracking-wider uppercase text-slate-700 dark:text-slate-200">
-                          SELECT ALL ({ledgerFiltered.length})
-                        </span>
-                      </label>
-                      <button onClick={toggleExpandCollapseAll} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold text-slate-600 dark:text-slate-300 hover:text-brand-teal dark:hover:text-brand-teal hover:bg-slate-100 dark:hover:bg-slate-800 transition-all border border-slate-200 dark:border-slate-700">
-                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>
-                        <span>{isAllCollapsed || Object.values(expandedGroups).filter(v=>v).length === 0 ? 'Expand All' : 'Collapse All'}</span>
-                      </button>
+                  {/* Merged Desktop Column Header Row */}
+                  {groupedLedger.length > 0 && (
+                    <div className="hidden lg:grid grid-cols-[2.5rem_6rem_12rem_8rem_1fr_10rem_5rem] gap-4 px-6 py-3 mt-6 items-center text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest border-b border-slate-200 dark:border-slate-800">
+                      <div className="flex items-center justify-center nav-item relative group">
+                        <AnimatedCheckbox checked={selectedRows.length > 0 && selectedRows.length === ledgerFiltered.length} onChange={handleSelectAll} />
+                        <span className="nav-tooltip-bottom">Select All</span>
+                      </div>
+                      <div className="shrink-0 cursor-pointer hover:text-brand-teal flex items-center gap-1 select-none" onClick={() => handleSort('date')}>Date <SortIcon colKey="date"/></div>
+                      <div className="shrink-0 cursor-pointer hover:text-brand-teal flex items-center gap-1 select-none" onClick={() => handleSort('category')}>Category <SortIcon colKey="category"/></div>
+                      <div className="shrink-0 cursor-pointer hover:text-brand-teal flex items-center justify-end gap-1 select-none" onClick={() => handleSort('amount')}><SortIcon colKey="amount"/> Amount</div>
+                      <div className="min-w-0 px-4 cursor-pointer hover:text-brand-teal flex items-center gap-1 select-none" onClick={() => handleSort('description')}>Description <SortIcon colKey="description"/></div>
+                      <div className="shrink-0 cursor-pointer hover:text-brand-teal flex items-center gap-1 select-none" onClick={() => handleSort('account')}>Account <SortIcon colKey="account"/></div>
+                      <div className="flex items-center justify-end nav-item relative group">
+                        <button onClick={toggleExpandCollapseAll} className="p-1.5 text-slate-400 hover:text-brand-teal transition-colors">
+                          <ChevronsUpDown c="w-4 h-4"/>
+                        </button>
+                        <span className="nav-tooltip-bottom">{isAllCollapsed || Object.values(expandedGroups).filter(v=>v).length === 0 ? 'Expand All' : 'Collapse All'}</span>
+                      </div>
                     </div>
                   )}
 
+                  {/* Fallback Compact Mobile Header */}
                   {groupedLedger.length > 0 && (
-                    <div className="hidden lg:grid grid-cols-[2.5rem_6rem_12rem_8rem_1fr_10rem_5rem] gap-4 px-6 py-3 mt-6 items-center text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest border-b border-slate-200 dark:border-slate-800"><div className="shrink-0"></div><div className="shrink-0 cursor-pointer hover:text-brand-teal flex items-center gap-1 select-none" onClick={() => handleSort('date')}>Date <SortIcon colKey="date"/></div><div className="shrink-0 cursor-pointer hover:text-brand-teal flex items-center gap-1 select-none" onClick={() => handleSort('category')}>Category <SortIcon colKey="category"/></div><div className="shrink-0 cursor-pointer hover:text-brand-teal flex items-center justify-end gap-1 select-none" onClick={() => handleSort('amount')}><SortIcon colKey="amount"/> Amount</div><div className="min-w-0 px-4 cursor-pointer hover:text-brand-teal flex items-center gap-1 select-none" onClick={() => handleSort('description')}>Description <SortIcon colKey="description"/></div><div className="shrink-0 cursor-pointer hover:text-brand-teal flex items-center gap-1 select-none" onClick={() => handleSort('account')}>Account <SortIcon colKey="account"/></div><div className="shrink-0 text-center"></div></div>
+                    <div className="lg:hidden flex items-center justify-between px-4 py-2 mt-4 border-b border-slate-200 dark:border-slate-800">
+                       <div className="flex items-center gap-3">
+                          <AnimatedCheckbox checked={selectedRows.length > 0 && selectedRows.length === ledgerFiltered.length} onChange={handleSelectAll} />
+                       </div>
+                       <button onClick={toggleExpandCollapseAll} onTouchStart={(e) => handleTouchStart(isAllCollapsed || Object.values(expandedGroups).filter(v=>v).length === 0 ? 'Expand All' : 'Collapse All', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="p-1 text-slate-400 hover:text-brand-teal transition-colors">
+                          <ChevronsUpDown c="w-5 h-5"/>
+                       </button>
+                    </div>
                   )}
 
                   {groupedLedger.length === 0 ? <div className="modern-card p-12 text-center text-slate-400 font-bold text-sm mt-4 border border-slate-200 dark:border-slate-800">No transactions found.</div> : (
@@ -1092,8 +1125,16 @@
                                       const sign = isIN ? '+' : isTRF ? '' : '-'; const txTags = extractTags(t.tags);
                                       return (
                                         <div key={t.id} className={`group ${isExcluded ? 'opacity-40 grayscale' : ''}`}>
-                                           <div className="flex lg:hidden px-4 py-3 sm:px-6 sm:py-4 items-center gap-3 sm:gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors"><input type="checkbox" checked={selectedRows.includes(t.row_index)} onChange={() => handleSelectRow(t.row_index)} className="custom-check shrink-0" /><div className={`hidden sm:flex w-[40px] h-[40px] rounded-xl items-center justify-center shrink-0 shadow-sm border ${colorClass}`}><IconComp c="w-5 h-5"/></div><div className="flex-1 min-w-0 flex flex-col justify-center"><div className="flex justify-between items-start sm:mb-1"><p className={`text-sm sm:text-base font-extrabold truncate pr-2 ${isExcluded ? 'line-through text-slate-400' : ''}`}>{t.description}</p></div>{t.notes && <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5 pr-2">{t.notes}</p>}<div className="flex items-center gap-2 min-w-0 text-[10px] sm:text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide mt-1.5"><span className="shrink-0 text-slate-500 dark:text-slate-400">{formatDateShort(t.date)}</span><span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600 shrink-0"></span><span className="truncate text-slate-500 dark:text-slate-400">{isTRF ? `${t.account} ➔ ${t.transfer_to}` : t.account}</span>{t.category && <span className={`sm:hidden px-2 py-0.5 rounded-md ml-1 truncate max-w-[120px] shrink-0 ${badgeClass}`}>{t.category}</span>}</div></div><div className="flex flex-col items-end shrink-0 gap-1.5 ml-2"><p className={`text-base font-black blur-money ${amtColor} shrink-0`}>{sign}{formatINR(t.amount, isPrivacyMode)}</p><div className="flex items-center gap-1"><button onClick={() => handleOpenEditTxn(t)} className="p-1.5 text-slate-400 hover:text-brand-teal bg-slate-100 dark:bg-slate-800 rounded-lg transition-colors"><EditPencil c="w-3.5 h-3.5" /></button><button onClick={() => setDeleteModalId(t.row_index)} className="p-1.5 text-slate-400 hover:text-brand-expense bg-slate-100 dark:bg-slate-800 rounded-lg transition-colors"><Trash2 c="w-3.5 h-3.5" /></button></div></div></div>
-                                           <div className="hidden lg:grid grid-cols-[2.5rem_6rem_12rem_8rem_1fr_10rem_5rem] gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors"><div className="flex items-center justify-center"><input type="checkbox" checked={selectedRows.includes(t.row_index)} onChange={() => handleSelectRow(t.row_index)} className="custom-check shrink-0" /></div><div className="text-xs font-bold text-slate-500 dark:text-slate-400">{formatDateStr(t.date)}</div><div className="flex flex-col items-start justify-center min-w-0 pr-2">{t.category && <span className={`text-[10px] font-bold px-2 py-1 rounded-lg truncate max-w-full ${badgeClass}`}>{t.category}</span>}</div><div className={`text-right text-sm font-black blur-money ${amtColor}`}>{sign}{formatINR(t.amount, isPrivacyMode)}</div><div className="flex flex-col min-w-0 px-4"><span className="text-sm font-extrabold truncate">{t.description}</span>{t.notes && <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">{t.notes}</span>}{txTags.length > 0 && <span className="text-[10px] text-brand-teal font-bold truncate mt-0.5">{txTags.join(' ')}</span>}</div><div className="text-xs font-bold text-slate-600 dark:text-slate-400 truncate flex items-center gap-1.5">{isTRF ? <Repeat c="w-3 h-3 text-slate-400 shrink-0"/> : <Wallet c="w-3 h-3 text-slate-400 shrink-0"/>}<span className="truncate">{isTRF ? `${t.account} ➔ ${t.transfer_to}` : t.account}</span></div><div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity"><button onClick={() => handleOpenEditTxn(t)} className="p-1.5 text-slate-400 hover:text-brand-teal bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg"><EditPencil c="w-3.5 h-3.5" /></button><button onClick={() => setDeleteModalId(t.row_index)} className="p-1.5 text-slate-400 hover:text-brand-expense bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 shadow-sm hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg"><Trash2 c="w-3.5 h-3.5" /></button></div></div>
+                                           <div className="flex lg:hidden px-4 py-3 sm:px-6 sm:py-4 items-center gap-3 sm:gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                                              <AnimatedCheckbox checked={selectedRows.includes(t.row_index)} onChange={() => handleSelectRow(t.row_index)} />
+                                              <div className={`hidden sm:flex w-[40px] h-[40px] rounded-xl items-center justify-center shrink-0 shadow-sm border ${colorClass}`}><IconComp c="w-5 h-5"/></div><div className="flex-1 min-w-0 flex flex-col justify-center"><div className="flex justify-between items-start sm:mb-1"><p className={`text-sm sm:text-base font-extrabold truncate pr-2 ${isExcluded ? 'line-through text-slate-400' : ''}`}>{t.description}</p></div>{t.notes && <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5 pr-2">{t.notes}</p>}<div className="flex items-center gap-2 min-w-0 text-[10px] sm:text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide mt-1.5"><span className="shrink-0 text-slate-500 dark:text-slate-400">{formatDateShort(t.date)}</span><span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600 shrink-0"></span><span className="truncate text-slate-500 dark:text-slate-400">{isTRF ? `${t.account} ➔ ${t.transfer_to}` : t.account}</span>{t.category && <span className={`sm:hidden px-2 py-0.5 rounded-md ml-1 truncate max-w-[120px] shrink-0 ${badgeClass}`}>{t.category}</span>}</div></div><div className="flex flex-col items-end shrink-0 gap-1.5 ml-2"><p className={`text-base font-black blur-money ${amtColor} shrink-0`}>{sign}{formatINR(t.amount, isPrivacyMode)}</p><div className="flex items-center gap-1"><button onClick={() => handleOpenEditTxn(t)} className="p-1.5 text-slate-400 hover:text-brand-teal bg-slate-100 dark:bg-slate-800 rounded-lg transition-colors"><EditPencil c="w-3.5 h-3.5" /></button><button onClick={() => setDeleteModalId(t.row_index)} className="p-1.5 text-slate-400 hover:text-brand-expense bg-slate-100 dark:bg-slate-800 rounded-lg transition-colors"><Trash2 c="w-3.5 h-3.5" /></button></div></div>
+                                           </div>
+                                           <div className="hidden lg:grid grid-cols-[2.5rem_6rem_12rem_8rem_1fr_10rem_5rem] gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
+                                              <div className="flex items-center justify-center">
+                                                <AnimatedCheckbox checked={selectedRows.includes(t.row_index)} onChange={() => handleSelectRow(t.row_index)} />
+                                              </div>
+                                              <div className="text-xs font-bold text-slate-500 dark:text-slate-400">{formatDateStr(t.date)}</div><div className="flex flex-col items-start justify-center min-w-0 pr-2">{t.category && <span className={`text-[10px] font-bold px-2 py-1 rounded-lg truncate max-w-full ${badgeClass}`}>{t.category}</span>}</div><div className={`text-right text-sm font-black blur-money ${amtColor}`}>{sign}{formatINR(t.amount, isPrivacyMode)}</div><div className="flex flex-col min-w-0 px-4"><span className="text-sm font-extrabold truncate">{t.description}</span>{t.notes && <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">{t.notes}</span>}{txTags.length > 0 && <span className="text-[10px] text-brand-teal font-bold truncate mt-0.5">{txTags.join(' ')}</span>}</div><div className="text-xs font-bold text-slate-600 dark:text-slate-400 truncate flex items-center gap-1.5">{isTRF ? <Repeat c="w-3 h-3 text-slate-400 shrink-0"/> : <Wallet c="w-3 h-3 text-slate-400 shrink-0"/>}<span className="truncate">{isTRF ? `${t.account} ➔ ${t.transfer_to}` : t.account}</span></div><div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity"><button onClick={() => handleOpenEditTxn(t)} className="p-1.5 text-slate-400 hover:text-brand-teal bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg"><EditPencil c="w-3.5 h-3.5" /></button><button onClick={() => setDeleteModalId(t.row_index)} className="p-1.5 text-slate-400 hover:text-brand-expense bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 shadow-sm hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg"><Trash2 c="w-3.5 h-3.5" /></button></div>
+                                           </div>
                                         </div>
                                       );
                                    })}
