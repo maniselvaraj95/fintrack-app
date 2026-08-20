@@ -37,13 +37,10 @@
     }
   </script>
 
-  <!-- React, ReactDOM, Babel, Recharts, Lucide Icons -->
-  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <!-- React 18 & Babel Standalone -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://unpkg.com/lucide@latest"></script>
-  <script src="https://unpkg.com/lucide-react@latest"></script>
-  <script src="https://unpkg.com/recharts/umd/Recharts.js"></script>
 
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -82,7 +79,6 @@
       border-color: #292524;
     }
 
-    /* Custom Scrollbar for smooth touch & desktop lists */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -101,13 +97,34 @@
 
   <script type="text/babel">
     const { useState, useEffect, useMemo, useRef } = React;
-    const { 
-      RefreshCw, Lock, Eye, EyeOff, Moon, Sun, Settings, Plus,
-      TrendingUp, TrendingDown, Wallet, ArrowRightLeft,
-      ChevronDown, ChevronUp, ChevronsUpDown, Check,
-      Tag, Edit3, Trash2, X, MoreHorizontal, Calendar, PieChart
-    } = lucideReact;
-    const { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } = Recharts;
+
+    // --- Standalone Robust SVG Icon Components (Zero CDN Failure Risk) ---
+    const IconWrapper = ({ size = 18, className = "", children }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+        {children}
+      </svg>
+    );
+
+    const RefreshCw = (p) => <IconWrapper {...p}><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></IconWrapper>;
+    const Lock = (p) => <IconWrapper {...p}><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></IconWrapper>;
+    const Eye = (p) => <IconWrapper {...p}><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></IconWrapper>;
+    const EyeOff = (p) => <IconWrapper {...p}><path d="M9.88 9.88a3 3 0 1 0 4.24 4.24"/><path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68"/><path d="M6.61 6.61A13.526 13.526 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61"/><line x1="2" x2="22" y1="2" y2="22"/></IconWrapper>;
+    const Moon = (p) => <IconWrapper {...p}><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></IconWrapper>;
+    const Sun = (p) => <IconWrapper {...p}><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></IconWrapper>;
+    const SettingsIcon = (p) => <IconWrapper {...p}><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></IconWrapper>;
+    const Plus = (p) => <IconWrapper {...p}><path d="M5 12h14"/><path d="M12 5v14"/></IconWrapper>;
+    const TrendingUp = (p) => <IconWrapper {...p}><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></IconWrapper>;
+    const PieChart = (p) => <IconWrapper {...p}><path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/></IconWrapper>;
+    const Wallet = (p) => <IconWrapper {...p}><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></IconWrapper>;
+    const ChevronDown = (p) => <IconWrapper {...p}><path d="m6 9 6 6 6-6"/></IconWrapper>;
+    const ChevronUp = (p) => <IconWrapper {...p}><path d="m18 15-6-6-6 6"/></IconWrapper>;
+    const ChevronsUpDown = (p) => <IconWrapper {...p}><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></IconWrapper>;
+    const Check = (p) => <IconWrapper {...p}><polyline points="20 6 9 17 4 12"/></IconWrapper>;
+    const Tag = (p) => <IconWrapper {...p}><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><circle cx="7" cy="7" r=".5"/></IconWrapper>;
+    const Edit3 = (p) => <IconWrapper {...p}><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></IconWrapper>;
+    const Trash2 = (p) => <IconWrapper {...p}><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></IconWrapper>;
+    const X = (p) => <IconWrapper {...p}><path d="M18 6 6 18"/><path d="m6 6 12 12"/></IconWrapper>;
+    const MoreHorizontal = (p) => <IconWrapper {...p}><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></IconWrapper>;
 
     // --- Format Helpers ---
     const formatCurrency = (amt, isPrivate = false) => {
@@ -123,7 +140,7 @@
       return d.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
     };
 
-    // --- Mock Initial Ledger Data ---
+    // --- Initial Ledger Data ---
     const INITIAL_TRANSACTIONS = [
       { id: '1', date: '2026-08-01', type: 'INCOME', category: 'Salary', amount: 119965, description: 'Aug Salary', tag: '#paycheck', account: 'HDFC' },
       { id: '2', date: '2026-08-07', type: 'EXPENSE', category: 'EMI & Loans', amount: 50000, description: 'Gold Loan principle', tag: '#goldloan', account: 'HDFC' },
@@ -139,7 +156,7 @@
 
     function App() {
       const [transactions, setTransactions] = useState(INITIAL_TRANSACTIONS);
-      const [currentTab, setCurrentTab] = useState('transactions'); // overview, analytics, transactions
+      const [currentTab, setCurrentTab] = useState('transactions');
       const [typeFilter, setTypeFilter] = useState('ALL');
       const [selectedTag, setSelectedTag] = useState('ALL');
       const [searchQuery, setSearchQuery] = useState('');
@@ -148,11 +165,11 @@
       const [selectedIds, setSelectedIds] = useState(new Set());
       const [collapsedMonths, setCollapsedMonths] = useState(new Set());
 
-      // Long-Press Tooltip State for Mobile
+      // Long-Press Mobile Tooltip State
       const [mobileTooltip, setMobileTooltip] = useState({ text: '', x: 0, y: 0, visible: false });
       const touchTimerRef = useRef(null);
 
-      // Dark Mode Synchronizer
+      // Dark Mode Syncer
       useEffect(() => {
         if (isDark) {
           document.documentElement.classList.add('dark');
@@ -161,14 +178,14 @@
         }
       }, [isDark]);
 
-      // --- Mobile Long-Press Handlers ---
+      // --- Mobile Long-Press Interaction Handlers ---
       const handleTouchStart = (text, e) => {
         const touch = e.touches[0];
         const clientX = touch.clientX;
         const clientY = touch.clientY;
         touchTimerRef.current = setTimeout(() => {
           setMobileTooltip({ text, x: clientX, y: clientY - 45, visible: true });
-        }, 400); // 400ms threshold for press-and-hold
+        }, 400);
       };
 
       const handleTouchEnd = () => {
@@ -207,12 +224,12 @@
       const allMonthKeys = useMemo(() => Object.keys(groupedMonths), [groupedMonths]);
       const isAllCollapsed = allMonthKeys.length > 0 && allMonthKeys.every(k => collapsedMonths.has(k));
 
-      // Global Toggle for Expand / Collapse All
+      // Global Master Toggle for Expand / Collapse All
       const toggleExpandCollapseAll = () => {
         if (isAllCollapsed || collapsedMonths.size > 0) {
-          setCollapsedMonths(new Set()); // Expand all
+          setCollapsedMonths(new Set()); // Open all
         } else {
-          setCollapsedMonths(new Set(allMonthKeys)); // Collapse all
+          setCollapsedMonths(new Set(allMonthKeys)); // Minimize all
         }
       };
 
@@ -225,7 +242,7 @@
         });
       };
 
-      // --- Selection Logic ---
+      // --- Selection Management ---
       const isAllSelected = filteredTransactions.length > 0 && selectedIds.size === filteredTransactions.length;
 
       const toggleSelectAll = () => {
@@ -245,18 +262,18 @@
         });
       };
 
-      // --- Selected Net Calculation (Excludes TRANSFER / Net 0) ---
+      // --- Net Outflow/Inflow Calculation (Excluding TRANSFER / Net 0) ---
       const selectedNetSum = useMemo(() => {
         const selectedList = transactions.filter(t => selectedIds.has(t.id));
         return selectedList.reduce((acc, t) => {
-          if (t.type === 'TRANSFER') return acc; // Exclude internal transfers
+          if (t.type === 'TRANSFER') return acc; // Exclude internal self transfers
           if (t.type === 'INCOME') return acc + Number(t.amount);
           if (t.type === 'EXPENSE') return acc - Number(t.amount);
           return acc;
         }, 0);
       }, [transactions, selectedIds]);
 
-      // Unique Tags
+      // Unique Tag List
       const uniqueTags = useMemo(() => {
         const tags = new Set(transactions.map(t => t.tag).filter(Boolean));
         return Array.from(tags);
@@ -264,7 +281,7 @@
 
       return (
         <div className="flex min-h-screen">
-          {/* Mobile Floating Press-and-Hold Tooltip Bubble */}
+          {/* Mobile Floating Long-Press Tooltip Bubble */}
           {mobileTooltip.visible && (
             <div 
               className="fixed z-50 px-2.5 py-1 bg-stone-900 text-white text-[11px] font-bold tracking-wider uppercase rounded-md shadow-lg pointer-events-none -translate-x-1/2"
@@ -274,10 +291,10 @@
             </div>
           )}
 
-          {/* 1. Adaptive Desktop Sidebar Navigation */}
+          {/* 1. Adaptive Sidebar Navigation */}
           <aside className="hidden md:flex flex-col items-center justify-between w-20 py-6 bg-white dark:bg-brand-sidebar border-r border-stone-200 dark:border-stone-800 shrink-0 select-none">
             <div className="flex flex-col items-center gap-8 w-full">
-              {/* App Brand Icon */}
+              {/* App Brand Logo */}
               <div className="w-11 h-11 bg-brand-teal text-white rounded-2xl flex items-center justify-center font-bold text-xl shadow-md shadow-brand-teal/20">
                 ₹
               </div>
@@ -315,7 +332,7 @@
             </div>
           </aside>
 
-          {/* 2. Main Content Area */}
+          {/* 2. Main Content View */}
           <div className="flex-1 flex flex-col min-w-0 pb-28 md:pb-12">
             {/* Header Toolbar */}
             <header className="px-5 md:px-8 py-5 flex items-center justify-between bg-brand-surface dark:bg-stone-950 border-b border-stone-200/60 dark:border-stone-800/60">
@@ -323,14 +340,14 @@
                 {currentTab}
               </h1>
 
-              {/* Header Action Buttons with Unified Hover Tooltips */}
+              {/* Header Buttons with Hover Tooltips */}
               <div className="flex items-center gap-2">
                 {[
                   { id: 'refresh', label: 'Refresh Data', icon: RefreshCw, action: () => {} },
                   { id: 'lock', label: 'Lock App', icon: Lock, action: () => {} },
                   { id: 'privacy', label: isPrivate ? 'Show Amounts' : 'Privacy Mode', icon: isPrivate ? EyeOff : Eye, action: () => setIsPrivate(!isPrivate) },
                   { id: 'theme', label: isDark ? 'Light Mode' : 'Dark Mode', icon: isDark ? Sun : Moon, action: () => setIsDark(!isDark) },
-                  { id: 'settings', label: 'Settings', icon: Settings, action: () => {} }
+                  { id: 'settings', label: 'Settings', icon: SettingsIcon, action: () => {} }
                 ].map(btn => {
                   const Icon = btn.icon;
                   return (
@@ -345,7 +362,7 @@
                         <Icon size={18} />
                       </button>
 
-                      {/* Unified Desktop Tooltip */}
+                      {/* Tooltip */}
                       <div className="custom-tooltip absolute top-12 left-1/2 -translate-x-1/2 z-50 bg-stone-900 text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded shadow-md whitespace-nowrap">
                         {btn.label}
                       </div>
@@ -406,7 +423,7 @@
                 })}
               </div>
 
-              {/* Search & Category Filter Bar */}
+              {/* Search Bar */}
               <div className="modern-card p-2 flex flex-col sm:flex-row items-center gap-3">
                 <input
                   type="text"
@@ -456,7 +473,7 @@
                       ? 'bg-brand-teal border-brand-teal text-white' 
                       : 'border-stone-300 dark:border-stone-600 bg-stone-50 dark:bg-stone-800'
                   }`}>
-                    {isAllSelected && <Check size={14} strokeWidth={3} />}
+                    {isAllSelected && <Check size={14} />}
                   </div>
                   <input
                     type="checkbox"
@@ -548,14 +565,14 @@
                                         : 'border-stone-300 dark:border-stone-600 bg-white dark:bg-stone-800'
                                     }`}
                                   >
-                                    {isSelected && <Check size={11} strokeWidth={3} />}
+                                    {isSelected && <Check size={11} />}
                                   </div>
                                   <span className="text-xs font-semibold text-stone-400 w-14 shrink-0">
                                     {formatDateShort(row.date)}
                                   </span>
                                 </div>
 
-                                {/* Category Badge - Expanded width to 120px to prevent truncation */}
+                                {/* Category Badge - Expanded width to prevent truncation */}
                                 <div className="shrink-0 w-24 sm:w-28 text-left">
                                   <span className="inline-block max-w-[115px] truncate px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-300 border border-stone-200/60 dark:border-stone-700/60">
                                     {row.category}
@@ -605,7 +622,7 @@
             {/* 7. Floating Bulk Action Toolbar */}
             {selectedIds.size > 0 && (
               <div className="fixed z-40 
-                /* Mobile: Preserved pinned at bottom-[88px] */
+                /* Mobile: Pinned above bottom nav */
                 bottom-[88px] left-4 right-4 
                 /* Desktop: Centered horizontally */
                 md:left-1/2 md:-translate-x-1/2 md:right-auto md:bottom-8 md:w-auto md:min-w-[560px]"
@@ -688,4 +705,3 @@
   </script>
 </body>
 </html>
-
