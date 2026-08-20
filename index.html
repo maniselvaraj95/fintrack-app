@@ -17,13 +17,13 @@
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(e => console.error(e));
+        try { navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW:', e)); } catch(e) {}
       });
     }
   </script>
 
   <style>#crash-log{display:none;padding:20px;color:#ef4444;background:#fee2e2;font-family:monospace;font-size:12px;font-weight:bold;height:100vh;width:100vw;overflow:auto;}</style>
-  <script>window.onerror=function(m,s,l,c,e){document.getElementById('crash-log').style.display='block';document.getElementById('crash-log').innerHTML+='<p>💥 ERROR: '+m+' (Line: '+l+')</p>';};</script>
+  <script>window.onerror=function(m,s,l,c,e){console.error("Caught:", m, l);};</script>
   <script>try{if(localStorage.getItem('theme')==='dark'||(!('theme' in localStorage)&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');let m=document.getElementById('theme-color-meta');if(m)m.setAttribute("content","#1c1917");}else{document.documentElement.classList.remove('dark');let m=document.getElementById('theme-color-meta');if(m)m.setAttribute("content","#e06c53");}}catch(e){}</script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config={darkMode:'class',theme:{extend:{colors:{brand:{bgLight:'#faf6f3',bgDark:'#1c1917',sidebar:'#292524',sidebarHover:'#44403c',cardLight:'#ffffff',cardDark:'#292524',teal:'#e06c53',tealHover:'#c2553d',expense:'#ef4444',income:'#22c55e',transfer:'#f59e0b'}}}}}</script>
@@ -43,20 +43,14 @@
     @keyframes slideUp{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
     .privacy-active .blur-money{user-select:none;pointer-events:none;}
     
-    /* Animated SVG Checkbox (Replaces old custom-check) */
-    .check-anim { cursor: pointer; position: relative; margin: auto; width: 18px; height: 18px; -webkit-tap-highlight-color: transparent; transform: translate3d(0, 0, 0); }
-    .check-anim:before { content: ""; position: absolute; top: -15px; left: -15px; width: 48px; height: 48px; border-radius: 50%; background: rgba(224,108,83,0.08); opacity: 0; transition: opacity 0.2s ease; }
-    .check-anim svg { position: relative; z-index: 1; fill: none; stroke-linecap: round; stroke-linejoin: round; stroke: #cbd5e1; stroke-width: 1.8; transform: translate3d(0, 0, 0); transition: all 0.2s ease; }
-    .dark .check-anim svg { stroke: #57534e; }
-    .check-anim svg path { stroke-dasharray: 60; stroke-dashoffset: 0; }
-    .check-anim svg polyline { stroke-dasharray: 22; stroke-dashoffset: 66; }
-    .check-anim:hover:before { opacity: 1; }
-    .check-anim:hover svg { stroke: #e06c53; }
-    .dark .check-anim:hover svg { stroke: #e06c53; }
-    input[type="checkbox"]:checked + .check-anim svg { stroke: #e06c53; }
-    .dark input[type="checkbox"]:checked + .check-anim svg { stroke: #e06c53; }
-    input[type="checkbox"]:checked + .check-anim svg path { stroke-dashoffset: 60; transition: all 0.3s linear; }
-    input[type="checkbox"]:checked + .check-anim svg polyline { stroke-dashoffset: 42; transition: all 0.2s linear; transition-delay: 0.15s; }
+    /* FAST NATIVE CHECKBOX - PERFECTLY ROUNDED (50%) */
+    .custom-check{appearance:none;background-color:#f1f5f9;width:1.25em;height:1.25em;border-radius:50%;display:grid;place-content:center;cursor:pointer;border:1px solid #cbd5e1;transition:all 0.2s ease;}
+    .dark .custom-check{background-color:#44403c;border-color:#57534e;}
+    .custom-check::before{content:"";width:.65em;height:.65em;transform:scale(0);transition:120ms transform ease-in-out;box-shadow:inset 1em 1em white;background-color:white;clip-path:polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0%,43% 62%);}
+    .custom-check:checked{background-color:#e06c53;border-color:#e06c53;}
+    .dark .custom-check:checked{background-color:#e06c53;border-color:#e06c53;}
+    .custom-check:checked::before{transform:scale(1);}
+    .dark input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.8;cursor:pointer;}
 
     /* Desktop Tooltip Hover System */
     .nav-tooltip, .nav-tooltip-bottom {
@@ -85,7 +79,6 @@
       .nav-item:hover .nav-tooltip-bottom { opacity: 1; top: calc(100% + 16px); }
     }
     @media (max-width: 767px) {
-      /* Hide native CSS tooltips on mobile. Replaced by React delay-tooltip */
       .nav-tooltip, .nav-tooltip-bottom { display: none; }
     }
   </style>
@@ -143,19 +136,6 @@
     const Moon = ({c}) => <Icon c={c}><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></Icon>;
     const Eye = ({c}) => <Icon c={c}><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></Icon>;
     const EyeOff = ({c}) => <Icon c={c}><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22"/></Icon>;
-
-    // New Reusable Checkbox Component
-    const AnimatedCheckbox = ({ checked, onChange }) => (
-      <div className="inline-block relative w-[18px] h-[18px] shrink-0" onClick={(e) => e.stopPropagation()}>
-        <input type="checkbox" checked={checked} onChange={onChange} className="hidden absolute" />
-        <div className="check-anim block" onClick={(e) => { e.preventDefault(); onChange({target:{checked:!checked}}); }}>
-          <svg width="18px" height="18px" viewBox="0 0 18 18">
-            <path d="M1,9 L1,3.5 C1,2 2,1 3.5,1 L14.5,1 C16,1 17,2 17,3.5 L17,14.5 C17,16 16,17 14.5,17 L3.5,17 C2,17 1,16 1,14.5 L1,9 Z"></path>
-            <polyline points="1 9 7 14 15 4"></polyline>
-          </svg>
-        </div>
-      </div>
-    );
 
     const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const MONTH_NAMES_FULL = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -255,11 +235,11 @@
       );
     }
 
-    function AreaChart({ data, height = 240, isDark, isPrivacy }) {
+    function AreaChart({ data, height = 180, isDark, isPrivacy }) {
       const [hoverIndex, setHoverIndex] = useState(null);
       const isScrollable = data.length > 12;
       const width = isScrollable ? Math.max(600, data.length * 52) : 600;
-      const pad = { t: 20, r: 20, b: 30, l: 50 }; 
+      const pad = { t: 15, r: 15, b: 25, l: 45 }; 
       const gW = width - pad.l - pad.r; 
       const gH = height - pad.t - pad.b;
       
@@ -298,14 +278,14 @@
             {hoverIndex !== null && (() => {
                const bX = toolX > width / 2 ? -160 : 10;
                return (
-                   <g transform={`translate(${toolX}, 25)`} pointerEvents="none" className="animate-fade-in z-50">
-                      <rect x={bX} y="0" width="150" height="100" rx="16" fill={isDark ? '#1a2e2f' : '#122b2c'} opacity="0.98" filter="drop-shadow(0 10px 15px rgba(0,0,0,0.15))" />
-                      <text x={bX+75} y="22" textAnchor="middle" fill="#ffffff" fontSize="12" fontWeight="800" tracking="wider">{data[hoverIndex].label}</text>
-                      <line x1={bX+15} y1="30" x2={bX+135} y2="30" stroke={isDark ? '#274041' : '#1a3d3e'} strokeWidth="1" />
-                      <text x={bX+15} y="48" fill="#94a3b8" fontSize="10" fontWeight="700">Inc:</text><text x={bX+135} y="48" textAnchor="end" fill="#10b981" fontSize="11" fontWeight="900" className="blur-money">{formatCompact(data[hoverIndex].in, isPrivacy)}</text>
-                      <text x={bX+15} y="64" fill="#94a3b8" fontSize="10" fontWeight="700">Exp:</text><text x={bX+135} y="64" textAnchor="end" fill="#f43f5e" fontSize="11" fontWeight="900" className="blur-money">{formatCompact(data[hoverIndex].out, isPrivacy)}</text>
-                      <text x={bX+15} y="80" fill="#94a3b8" fontSize="10" fontWeight="700">Inv:</text><text x={bX+135} y="80" textAnchor="end" fill="#f59e0b" fontSize="11" fontWeight="900" className="blur-money">{formatCompact(data[hoverIndex].inv, isPrivacy)}</text>
-                      <text x={bX+15} y="96" fill="#94a3b8" fontSize="10" fontWeight="700">Avail:</text><text x={bX+135} y="96" textAnchor="end" fill="#e06c53" fontSize="11" fontWeight="900" className="blur-money">{formatCompact(data[hoverIndex].avail, isPrivacy)}</text>
+                   <g transform={`translate(${toolX}, 5)`} pointerEvents="none" className="animate-fade-in z-50">
+                      <rect x={bX} y="0" width="150" height="96" rx="16" fill={isDark ? '#1a2e2f' : '#122b2c'} opacity="0.98" filter="drop-shadow(0 10px 15px rgba(0,0,0,0.15))" />
+                      <text x={bX+75} y="20" textAnchor="middle" fill="#ffffff" fontSize="12" fontWeight="800" tracking="wider">{data[hoverIndex].label}</text>
+                      <line x1={bX+15} y1="26" x2={bX+135} y2="26" stroke={isDark ? '#274041' : '#1a3d3e'} strokeWidth="1" />
+                      <text x={bX+15} y="42" fill="#94a3b8" fontSize="10" fontWeight="700">Inc:</text><text x={bX+135} y="42" textAnchor="end" fill="#10b981" fontSize="11" fontWeight="900" className="blur-money">{formatCompact(data[hoverIndex].in, isPrivacy)}</text>
+                      <text x={bX+15} y="58" fill="#94a3b8" fontSize="10" fontWeight="700">Exp:</text><text x={bX+135} y="58" textAnchor="end" fill="#f43f5e" fontSize="11" fontWeight="900" className="blur-money">{formatCompact(data[hoverIndex].out, isPrivacy)}</text>
+                      <text x={bX+15} y="74" fill="#94a3b8" fontSize="10" fontWeight="700">Inv:</text><text x={bX+135} y="74" textAnchor="end" fill="#f59e0b" fontSize="11" fontWeight="900" className="blur-money">{formatCompact(data[hoverIndex].inv, isPrivacy)}</text>
+                      <text x={bX+15} y="90" fill="#94a3b8" fontSize="10" fontWeight="700">Avail:</text><text x={bX+135} y="90" textAnchor="end" fill="#e06c53" fontSize="11" fontWeight="900" className="blur-money">{formatCompact(data[hoverIndex].avail, isPrivacy)}</text>
                    </g>
                );
             })()}
@@ -661,7 +641,7 @@
         const clientX = touch.clientX;
         const clientY = touch.clientY;
         touchShowTimer.current = setTimeout(() => {
-          setMobileTooltip({ text, x: clientX, y: pos === 'top' ? clientY - 45 : clientY + 35, visible: true, pos });
+          setMobileTooltip({ text, x: clientX, y: pos === 'top' ? clientY - 55 : clientY + 45, visible: true, pos });
         }, 400);
       };
 
@@ -672,7 +652,7 @@
         }
         touchHideTimer.current = setTimeout(() => {
           setMobileTooltip(prev => ({ ...prev, visible: false }));
-        }, 1500);
+        }, 1000);
       };
 
       useEffect(() => {
@@ -983,7 +963,7 @@
 
           {/* Floating Mobile Delay Tooltip */}
           {mobileTooltip.visible && (
-            <div className="fixed z-[150] px-2.5 py-1.5 bg-slate-800 dark:bg-slate-700 text-white text-[11px] font-bold tracking-wider uppercase rounded-md shadow-lg pointer-events-none -translate-x-1/2 transition-opacity duration-200" style={{ left: `${mobileTooltip.x}px`, top: `${mobileTooltip.y}px` }}>
+            <div className="fixed z-[150] px-2 py-1 bg-slate-800 dark:bg-slate-700 text-white text-[10px] font-bold tracking-wider uppercase rounded-md shadow-lg pointer-events-none -translate-x-1/2 transition-opacity duration-200" style={{ left: `${mobileTooltip.x}px`, top: `${mobileTooltip.y}px` }}>
               {mobileTooltip.text}
             </div>
           )}
@@ -1032,7 +1012,7 @@
                  <button onClick={() => setIsPrivacyMode(!isPrivacyMode)} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${isPrivacyMode ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50'}`}>{isPrivacyMode ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Privacy Mode</span></button>
                  <button onClick={() => setIsDarkMode(!isDarkMode)} className="nav-item focus:outline-none relative p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50">{isDarkMode ? <Sun c="w-4 h-4"/> : <Moon c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Toggle Theme</span></button>
                  <button onClick={() => setActiveTab('settings')} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50'}`}><SettingsIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Settings</span></button>
-                 <button onClick={handleOpenNewTxn} className="nav-item focus:outline-none relative ml-2 bg-brand-teal hover:bg-brand-tealHover text-white font-bold py-2 px-4 rounded-xl flex items-center justify-center gap-2 transition-colors text-sm shadow-sm h-[38px]"><Plus c="w-4 h-4"/> Add entry <span className="nav-tooltip-bottom">New transaction</span></button>
+                 <button onClick={handleOpenNewTxn} className="nav-item focus:outline-none relative ml-2 bg-brand-teal hover:bg-brand-tealHover text-white font-bold py-2 px-4 rounded-full flex items-center justify-center gap-2 transition-colors text-sm shadow-sm h-[38px]"><Plus c="w-4 h-4"/> Add entry <span className="nav-tooltip-bottom">New transaction</span></button>
               </div>
             </header>
 
@@ -1062,19 +1042,16 @@
 
               {activeTab === 'ledger' && (
                 <div className="animate-fade-in space-y-4">
-                  {/* Pill Shape Type Filters */}
                   <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1">{['ALL', 'EXPENSE', 'INCOME', 'TRANSFER'].map(tab => (<button key={tab} onClick={() => setLedgerTypeFilter(tab)} className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-colors border shadow-sm ${ledgerTypeFilter === tab ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-white dark:bg-brand-cardDark text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>{tab}</button>))}</div>
                   
                   <div className="modern-card p-3 flex flex-col sm:flex-row items-center justify-between gap-3 border border-slate-200 dark:border-slate-800"><div className="relative w-full flex items-center bg-brand-bgLight dark:bg-brand-bgDark rounded-xl px-3 flex-1 border border-slate-100 dark:border-slate-800"><SearchIcon c="w-5 h-5 text-slate-400 shrink-0" /><input type="text" placeholder="Search transactions..." value={searchQ} onChange={e => setSearchQ(e.target.value)} className="w-full bg-transparent border-none outline-none py-3 pl-3 text-sm font-bold text-slate-800 dark:text-white placeholder-slate-400" /></div><div className="w-full sm:w-64 shrink-0 z-20"><SearchableSelect options={['All Categories', ...allUniqueCategories]} value={ledgerCategoryFilter === 'All' ? 'All Categories' : ledgerCategoryFilter} onChange={(val) => setLedgerCategoryFilter(val === 'All Categories' ? 'All' : val)} placeholder="Filter Category..." compact={true} /></div></div>
                   
-                  {/* Pill Shape Tag Filters */}
                   <div className="flex flex-wrap items-center gap-2 pb-1 px-1"><button onClick={() => setLedgerTagFilter(null)} className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors border shadow-sm ${!ledgerTagFilter ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-white dark:bg-brand-cardDark text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>All Tags</button>{allAvailableTags.map(tag => (<button key={tag} onClick={() => setLedgerTagFilter(tag === ledgerTagFilter ? null : tag)} className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors border shadow-sm ${tag === ledgerTagFilter ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-white dark:bg-brand-cardDark text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>{tag}</button>))}</div>
                   
-                  {/* Merged Desktop Column Header Row */}
                   {groupedLedger.length > 0 && (
                     <div className="hidden lg:grid grid-cols-[2.5rem_6rem_12rem_8rem_1fr_10rem_5rem] gap-4 px-6 py-3 mt-6 items-center text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest border-b border-slate-200 dark:border-slate-800">
                       <div className="flex items-center justify-center nav-item relative group">
-                        <AnimatedCheckbox checked={selectedRows.length > 0 && selectedRows.length === ledgerFiltered.length} onChange={handleSelectAll} />
+                        <input type="checkbox" checked={selectedRows.length > 0 && selectedRows.length === ledgerFiltered.length} onChange={handleSelectAll} className="custom-check shrink-0" />
                         <span className="nav-tooltip-bottom">Select All</span>
                       </div>
                       <div className="shrink-0 cursor-pointer hover:text-brand-teal flex items-center gap-1 select-none" onClick={() => handleSort('date')}>Date <SortIcon colKey="date"/></div>
@@ -1091,11 +1068,10 @@
                     </div>
                   )}
 
-                  {/* Fallback Compact Mobile Header */}
                   {groupedLedger.length > 0 && (
                     <div className="lg:hidden flex items-center justify-between px-4 py-2 mt-4 border-b border-slate-200 dark:border-slate-800">
                        <div className="flex items-center gap-3">
-                          <AnimatedCheckbox checked={selectedRows.length > 0 && selectedRows.length === ledgerFiltered.length} onChange={handleSelectAll} />
+                          <input type="checkbox" checked={selectedRows.length > 0 && selectedRows.length === ledgerFiltered.length} onChange={handleSelectAll} className="custom-check shrink-0" />
                        </div>
                        <button onClick={toggleExpandCollapseAll} onTouchStart={(e) => handleTouchStart(isAllCollapsed || Object.values(expandedGroups).filter(v=>v).length === 0 ? 'Expand All' : 'Collapse All', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="p-1 text-slate-400 hover:text-brand-teal transition-colors">
                           <ChevronsUpDown c="w-5 h-5"/>
@@ -1126,12 +1102,12 @@
                                       return (
                                         <div key={t.id} className={`group ${isExcluded ? 'opacity-40 grayscale' : ''}`}>
                                            <div className="flex lg:hidden px-4 py-3 sm:px-6 sm:py-4 items-center gap-3 sm:gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                                              <AnimatedCheckbox checked={selectedRows.includes(t.row_index)} onChange={() => handleSelectRow(t.row_index)} />
+                                              <input type="checkbox" checked={selectedRows.includes(t.row_index)} onChange={() => handleSelectRow(t.row_index)} className="custom-check shrink-0" />
                                               <div className={`hidden sm:flex w-[40px] h-[40px] rounded-xl items-center justify-center shrink-0 shadow-sm border ${colorClass}`}><IconComp c="w-5 h-5"/></div><div className="flex-1 min-w-0 flex flex-col justify-center"><div className="flex justify-between items-start sm:mb-1"><p className={`text-sm sm:text-base font-extrabold truncate pr-2 ${isExcluded ? 'line-through text-slate-400' : ''}`}>{t.description}</p></div>{t.notes && <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5 pr-2">{t.notes}</p>}<div className="flex items-center gap-2 min-w-0 text-[10px] sm:text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide mt-1.5"><span className="shrink-0 text-slate-500 dark:text-slate-400">{formatDateShort(t.date)}</span><span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600 shrink-0"></span><span className="truncate text-slate-500 dark:text-slate-400">{isTRF ? `${t.account} ➔ ${t.transfer_to}` : t.account}</span>{t.category && <span className={`sm:hidden px-2 py-0.5 rounded-md ml-1 truncate max-w-[120px] shrink-0 ${badgeClass}`}>{t.category}</span>}</div></div><div className="flex flex-col items-end shrink-0 gap-1.5 ml-2"><p className={`text-base font-black blur-money ${amtColor} shrink-0`}>{sign}{formatINR(t.amount, isPrivacyMode)}</p><div className="flex items-center gap-1"><button onClick={() => handleOpenEditTxn(t)} className="p-1.5 text-slate-400 hover:text-brand-teal bg-slate-100 dark:bg-slate-800 rounded-lg transition-colors"><EditPencil c="w-3.5 h-3.5" /></button><button onClick={() => setDeleteModalId(t.row_index)} className="p-1.5 text-slate-400 hover:text-brand-expense bg-slate-100 dark:bg-slate-800 rounded-lg transition-colors"><Trash2 c="w-3.5 h-3.5" /></button></div></div>
                                            </div>
                                            <div className="hidden lg:grid grid-cols-[2.5rem_6rem_12rem_8rem_1fr_10rem_5rem] gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
                                               <div className="flex items-center justify-center">
-                                                <AnimatedCheckbox checked={selectedRows.includes(t.row_index)} onChange={() => handleSelectRow(t.row_index)} />
+                                                <input type="checkbox" checked={selectedRows.includes(t.row_index)} onChange={() => handleSelectRow(t.row_index)} className="custom-check shrink-0" />
                                               </div>
                                               <div className="text-xs font-bold text-slate-500 dark:text-slate-400">{formatDateStr(t.date)}</div><div className="flex flex-col items-start justify-center min-w-0 pr-2">{t.category && <span className={`text-[10px] font-bold px-2 py-1 rounded-lg truncate max-w-full ${badgeClass}`}>{t.category}</span>}</div><div className={`text-right text-sm font-black blur-money ${amtColor}`}>{sign}{formatINR(t.amount, isPrivacyMode)}</div><div className="flex flex-col min-w-0 px-4"><span className="text-sm font-extrabold truncate">{t.description}</span>{t.notes && <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">{t.notes}</span>}{txTags.length > 0 && <span className="text-[10px] text-brand-teal font-bold truncate mt-0.5">{txTags.join(' ')}</span>}</div><div className="text-xs font-bold text-slate-600 dark:text-slate-400 truncate flex items-center gap-1.5">{isTRF ? <Repeat c="w-3 h-3 text-slate-400 shrink-0"/> : <Wallet c="w-3 h-3 text-slate-400 shrink-0"/>}<span className="truncate">{isTRF ? `${t.account} ➔ ${t.transfer_to}` : t.account}</span></div><div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity"><button onClick={() => handleOpenEditTxn(t)} className="p-1.5 text-slate-400 hover:text-brand-teal bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg"><EditPencil c="w-3.5 h-3.5" /></button><button onClick={() => setDeleteModalId(t.row_index)} className="p-1.5 text-slate-400 hover:text-brand-expense bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 shadow-sm hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg"><Trash2 c="w-3.5 h-3.5" /></button></div>
                                            </div>
@@ -1153,8 +1129,9 @@
             </div>
           </main>
 
+          {/* Centered Bulk Edit Bar */}
           {selectedRows.length > 0 && activeTab === 'ledger' && (
-             <div className="fixed bottom-[88px] md:bottom-8 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 z-50 animate-slide-up max-w-full md:max-w-max mx-auto">
+             <div className="fixed bottom-[88px] md:bottom-8 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-max z-50 animate-slide-up mx-auto">
                 <div className="bg-white dark:bg-brand-sidebar shadow-[0_8px_30px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.5)] rounded-2xl border border-slate-200 dark:border-slate-700/50 flex flex-row items-center p-2 relative">
                    <div className="flex items-center gap-3 px-3 py-1.5 md:py-2 border-r border-slate-200 dark:border-slate-700/50"><span className="text-xs font-bold text-slate-700 dark:text-slate-300 whitespace-nowrap">{selectedRows.length} selected</span><span className="text-slate-900 dark:text-white font-black text-sm blur-money">{formatINR(Math.abs(selectedSum), isPrivacyMode)}</span></div>
                    <div className="flex md:hidden items-center gap-1 pl-2"><button onClick={() => setIsActionsMenuOpen(!isActionsMenuOpen)} className="px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg flex items-center gap-1.5"><span className="text-[10px]">•••</span> Actions</button><button onClick={() => setBulkModal({isOpen: true, action: 'DELETE'})} className="p-2 text-brand-expense hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg"><Trash2 c="w-4 h-4"/></button></div>
