@@ -3,8 +3,8 @@
   "short_name": "FinTrack",
   "start_url": "./index.html",
   "display": "standalone",
-  "background_color": "#f1e6d3",
-  "theme_color": "#f1e6d3",
+  "background_color": "#f1e0d3",
+  "theme_color": "#f1e0d3",
   "orientation": "portrait-primary",
   "icons": [
     {
