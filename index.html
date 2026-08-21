@@ -39,10 +39,11 @@
     .hide-scrollbar{-ms-overflow-style:none;scrollbar-width:none;}
     .animate-fade-in{animation:fadeIn .3s forwards;}
     .animate-slide-up{animation:slideUp .4s forwards;}
-    @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
-    @keyframes slideUp{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
     .privacy-active .blur-money{user-select:none;pointer-events:none;}
     
+    /* Chrome Password Autofill Defeat Trick */
+    .pin-input { -webkit-text-security: disc; }
+
     /* NAV ITEMS - Disable Mobile Tap Flash */
     .nav-item {
       -webkit-tap-highlight-color: transparent;
@@ -83,7 +84,7 @@
     .dark input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.8;cursor:pointer;}
 
     /* Desktop Tooltip Hover System */
-    .nav-tooltip, .nav-tooltip-bottom {
+    .nav-tooltip, .nav-tooltip-bottom, .nav-tooltip-bottom-right {
       position: absolute;
       padding: 6px 12px;
       background-color: #334155;
@@ -98,18 +99,20 @@
       z-index: 50;
       text-transform: uppercase;
     }
-    .dark .nav-tooltip, .dark .nav-tooltip-bottom {
+    .dark .nav-tooltip, .dark .nav-tooltip-bottom, .dark .nav-tooltip-bottom-right {
       background-color: #1e293b;
       border: 1px solid #334155;
     }
     @media (min-width: 768px) {
       .nav-tooltip { left: calc(100% + 12px); top: 50%; transform: translateY(-50%); }
       .nav-tooltip-bottom { top: calc(100% + 12px); left: 50%; transform: translateX(-50%); }
+      .nav-tooltip-bottom-right { top: calc(100% + 12px); right: 0; left: auto; transform: none; }
       .nav-item:hover .nav-tooltip { opacity: 1; left: calc(100% + 16px); }
       .nav-item:hover .nav-tooltip-bottom { opacity: 1; top: calc(100% + 16px); }
+      .nav-item:hover .nav-tooltip-bottom-right { opacity: 1; top: calc(100% + 16px); }
     }
     @media (max-width: 767px) {
-      .nav-tooltip, .nav-tooltip-bottom { display: none; }
+      .nav-tooltip, .nav-tooltip-bottom, .nav-tooltip-bottom-right { display: none; }
     }
   </style>
 </head>
@@ -161,6 +164,7 @@
     const SettingsIcon = ({c}) => <Icon c={c}><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></Icon>;
     const TagIcon = ({c}) => <Icon c={c}><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82zM7 7h.01"/></Icon>;
     const LockIcon = ({c}) => <Icon c={c}><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></Icon>;
+    const Shield = ({c}) => <Icon c={c}><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></Icon>;
     const DeleteIcon = ({c}) => <Icon c={c}><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zM18 9l-6 6M12 9l6 6"/></Icon>;
     const Sun = ({c}) => <Icon c={c}><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></Icon>;
     const Moon = ({c}) => <Icon c={c}><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></Icon>;
@@ -237,7 +241,7 @@
       useEffect(() => { const hk = (e) => { if (error) return; if(e.key>='0'&&e.key<='9') handlePress(e.key); else if(e.key==='Backspace'||e.key==='Delete') handleBackspace(); }; window.addEventListener('keydown', hk); return () => window.removeEventListener('keydown', hk); }, [error, correctPin]);
       return (
           <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-brand-bgLight dark:bg-brand-bgDark transition-colors duration-300">
-              <div className="flex flex-col items-center mb-12 animate-slide-up"><div className="w-16 h-16 bg-brand-teal rounded-2xl flex items-center justify-center text-white mb-6 shadow-md"><LockIcon c="w-8 h-8"/></div><h2 className="text-xl font-black text-slate-800 dark:text-white mb-2">App Locked</h2><p className="text-sm font-bold text-slate-500 dark:text-slate-400">Enter your PIN to continue</p></div>
+              <div className="flex flex-col items-center mb-12 animate-slide-up"><div className="w-16 h-16 bg-brand-teal rounded-2xl flex items-center justify-center text-white mb-6 shadow-md"><Shield c="w-8 h-8"/></div><h2 className="text-xl font-black text-slate-800 dark:text-white mb-2">App Locked</h2><p className="text-sm font-bold text-slate-500 dark:text-slate-400">Enter your PIN to continue</p></div>
               <div className="flex gap-4 mb-12 min-h-[1.5rem]">{Array.from({ length: correctPin.length }).map((_, i) => (<div key={i} className={`w-4 h-4 rounded-full transition-all ${i < input.length ? 'bg-brand-teal scale-110' : 'bg-slate-200 dark:bg-slate-800'} ${error ? 'animate-pulse bg-brand-expense' : ''}`} />))}</div>
               <div className="grid grid-cols-3 gap-4 sm:gap-6 max-w-[320px] w-full px-4">{[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => <button key={n} onClick={()=>handlePress(String(n))} className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] flex items-center justify-center text-3xl font-black text-slate-800 dark:text-white bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-800 active:scale-90 mx-auto">{n}</button>)}<div className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px]"></div><button onClick={()=>handlePress('0')} className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] flex items-center justify-center text-3xl font-black text-slate-800 dark:text-white bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-800 active:scale-90 mx-auto">0</button><button onClick={handleBackspace} className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] flex items-center justify-center text-slate-500 dark:text-slate-400 bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-800 active:scale-90 mx-auto"><DeleteIcon c="w-8 h-8"/></button></div>
           </div>
@@ -259,7 +263,6 @@
       const handleOpen = () => {
          if (wrapperRef.current) {
              const rect = wrapperRef.current.getBoundingClientRect();
-             // Smart flip logic: if less than 220px to bottom of screen, open upwards.
              setOpenUpwards(window.innerHeight - rect.bottom < 220);
          }
          setIsOpen(true);
@@ -535,7 +538,7 @@
       );
     }
 
-    function SettingsView({ appData, onSave, appPin, autoLockTime }) {
+    function SettingsView({ appData, onSave, appPin, autoLockTime, setIsBackgroundSyncing }) {
       const safeIncomeCats = appData?.settings?.incomeCats||[];
       const safeExpenseCats = appData?.settings?.expenseCats||[];
       const safeAccounts = appData?.settings?.accounts||[];
@@ -547,6 +550,7 @@
       const [showPin, setShowPin] = useState(false);
       const [lockTime, setLockTime] = useState(autoLockTime||'0');
       const [saving, setSaving] = useState(false);
+      const [saveError, setSaveError] = useState('');
 
       const [snapshotDate, setSnapshotDate] = useState(() => {
          if (appData.balances && appData.balances.length > 0) {
@@ -564,14 +568,21 @@
       }, [appData]);
 
       const handleSave = () => {
+         if (pin.length > 0 && (pin.length < 4 || pin.length > 8)) {
+             setSaveError("PIN must be between 4 and 8 digits.");
+             return;
+         }
+         setSaveError('');
          setSaving(true);
+         setIsBackgroundSyncing(true);
+         
          const renames = [];
          incCats.forEach((nC, i) => { const oC = safeIncomeCats[i]; if(oC && oC!==nC && nC.trim()!=='') renames.push({old:oC, new:nC}); });
          expCats.forEach((nC, i) => { const oC = safeExpenseCats[i]; if(oC && oC!==nC && nC.trim()!=='') renames.push({old:oC, new:nC}); });
          
          const payload = { excludedCats: exCats, balances: bals, incomeCats: incCats.filter(c=>c.trim()!==''), expenseCats: expCats.filter(c=>c.trim()!==''), categoryRenames: renames, appPin: pin, autoLockTime: lockTime };
          
-         // Optimistic Update
+         // Optimistic Update - Do not overwrite with stale API response
          onSave(prev => {
              let updatedTxns = [...prev.transactions];
              renames.forEach(r => {
@@ -592,12 +603,14 @@
              };
          });
 
-         apiCall('SAVE_SETTINGS', { payload }).then(res => {
-             onSave(res);
+         apiCall('SAVE_SETTINGS', { payload }).then(() => {
              setSaving(false);
+             setIsBackgroundSyncing(false);
          }).catch(e => {
              console.error(e);
              setSaving(false);
+             setIsBackgroundSyncing(false);
+             alert("Settings save failed. Please check your connection.");
          });
       };
 
@@ -605,6 +618,7 @@
          <div className="animate-fade-in space-y-6 max-w-4xl mx-auto pb-8">
             <div className="modern-card p-6 sm:p-8">
                <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6 border-b border-slate-100 dark:border-slate-800 pb-5"><div><h3 className="text-xl font-extrabold">System Settings</h3></div><button onClick={handleSave} disabled={saving} className="bg-brand-teal text-white font-bold py-2.5 px-6 rounded-full text-sm shadow-sm">{saving ? 'Saving...' : 'Save Configuration'}</button></div>
+               {saveError && <div className="mb-6 p-3 bg-rose-50 text-brand-expense rounded-full text-xs font-bold text-center border border-rose-100">{saveError}</div>}
                <h4 className="text-sm font-bold mb-4">Account Snapshots</h4>
                <div className="mb-6 bg-slate-50 dark:bg-brand-bgDark border border-slate-100 dark:border-slate-800 p-5 rounded-3xl"><label className="block text-[11px] font-bold mb-1">Global Snapshot Date</label><input type="date" value={snapshotDate} onChange={e=>setSnapshotDate(e.target.value)} className="w-full sm:w-64 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-semibold outline-none" /></div>
                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">{safeAccounts.map(acc => { 
@@ -628,7 +642,7 @@
                <div className="border-t border-slate-100 dark:border-slate-800 pt-6 mt-8">
                    <h3 className="text-xl font-extrabold mb-4">Security</h3>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-                       <div className="bg-slate-50 dark:bg-brand-bgDark rounded-3xl p-5 border border-slate-100 dark:border-slate-800"><label className="block text-[11px] font-bold mb-2">App Access PIN</label><div className="flex gap-3"><input type={showPin?"text":"password"} inputMode="numeric" pattern="[0-9]*" maxLength="8" placeholder="Leave blank to disable" value={pin} onChange={(e)=>setPin(e.target.value.replace(/[^0-9]/g,''))} autoComplete="new-password" spellCheck="false" autoCorrect="off" className="flex-1 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold tracking-widest outline-none"/><button onClick={()=>setShowPin(!showPin)} className="p-3 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full aspect-square flex items-center justify-center">{showPin?<EyeOff c="w-4 h-4"/>:<Eye c="w-4 h-4"/>}</button></div></div>
+                       <div className="bg-slate-50 dark:bg-brand-bgDark rounded-3xl p-5 border border-slate-100 dark:border-slate-800"><label className="block text-[11px] font-bold mb-2">App Access PIN</label><div className="flex gap-3"><input type="text" inputMode="numeric" pattern="[0-9]*" maxLength="8" placeholder="Leave blank to disable" value={pin} onChange={(e)=>setPin(e.target.value.replace(/[^0-9]/g,''))} autoComplete="new-password" spellCheck="false" autoCorrect="off" className={`flex-1 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold tracking-widest outline-none ${!showPin && pin ? 'pin-input' : ''}`}/><button onClick={()=>setShowPin(!showPin)} className="p-3 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full aspect-square flex items-center justify-center">{showPin?<EyeOff c="w-4 h-4"/>:<Eye c="w-4 h-4"/>}</button></div></div>
                        <div className="bg-slate-50 dark:bg-brand-bgDark rounded-3xl p-5 border border-slate-100 dark:border-slate-800"><label className="block text-[11px] font-bold mb-2">Auto-Lock Timer</label><select value={lockTime} onChange={(e)=>setLockTime(e.target.value)} className="w-full bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-3 text-sm font-bold outline-none"><option value="0">Never</option><option value="1">1 minute</option><option value="5">5 minutes</option><option value="15">15 minutes</option><option value="30">30 minutes</option></select></div>
                    </div>
                </div>
@@ -1115,8 +1129,8 @@
                  {appData.appPin && <button onClick={() => setIsAuthenticated(false)} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50"><LockIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Lock App</span></button>}
                  <button onClick={() => setIsPrivacyMode(!isPrivacyMode)} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${isPrivacyMode ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50'}`}>{isPrivacyMode ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Privacy Mode</span></button>
                  <button onClick={() => setIsDarkMode(!isDarkMode)} className="nav-item focus:outline-none relative p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50">{isDarkMode ? <Sun c="w-4 h-4"/> : <Moon c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Toggle Theme</span></button>
-                 <button onClick={() => setActiveTab('settings')} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50'}`}><SettingsIcon c="w-4 h-4"/><span className="nav-tooltip-bottom transform right-0 translate-x-[-15%]">Settings</span></button>
-                 <button onClick={handleOpenNewTxn} className="nav-item focus:outline-none relative ml-2 bg-brand-teal hover:bg-brand-tealHover text-white font-bold py-2 px-4 rounded-full flex items-center justify-center gap-2 transition-colors text-sm shadow-sm h-[38px]"><Plus c="w-4 h-4"/> Add entry <span className="nav-tooltip-bottom transform right-0 translate-x-[-15%]">New transaction</span></button>
+                 <button onClick={() => setActiveTab('settings')} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50'}`}><SettingsIcon c="w-4 h-4"/><span className="nav-tooltip-bottom-right">Settings</span></button>
+                 <button onClick={handleOpenNewTxn} className="nav-item focus:outline-none relative ml-2 bg-brand-teal hover:bg-brand-tealHover text-white font-bold py-2 px-4 rounded-full flex items-center justify-center gap-2 transition-colors text-sm shadow-sm h-[38px]"><Plus c="w-4 h-4"/> Add entry <span className="nav-tooltip-bottom-right">New transaction</span></button>
               </div>
             </header>
 
@@ -1257,7 +1271,7 @@
                 </div>
               )}
 
-              {activeTab === 'settings' && <SettingsView appData={appData} onSave={setAppData} appPin={appData.appPin} autoLockTime={appData.autoLockTime} />}
+              {activeTab === 'settings' && <SettingsView appData={appData} onSave={setAppData} appPin={appData.appPin} autoLockTime={appData.autoLockTime} setIsBackgroundSyncing={setIsBackgroundSyncing} />}
 
             </div>
           </main>
