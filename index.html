@@ -744,6 +744,7 @@
       const [ledgerAccountFilter, setLedgerAccountFilter] = useState('All');
       const [ledgerTagFilter, setLedgerTagFilter] = useState(null);
       const [ledgerTypeFilter, setLedgerTypeFilter] = useState('ALL'); 
+      const [tagsExpanded, setTagsExpanded] = useState(false); // NEW STATE FOR TAGS COLLAPSE
       const [analyticsCategory, setAnalyticsCategory] = useState('All Categories');
       const [selectedRows, setSelectedRows] = useState([]);
       const [bulkModal, setBulkModal] = useState({ isOpen: false, action: null });
@@ -1205,7 +1206,23 @@
                      </div>
                   </div>
                   
-                  <div className="flex flex-wrap items-center gap-2 pb-1 px-1"><button onClick={() => setLedgerTagFilter(null)} className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors border shadow-sm ${!ledgerTagFilter ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-white dark:bg-brand-cardDark text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>All Tags</button>{allAvailableTags.map(tag => (<button key={tag} onClick={() => setLedgerTagFilter(tag === ledgerTagFilter ? null : tag)} className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors border shadow-sm ${tag === ledgerTagFilter ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-white dark:bg-brand-cardDark text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>{tag}</button>))}</div>
+                  <div className="mt-2">
+                     <div className="flex items-center justify-between cursor-pointer group px-2 py-1" onClick={() => setTagsExpanded(!tagsExpanded)}>
+                        <span className="text-[11px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
+                           <TagIcon c="w-3.5 h-3.5" /> Tags Filter
+                           {ledgerTagFilter && <span className="bg-brand-teal/10 text-brand-teal border border-brand-teal/20 px-2 py-0.5 rounded-md normal-case tracking-normal shadow-sm">{ledgerTagFilter}</span>}
+                        </span>
+                        <ChevronDown c={`w-4 h-4 text-slate-400 transition-transform ${tagsExpanded ? 'rotate-180' : ''}`} />
+                     </div>
+                     {tagsExpanded && (
+                        <div className="animate-fade-in flex flex-wrap items-center gap-2 pt-3 pb-1 px-1">
+                           <button onClick={() => setLedgerTagFilter(null)} className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors border shadow-sm ${!ledgerTagFilter ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-white dark:bg-brand-cardDark text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>All Tags</button>
+                           {allAvailableTags.map(tag => (
+                              <button key={tag} onClick={() => setLedgerTagFilter(tag === ledgerTagFilter ? null : tag)} className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors border shadow-sm ${tag === ledgerTagFilter ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-white dark:bg-brand-cardDark text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>{tag}</button>
+                           ))}
+                        </div>
+                     )}
+                  </div>
                   
                   {/* Desktop Ledger Header */}
                   {groupedLedger.length > 0 && (
