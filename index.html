@@ -529,7 +529,7 @@
         });
       };
 
-      const appendTag = (t) => { const cur = extractTags(tags); if(!cur.includes(t)) setTags([...cur, t].join(', ')); };
+      const appendTag = (t) => { const cur = extractTags(tags); if(!cur.includes(t)) { const cT = t.replace(/^#/, ''); const nT = tags.trim(); setTags(nT ? (nT.endsWith(',') ? nT + ' ' + cT : nT + ', ' + cT) : cT); } };
       const catOptions = type === 'INCOME' ? safeIncomeCats : (type === 'EXPENSE' ? safeExpenseCats : ['TRANSFER']);
 
       return (
