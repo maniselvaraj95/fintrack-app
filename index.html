@@ -43,7 +43,13 @@
     @keyframes slideUp{from{opacity:0;transform:translateY(40px);}to{opacity:1;transform:translateY(0);}}
     .privacy-active .blur-money{user-select:none;pointer-events:none;}
     
-    /* FAST NATIVE CHECKBOX - PERFECTLY ROUNDED AND FIXED SIZE */
+    /* NAV ITEMS - Disable Mobile Tap Flash */
+    .nav-item {
+      -webkit-tap-highlight-color: transparent;
+      outline: none;
+    }
+
+    /* FAST NATIVE CHECKBOX - PERFECTLY ROUNDED AND STRICT FIXED SIZE */
     .custom-check {
       appearance: none;
       background-color: #f1f5f9;
@@ -212,11 +218,11 @@
                     <div className="flex justify-center mb-6"><div className="w-16 h-16 bg-brand-teal rounded-2xl flex items-center justify-center text-white shadow-sm"><IndianRupee c="w-8 h-8"/></div></div>
                     <h2 className="text-2xl font-black text-slate-800 dark:text-white text-center mb-2">FinTrack Setup</h2>
                     <p className="text-xs font-bold text-slate-500 dark:text-slate-400 text-center mb-6">Link your secure Google Sheet to this device.</p>
-                    {errMsg && <div className="mb-4 p-3 bg-rose-50 text-brand-expense rounded-xl text-xs font-bold text-center border border-rose-100">{errMsg}</div>}
+                    {errMsg && <div className="mb-4 p-3 bg-rose-50 text-brand-expense rounded-full text-xs font-bold text-center border border-rose-100">{errMsg}</div>}
                     <form onSubmit={handle} className="space-y-4">
-                        <div><label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest mb-1.5">Web App URL</label><input type="url" required value={u} onChange={e=>setU(e.target.value)} placeholder="https://script.google.com/..." className="w-full bg-slate-50 dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-1 focus:border-brand-teal dark:text-white" /></div>
-                        <div><label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest mb-1.5">Secret Key</label><input type="password" required value={k} onChange={e=>setK(e.target.value)} placeholder="Enter your secret key" className="w-full bg-slate-50 dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm font-bold outline-none focus:ring-1 focus:border-brand-teal dark:text-white tracking-widest" /></div>
-                        <button type="submit" disabled={loading} className="w-full py-3.5 rounded-xl font-black text-white bg-brand-teal hover:bg-brand-tealHover shadow-sm transition-colors mt-2">{loading ? 'Verifying...' : 'Connect Device'}</button>
+                        <div><label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest mb-1.5">Web App URL</label><input type="url" required value={u} onChange={e=>setU(e.target.value)} placeholder="https://script.google.com/..." className="w-full bg-slate-50 dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-3 text-sm font-bold outline-none focus:ring-1 focus:border-brand-teal dark:text-white" /></div>
+                        <div><label className="block text-[10px] font-bold text-slate-700 dark:text-slate-300 uppercase tracking-widest mb-1.5">Secret Key</label><input type="password" required value={k} onChange={e=>setK(e.target.value)} placeholder="Enter your secret key" className="w-full bg-slate-50 dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-3 text-sm font-bold outline-none focus:ring-1 focus:border-brand-teal dark:text-white tracking-widest" /></div>
+                        <button type="submit" disabled={loading} className="w-full py-3.5 rounded-full font-black text-white bg-brand-teal hover:bg-brand-tealHover shadow-sm transition-colors mt-2">{loading ? 'Verifying...' : 'Connect Device'}</button>
                     </form>
                 </div>
             </div>
@@ -241,17 +247,33 @@
     function SearchableSelect({ options, value, onChange, placeholder, compact = false }) {
       const [isOpen, setIsOpen] = useState(false);
       const [search, setSearch] = useState('');
+      const [openUpwards, setOpenUpwards] = useState(false);
       const wrapperRef = useRef(null);
-      useEffect(() => { function h(e) { if (wrapperRef.current && !wrapperRef.current.contains(e.target)) { setIsOpen(false); setSearch(''); } } document.addEventListener("mousedown", h); return () => document.removeEventListener("mousedown", h); }, []);
+
+      useEffect(() => { 
+        function h(e) { if (wrapperRef.current && !wrapperRef.current.contains(e.target)) { setIsOpen(false); setSearch(''); } } 
+        document.addEventListener("mousedown", h); 
+        return () => document.removeEventListener("mousedown", h); 
+      }, []);
+
+      const handleOpen = () => {
+         if (wrapperRef.current) {
+             const rect = wrapperRef.current.getBoundingClientRect();
+             // Smart flip logic: if less than 220px to bottom of screen, open upwards.
+             setOpenUpwards(window.innerHeight - rect.bottom < 220);
+         }
+         setIsOpen(true);
+      };
+
       const filtered = (options||[]).filter(o => String(o).toLowerCase().includes(String(search).toLowerCase()));
       return (
-        <div className="relative" ref={wrapperRef}>
-          <div className={`relative flex items-center w-full bg-white dark:bg-brand-bgDark border ${isOpen ? 'border-brand-teal ring-1 ring-brand-teal' : 'border-slate-200 dark:border-slate-700'} ${compact ? 'rounded-xl px-4 py-2.5 text-xs shadow-sm cursor-pointer' : 'rounded-xl px-4 py-3.5 text-sm shadow-sm cursor-text'} font-bold transition-all`} onClick={() => setIsOpen(true)}>
-             {isOpen && !compact ? ( <input autoFocus type="text" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Type to search..." className="w-full bg-transparent outline-none text-slate-900 dark:text-white" /> ) : ( <div className={`w-full flex items-center justify-between ${value ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500'}`}><span className="truncate pr-3">{value || placeholder}</span><ChevronDown c={`w-4 h-4 shrink-0 transition-transform ${isOpen ? 'rotate-180 text-brand-teal' : 'text-slate-400'}`} /></div> )}
+        <div className="relative w-full" ref={wrapperRef}>
+          <div className={`relative flex items-center w-full bg-white dark:bg-brand-bgDark border ${isOpen ? 'border-brand-teal ring-1 ring-brand-teal' : 'border-slate-200 dark:border-slate-700'} ${compact ? 'rounded-full px-4 py-2.5 text-xs shadow-sm cursor-pointer' : 'rounded-full px-4 py-3.5 text-sm shadow-sm cursor-text'} font-bold transition-all`} onClick={handleOpen}>
+             {isOpen && !compact ? ( <input autoFocus type="text" autoComplete="new-password" spellCheck="false" autoCorrect="off" name={`search_${Math.random()}`} value={search} onChange={e=>setSearch(e.target.value)} placeholder="Type to search..." className="w-full bg-transparent outline-none text-slate-900 dark:text-white" /> ) : ( <div className={`w-full flex items-center justify-between ${value ? 'text-slate-900 dark:text-white' : 'text-slate-400 dark:text-slate-500'}`}><span className="truncate pr-3">{value || placeholder}</span><ChevronDown c={`w-4 h-4 shrink-0 transition-transform ${isOpen ? 'rotate-180 text-brand-teal' : 'text-slate-400'}`} /></div> )}
           </div>
           {isOpen && (
-            <div className="absolute z-[100] w-full mt-2 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-xl shadow-lg max-h-48 overflow-y-auto hide-scrollbar">
-              {compact && <div className="sticky top-0 bg-white dark:bg-brand-cardDark border-b border-slate-100 dark:border-slate-800 p-2 z-10"><input type="text" autoFocus value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search..." className="w-full bg-slate-50 dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-xs font-semibold outline-none text-slate-900 dark:text-white" /></div>}
+            <div className={`absolute z-[150] w-full ${openUpwards ? 'bottom-full mb-2' : 'top-full mt-2'} bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl max-h-48 overflow-y-auto hide-scrollbar`}>
+              {compact && <div className="sticky top-0 bg-white dark:bg-brand-cardDark border-b border-slate-100 dark:border-slate-800 p-2 z-10"><input type="text" autoFocus autoComplete="new-password" spellCheck="false" autoCorrect="off" name={`search_${Math.random()}`} value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search..." className="w-full bg-slate-50 dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-3 py-2 text-xs font-semibold outline-none text-slate-900 dark:text-white" /></div>}
               {filtered.length > 0 ? filtered.map(o => ( <div key={o} onClick={(e) => { e.stopPropagation(); onChange(o); setIsOpen(false); setSearch(''); }} className="px-4 py-3 border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer text-sm font-bold text-slate-700 dark:text-slate-300 transition-colors last:border-0">{o}</div> )) : <div className="px-4 py-3 text-sm text-slate-400 font-medium text-center">No matches found</div>}
             </div>
           )}
@@ -365,7 +387,7 @@
       if (!isOpen) return null;
       return (
         <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in sm:pb-4 pb-24">
-           <div className="bg-white dark:bg-brand-cardDark rounded-2xl w-full max-w-[320px] mx-auto overflow-hidden shadow-2xl animate-slide-up p-6 text-center border border-slate-100 dark:border-slate-800">
+           <div className="bg-white dark:bg-brand-cardDark rounded-[2rem] w-full max-w-[320px] mx-auto overflow-hidden shadow-2xl animate-slide-up p-6 text-center border border-slate-100 dark:border-slate-800">
               <div className="w-14 h-14 bg-rose-50 dark:bg-rose-500/10 text-brand-expense rounded-full flex items-center justify-center mx-auto mb-4"><Trash2 c="w-7 h-7"/></div>
               <h2 className="text-lg font-black text-slate-800 dark:text-white mb-2">{title}</h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-bold mb-6">{message}</p>
@@ -496,14 +518,14 @@
               <div className="flex p-1 mb-6 bg-[#f0f2f5] dark:bg-slate-800 rounded-full shadow-sm"><button onClick={()=>setType('EXPENSE')} className={`flex-1 py-2.5 text-xs font-bold rounded-full transition-all ${type==='EXPENSE'?'bg-brand-expense text-white':'text-slate-500'}`}>Expense</button><button onClick={()=>setType('INCOME')} className={`flex-1 py-2.5 text-xs font-bold rounded-full transition-all ${type==='INCOME'?'bg-brand-income text-white':'text-slate-500'}`}>Income</button><button onClick={()=>setType('TRANSFER')} className={`flex-1 py-2.5 text-xs font-bold rounded-full transition-all ${type==='TRANSFER'?'bg-brand-transfer text-white':'text-slate-500'}`}>Transfer</button></div>
               {errorMsg && <div className="mb-6 p-3 bg-brand-expense/10 text-brand-expense rounded-full flex items-center gap-3 text-xs font-bold"><div className="w-5 h-5 rounded-full bg-brand-expense text-white flex items-center justify-center shrink-0">!</div>{errorMsg}</div>}
               <form id="txnForm" onSubmit={handleSubmit} className="space-y-4">
-                <div><label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Description</label><input type="text" placeholder="Example: Daily Food" value={description} onChange={e=>setDescription(e.target.value)} className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none dark:text-white" /></div>
+                <div><label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Description</label><input type="text" placeholder="Example: Daily Food" value={description} onChange={e=>setDescription(e.target.value)} autoComplete="new-password" spellCheck="false" autoCorrect="off" className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none dark:text-white" /></div>
                 <div className="flex gap-4"><div className="flex-1"><label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Amount</label><input type="number" step="0.01" value={amount} onChange={e=>setAmount(e.target.value)} className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none dark:text-white" /></div><div className="flex-1"><label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Date</label><input type="date" value={date} onChange={e=>setDate(e.target.value)} className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none dark:text-white" /></div></div>
                 <div className="flex gap-4"><div className="flex-1"><label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Category</label><SearchableSelect options={catOptions} value={category} onChange={setCategory} placeholder="Select..." compact={true} /></div><div className="flex-1"><label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">{type==='INCOME'?'To Account':'Account'}</label><SearchableSelect options={safeAccounts} value={account} onChange={setAccount} placeholder="Select..." compact={true} /></div></div>
                 {type === 'TRANSFER' && <div className="animate-fade-in"><label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Transfer To</label><SearchableSelect options={safeAccounts} value={transferTo} onChange={setTransferTo} placeholder="Select target..." compact={true} /></div>}
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Tags</label><input type="text" placeholder="#paycheck" value={tags} onChange={e=>setTags(e.target.value)} className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none dark:text-white mb-1" />
+                  <label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Tags</label><input type="text" placeholder="#paycheck" value={tags} onChange={e=>setTags(e.target.value)} autoComplete="new-password" spellCheck="false" autoCorrect="off" className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none dark:text-white mb-1" />
                   {allAvailableTags.length > 0 && <div className="flex flex-wrap gap-2 mt-2">{allAvailableTags.map(t => <button key={t} type="button" onClick={()=>appendTag(t)} className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 rounded-full text-[10px] font-bold">{t}</button>)}</div>}
-                  <label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5 mt-5">Notes</label><textarea placeholder="Optional note" value={notes} onChange={e=>setNotes(e.target.value)} className="w-full h-20 bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm font-bold outline-none dark:text-white resize-none"></textarea>
+                  <label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5 mt-5">Notes</label><textarea placeholder="Optional note" value={notes} onChange={e=>setNotes(e.target.value)} autoComplete="new-password" spellCheck="false" autoCorrect="off" className="w-full h-20 bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm font-bold outline-none dark:text-white resize-none"></textarea>
                 </div>
               </form>
             </div>
@@ -526,6 +548,14 @@
       const [lockTime, setLockTime] = useState(autoLockTime||'0');
       const [saving, setSaving] = useState(false);
 
+      const [snapshotDate, setSnapshotDate] = useState(() => {
+         if (appData.balances && appData.balances.length > 0) {
+             const latest = [...appData.balances].sort((a,b) => parseDateLocal(b.date) - parseDateLocal(a.date))[0];
+             if (latest && latest.date) return latest.date;
+         }
+         return new Date().toISOString().split('T')[0];
+      });
+
       useEffect(() => {
         setIncCats(appData?.settings?.incomeCats||[]);
         setExpCats(appData?.settings?.expenseCats||[]);
@@ -533,49 +563,85 @@
         setBals(appData.balances||[]);
       }, [appData]);
 
-      const sharedDate = bals.length > 0 && bals[0]?.date ? bals[0].date : new Date().toISOString().split('T')[0];
-
       const handleSave = () => {
          setSaving(true);
          const renames = [];
          incCats.forEach((nC, i) => { const oC = safeIncomeCats[i]; if(oC && oC!==nC && nC.trim()!=='') renames.push({old:oC, new:nC}); });
          expCats.forEach((nC, i) => { const oC = safeExpenseCats[i]; if(oC && oC!==nC && nC.trim()!=='') renames.push({old:oC, new:nC}); });
+         
          const payload = { excludedCats: exCats, balances: bals, incomeCats: incCats.filter(c=>c.trim()!==''), expenseCats: expCats.filter(c=>c.trim()!==''), categoryRenames: renames, appPin: pin, autoLockTime: lockTime };
+         
+         // Optimistic Update
+         onSave(prev => {
+             let updatedTxns = [...prev.transactions];
+             renames.forEach(r => {
+                 updatedTxns = updatedTxns.map(t => t.category === r.old ? { ...t, category: r.new } : t);
+             });
+             return {
+                 ...prev,
+                 transactions: updatedTxns,
+                 settings: {
+                     ...prev.settings,
+                     incomeCats: payload.incomeCats,
+                     expenseCats: payload.expenseCats
+                 },
+                 balances: payload.balances,
+                 excludedCats: payload.excludedCats,
+                 appPin: payload.appPin,
+                 autoLockTime: payload.autoLockTime
+             };
+         });
+
          apiCall('SAVE_SETTINGS', { payload }).then(res => {
              onSave(res);
              setSaving(false);
          }).catch(e => {
              console.error(e);
              setSaving(false);
-             alert("Settings save failed");
          });
       };
 
       return (
          <div className="animate-fade-in space-y-6 max-w-4xl mx-auto pb-8">
             <div className="modern-card p-6 sm:p-8">
-               <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6 border-b border-slate-100 dark:border-slate-800 pb-5"><div><h3 className="text-xl font-extrabold">System Settings</h3></div><button onClick={handleSave} disabled={saving} className="bg-brand-teal text-white font-bold py-2.5 px-6 rounded-full text-sm">{saving ? 'Saving...' : 'Save Configuration'}</button></div>
+               <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6 border-b border-slate-100 dark:border-slate-800 pb-5"><div><h3 className="text-xl font-extrabold">System Settings</h3></div><button onClick={handleSave} disabled={saving} className="bg-brand-teal text-white font-bold py-2.5 px-6 rounded-full text-sm shadow-sm">{saving ? 'Saving...' : 'Save Configuration'}</button></div>
                <h4 className="text-sm font-bold mb-4">Account Snapshots</h4>
-               <div className="mb-6 bg-slate-50 dark:bg-brand-bgDark border border-slate-100 dark:border-slate-800 p-5 rounded-2xl"><label className="block text-[11px] font-bold mb-1">Global Snapshot Date</label><input type="date" value={sharedDate} onChange={e=>setBals(safeAccounts.map(acc=>({account:acc, date:e.target.value, balance:(bals.find(b=>b.account===acc)||{balance:0}).balance})))} className="w-full bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-semibold outline-none" /></div>
-               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">{safeAccounts.map(acc => { const ex = bals.find(b=>b.account===acc)||{balance:''}; return (<div key={acc} className="p-4 bg-slate-50 dark:bg-brand-bgDark rounded-2xl border border-slate-100 dark:border-slate-800"><h4 className="font-bold text-sm mb-3 truncate">{acc}</h4><input type="number" step="0.01" value={ex.balance} onChange={e=>setBals(bals.find(b=>b.account===acc) ? bals.map(b=>b.account===acc ? {...b,balance:parseFloat(e.target.value)||0}:b) : [...bals,{account:acc,date:sharedDate,balance:parseFloat(e.target.value)||0}])} className="w-full bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none" /></div>) })}</div>
+               <div className="mb-6 bg-slate-50 dark:bg-brand-bgDark border border-slate-100 dark:border-slate-800 p-5 rounded-3xl"><label className="block text-[11px] font-bold mb-1">Global Snapshot Date</label><input type="date" value={snapshotDate} onChange={e=>setSnapshotDate(e.target.value)} className="w-full sm:w-64 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-semibold outline-none" /></div>
+               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">{safeAccounts.map(acc => { 
+                   const ex = bals.find(b => b.account === acc && b.date === snapshotDate) || { balance: '' }; 
+                   return (
+                     <div key={acc} className="p-5 bg-slate-50 dark:bg-brand-bgDark rounded-3xl border border-slate-100 dark:border-slate-800"><h4 className="font-bold text-sm mb-3 truncate">{acc}</h4><input type="number" step="0.01" value={ex.balance} onChange={e => {
+                         const val = parseFloat(e.target.value);
+                         const isNaNVal = isNaN(val);
+                         setBals(prev => {
+                             const existing = prev.find(b => b.account === acc && b.date === snapshotDate);
+                             if (existing) {
+                                 return prev.map(b => (b.account === acc && b.date === snapshotDate) ? { ...b, balance: isNaNVal ? '' : val } : b);
+                             } else {
+                                 return [...prev, { account: acc, date: snapshotDate, balance: isNaNVal ? '' : val }];
+                             }
+                         });
+                     }} className="w-full bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none" /></div>
+                   ) 
+               })}</div>
                
                <div className="border-t border-slate-100 dark:border-slate-800 pt-6 mt-8">
                    <h3 className="text-xl font-extrabold mb-4">Security</h3>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-                       <div className="bg-slate-50 dark:bg-brand-bgDark rounded-2xl p-5 border border-slate-100 dark:border-slate-800"><label className="block text-[11px] font-bold mb-2">App Access PIN</label><div className="flex gap-3"><input type={showPin?"text":"password"} inputMode="numeric" pattern="[0-9]*" maxLength="8" placeholder="Leave blank to disable" value={pin} onChange={(e)=>setPin(e.target.value.replace(/[^0-9]/g,''))} className="flex-1 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold tracking-widest outline-none"/><button onClick={()=>setShowPin(!showPin)} className="p-3 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full aspect-square flex items-center justify-center">{showPin?<EyeOff c="w-4 h-4"/>:<Eye c="w-4 h-4"/>}</button></div></div>
-                       <div className="bg-slate-50 dark:bg-brand-bgDark rounded-2xl p-5 border border-slate-100 dark:border-slate-800"><label className="block text-[11px] font-bold mb-2">Auto-Lock Timer</label><select value={lockTime} onChange={(e)=>setLockTime(e.target.value)} className="w-full bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-3 text-sm font-bold outline-none"><option value="0">Never</option><option value="1">1 minute</option><option value="5">5 minutes</option><option value="15">15 minutes</option><option value="30">30 minutes</option></select></div>
+                       <div className="bg-slate-50 dark:bg-brand-bgDark rounded-3xl p-5 border border-slate-100 dark:border-slate-800"><label className="block text-[11px] font-bold mb-2">App Access PIN</label><div className="flex gap-3"><input type={showPin?"text":"password"} inputMode="numeric" pattern="[0-9]*" maxLength="8" placeholder="Leave blank to disable" value={pin} onChange={(e)=>setPin(e.target.value.replace(/[^0-9]/g,''))} autoComplete="new-password" spellCheck="false" autoCorrect="off" className="flex-1 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold tracking-widest outline-none"/><button onClick={()=>setShowPin(!showPin)} className="p-3 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full aspect-square flex items-center justify-center">{showPin?<EyeOff c="w-4 h-4"/>:<Eye c="w-4 h-4"/>}</button></div></div>
+                       <div className="bg-slate-50 dark:bg-brand-bgDark rounded-3xl p-5 border border-slate-100 dark:border-slate-800"><label className="block text-[11px] font-bold mb-2">Auto-Lock Timer</label><select value={lockTime} onChange={(e)=>setLockTime(e.target.value)} className="w-full bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-3 text-sm font-bold outline-none"><option value="0">Never</option><option value="1">1 minute</option><option value="5">5 minutes</option><option value="15">15 minutes</option><option value="30">30 minutes</option></select></div>
                    </div>
                </div>
 
                <div className="border-t border-slate-100 dark:border-slate-800 pt-6">
                    <h3 className="text-xl font-extrabold mb-4">Categories</h3>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      <div className="bg-slate-50 dark:bg-brand-bgDark rounded-2xl p-5 border border-slate-100 dark:border-slate-800"><h4 className="text-xs font-bold mb-4 uppercase tracking-widest">Income Categories</h4><div className="space-y-2">{incCats.map((c, i) => { const isEx = exCats.includes(c); return (<div key={i} className="flex justify-between items-center p-1.5 pl-4 bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-700"><input value={c} onChange={(e)=>{const n=[...incCats];n[i]=e.target.value;setIncCats(n);}} className={`flex-1 min-w-0 bg-transparent outline-none text-sm font-bold px-2 ${isEx?'line-through opacity-50':''}`} /><div className="flex gap-3"><div onClick={()=>setExCats(isEx?exCats.filter(x=>x!==c):[...exCats,c])} className={`w-11 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${!isEx?'bg-brand-teal':'bg-slate-300 dark:bg-slate-700'}`}><div className={`bg-white w-4 h-4 rounded-full transition-transform ${!isEx?'translate-x-5':''}`}></div></div><button onClick={()=>setIncCats(incCats.filter((_,x)=>x!==i))} className="text-slate-300 hover:text-brand-expense p-1"><Trash2 c="w-4 h-4"/></button></div></div>) })}</div><button onClick={()=>setIncCats([...incCats,'New Income'])} className="w-full mt-4 text-brand-teal font-bold py-2.5 rounded-full text-xs uppercase border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark hover:bg-slate-50">Add Income Category</button></div>
-                      <div className="bg-slate-50 dark:bg-brand-bgDark rounded-2xl p-5 border border-slate-100 dark:border-slate-800"><h4 className="text-xs font-bold mb-4 uppercase tracking-widest">Expense Categories</h4><div className="space-y-2">{expCats.map((c, i) => { const isEx = exCats.includes(c); return (<div key={i} className="flex justify-between items-center p-1.5 pl-4 bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-700"><input value={c} onChange={(e)=>{const n=[...expCats];n[i]=e.target.value;setExpCats(n);}} className={`flex-1 min-w-0 bg-transparent outline-none text-sm font-bold px-2 ${isEx?'line-through opacity-50':''}`} /><div className="flex gap-3"><div onClick={()=>setExCats(isEx?exCats.filter(x=>x!==c):[...exCats,c])} className={`w-11 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${!isEx?'bg-brand-teal':'bg-slate-300 dark:bg-slate-700'}`}><div className={`bg-white w-4 h-4 rounded-full transition-transform ${!isEx?'translate-x-5':''}`}></div></div><button onClick={()=>setExpCats(expCats.filter((_,x)=>x!==i))} className="text-slate-300 hover:text-brand-expense p-1"><Trash2 c="w-4 h-4"/></button></div></div>) })}</div><button onClick={()=>setExpCats([...expCats,'New Expense'])} className="w-full mt-4 text-brand-teal font-bold py-2.5 rounded-full text-xs uppercase border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark hover:bg-slate-50">Add Expense Category</button></div>
+                      <div className="bg-slate-50 dark:bg-brand-bgDark rounded-3xl p-5 border border-slate-100 dark:border-slate-800"><h4 className="text-xs font-bold mb-4 uppercase tracking-widest">Income Categories</h4><div className="space-y-2">{incCats.map((c, i) => { const isEx = exCats.includes(c); return (<div key={i} className="flex justify-between items-center p-1.5 pl-4 bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-700"><input value={c} onChange={(e)=>{const n=[...incCats];n[i]=e.target.value;setIncCats(n);}} autoComplete="new-password" spellCheck="false" autoCorrect="off" className={`flex-1 min-w-0 bg-transparent outline-none text-sm font-bold px-2 ${isEx?'line-through opacity-50':''}`} /><div className="flex gap-3"><div onClick={()=>setExCats(isEx?exCats.filter(x=>x!==c):[...exCats,c])} className={`w-11 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${!isEx?'bg-brand-teal':'bg-slate-300 dark:bg-slate-700'}`}><div className={`bg-white w-4 h-4 rounded-full transition-transform ${!isEx?'translate-x-5':''}`}></div></div><button onClick={()=>setIncCats(incCats.filter((_,x)=>x!==i))} className="text-slate-300 hover:text-brand-expense p-1"><Trash2 c="w-4 h-4"/></button></div></div>) })}</div><button onClick={()=>setIncCats([...incCats,'New Income'])} className="w-full mt-4 text-brand-teal font-bold py-2.5 rounded-full text-xs uppercase border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark hover:bg-slate-50">Add Income Category</button></div>
+                      <div className="bg-slate-50 dark:bg-brand-bgDark rounded-3xl p-5 border border-slate-100 dark:border-slate-800"><h4 className="text-xs font-bold mb-4 uppercase tracking-widest">Expense Categories</h4><div className="space-y-2">{expCats.map((c, i) => { const isEx = exCats.includes(c); return (<div key={i} className="flex justify-between items-center p-1.5 pl-4 bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-700"><input value={c} onChange={(e)=>{const n=[...expCats];n[i]=e.target.value;setExpCats(n);}} autoComplete="new-password" spellCheck="false" autoCorrect="off" className={`flex-1 min-w-0 bg-transparent outline-none text-sm font-bold px-2 ${isEx?'line-through opacity-50':''}`} /><div className="flex gap-3"><div onClick={()=>setExCats(isEx?exCats.filter(x=>x!==c):[...exCats,c])} className={`w-11 h-6 flex items-center rounded-full p-1 cursor-pointer transition-colors ${!isEx?'bg-brand-teal':'bg-slate-300 dark:bg-slate-700'}`}><div className={`bg-white w-4 h-4 rounded-full transition-transform ${!isEx?'translate-x-5':''}`}></div></div><button onClick={()=>setExpCats(expCats.filter((_,x)=>x!==i))} className="text-slate-300 hover:text-brand-expense p-1"><Trash2 c="w-4 h-4"/></button></div></div>) })}</div><button onClick={()=>setExpCats([...expCats,'New Expense'])} className="w-full mt-4 text-brand-teal font-bold py-2.5 rounded-full text-xs uppercase border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark hover:bg-slate-50">Add Expense Category</button></div>
                    </div>
                </div>
 
-               <div className="border-t border-slate-100 dark:border-slate-800 pt-6 mt-8"><h3 className="text-xl font-extrabold mb-4 text-rose-600 dark:text-rose-500">Danger Zone</h3><div className="bg-rose-50 dark:bg-rose-500/10 rounded-2xl p-5 border border-rose-100 dark:border-rose-500/20 flex flex-col sm:flex-row justify-between sm:items-center gap-4"><div><h4 className="text-[11px] font-bold text-rose-800 dark:text-rose-200 uppercase tracking-wider mb-1">Disconnect App</h4><p className="text-xs text-rose-600 dark:text-rose-300 font-medium">Remove API keys and clear local cache from this device.</p></div><button onClick={()=>{if(window.confirm("Disconnect and clear all local data?")){try{localStorage.removeItem('API_URL');localStorage.removeItem('API_KEY');localStorage.removeItem('finTrackerCache');}catch(e){}window.location.reload();}}} className="bg-white dark:bg-brand-cardDark text-brand-expense font-bold py-2.5 px-6 rounded-full text-sm border border-rose-200 dark:border-rose-800 shadow-sm whitespace-nowrap">Disconnect</button></div></div>
+               <div className="border-t border-slate-100 dark:border-slate-800 pt-6 mt-8"><h3 className="text-xl font-extrabold mb-4 text-rose-600 dark:text-rose-500">Danger Zone</h3><div className="bg-rose-50 dark:bg-rose-500/10 rounded-3xl p-5 border border-rose-100 dark:border-rose-500/20 flex flex-col sm:flex-row justify-between sm:items-center gap-4"><div><h4 className="text-[11px] font-bold text-rose-800 dark:text-rose-200 uppercase tracking-wider mb-1">Disconnect App</h4><p className="text-xs text-rose-600 dark:text-rose-300 font-medium">Remove API keys and clear local cache from this device.</p></div><button onClick={()=>{if(window.confirm("Disconnect and clear all local data?")){try{localStorage.removeItem('API_URL');localStorage.removeItem('API_KEY');localStorage.removeItem('finTrackerCache');}catch(e){}window.location.reload();}}} className="bg-white dark:bg-brand-cardDark text-brand-expense font-bold py-2.5 px-6 rounded-full text-sm border border-rose-200 dark:border-rose-800 shadow-sm whitespace-nowrap">Disconnect</button></div></div>
 
             </div>
          </div>
@@ -607,15 +673,15 @@
         inp = <SearchableSelect options={allCategories} value={val} onChange={setVal} placeholder="Select..." />;
       } else if (action === 'TAGS') {
         t = "Overwrite Tags"; l = "Enter new tags:";
-        inp = <input type="text" placeholder="#vacation" value={val} onChange={e=>setVal(e.target.value)} className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none" />;
+        inp = <input type="text" placeholder="#vacation" value={val} onChange={e=>setVal(e.target.value)} autoComplete="new-password" spellCheck="false" autoCorrect="off" className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none" />;
       } else if (action === 'DESC') {
         t = "Redescribe"; l = "Enter description:";
-        inp = <input type="text" placeholder="e.g. Swiggy" value={val} onChange={e=>setVal(e.target.value)} className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none" />;
+        inp = <input type="text" placeholder="e.g. Swiggy" value={val} onChange={e=>setVal(e.target.value)} autoComplete="new-password" spellCheck="false" autoCorrect="off" className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none" />;
       }
 
       return (
         <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
-           <div className="bg-white dark:bg-brand-cardDark rounded-t-[2rem] sm:rounded-2xl w-full max-w-sm overflow-hidden shadow-xl animate-slide-up pb-6 sm:pb-0 border border-slate-100 dark:border-slate-800">
+           <div className="bg-white dark:bg-brand-cardDark rounded-t-[2rem] sm:rounded-[2rem] w-full max-w-sm overflow-hidden shadow-xl animate-slide-up pb-6 sm:pb-0 border border-slate-100 dark:border-slate-800">
               <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center"><h2 className="text-base font-black">{t}</h2><button onClick={onClose} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"><X c="w-5 h-5 text-slate-500"/></button></div>
               <form onSubmit={handleSubmit} className="p-6 bg-slate-50 dark:bg-brand-bgDark">
                  <p className="text-[11px] text-slate-500 font-bold mb-4 uppercase tracking-widest">{l}</p>{inp}
@@ -636,6 +702,7 @@
       const [editTxn, setEditTxn] = useState(null); 
       const [searchQ, setSearchQ] = useState('');
       const [ledgerCategoryFilter, setLedgerCategoryFilter] = useState('All');
+      const [ledgerAccountFilter, setLedgerAccountFilter] = useState('All');
       const [ledgerTagFilter, setLedgerTagFilter] = useState(null);
       const [ledgerTypeFilter, setLedgerTypeFilter] = useState('ALL'); 
       const [analyticsCategory, setAnalyticsCategory] = useState('All Categories');
@@ -654,7 +721,7 @@
       const [isDarkMode, setIsDarkMode] = useState(() => { try { return localStorage.getItem('theme') === 'dark'; } catch(e) { return false; } });
       const [isPrivacyMode, setIsPrivacyMode] = useState(() => { try { const s = localStorage.getItem('privacyMode'); return s !== null ? s === 'true' : true; } catch(e) { return true; } });
 
-      // Mobile Delayed Tooltip System
+      // Mobile Delayed Tooltip System with Screen Clamp
       const [mobileTooltip, setMobileTooltip] = useState({ text: '', x: 0, y: 0, visible: false, pos: 'top' });
       const touchShowTimer = useRef(null);
       const touchHideTimer = useRef(null);
@@ -662,10 +729,12 @@
       const handleTouchStart = (text, e, pos = 'top') => {
         if (touchHideTimer.current) clearTimeout(touchHideTimer.current);
         const touch = e.touches[0];
-        const clientX = touch.clientX;
-        const clientY = touch.clientY;
+        let clampX = touch.clientX;
+        if (clampX < 60) clampX = 60;
+        if (clampX > window.innerWidth - 60) clampX = window.innerWidth - 60;
+        
         touchShowTimer.current = setTimeout(() => {
-          setMobileTooltip({ text, x: clientX, y: pos === 'top' ? clientY - 55 : clientY + 45, visible: true, pos });
+          setMobileTooltip({ text, x: clampX, y: pos === 'top' ? touch.clientY - 55 : touch.clientY + 45, visible: true, pos });
         }, 400);
       };
 
@@ -805,13 +874,14 @@
         let f = parsedData; 
         if (ledgerTypeFilter !== 'ALL') f = f.filter(r => r.rawType === ledgerTypeFilter);
         if (ledgerCategoryFilter !== 'All') f = f.filter(r => r.category === ledgerCategoryFilter);
+        if (ledgerAccountFilter !== 'All') f = f.filter(r => r.account === ledgerAccountFilter || r.transfer_to === ledgerAccountFilter);
         if (ledgerTagFilter) f = f.filter(r => extractTags(r.tags).includes(ledgerTagFilter));
         if (searchQ) {
           const q = searchQ.toLowerCase();
           f = f.filter(r => `${String(r.description||'')} ${String(r.category||'')} ${String(r.tags||'')} ${String(r.notes||'')} ${String(r.account||'')} ${String(r.transfer_to||'')}`.toLowerCase().includes(q));
         }
         return f;
-      }, [parsedData, searchQ, ledgerCategoryFilter, ledgerTagFilter, ledgerTypeFilter]);
+      }, [parsedData, searchQ, ledgerCategoryFilter, ledgerTagFilter, ledgerTypeFilter, ledgerAccountFilter]);
 
       const selectedSum = useMemo(() => ledgerFiltered.filter(t => selectedRows.includes(t.row_index)).reduce((s, t) => {
         if (t.rawType === 'TRANSFER') return s;
@@ -872,23 +942,32 @@
       const mOUT = analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).reduce((a,b) => a + b.amount, 0);
       const savRate = mIN > 0 ? (((mIN - mOUT) / mIN) * 100).toFixed(1) : 0;
 
+      // Chronological Snapshot Math
       const accountBalances = useMemo(() => {
-        const bals = {};
-        let gD = new Date('1970-01-01');
-        const sB = appData.balances || [];
-        if (sB[0]?.date) gD = parseDateLocal(sB[0].date);
-        (appData?.settings?.accounts||[]).forEach(a => bals[a] = { current: (sB.find(b=>b.account===a)||{}).balance ? parseFloat((sB.find(b=>b.account===a)).balance) : 0, startDate: gD });
-        activeData.forEach(t => {
-          const d = parseDateLocal(t.date);
-          if (bals[t.account] && d >= bals[t.account].startDate) {
-            if (t.rawType === 'INCOME') bals[t.account].current += t.amount;
-            else if (t.rawType === 'EXPENSE' || t.rawType === 'TRANSFER') bals[t.account].current -= t.amount;
-          }
-          if (t.rawType === 'TRANSFER' && bals[t.transfer_to] && d >= bals[t.transfer_to].startDate) {
-            bals[t.transfer_to].current += t.amount;
-          }
+        const balsObj = {};
+        const safeAccounts = appData?.settings?.accounts||[];
+        
+        safeAccounts.forEach(a => {
+            const snaps = (appData.balances || []).filter(b => b.account === a);
+            snaps.sort((x, y) => parseDateLocal(y.date) - parseDateLocal(x.date));
+            const latest = snaps[0];
+            balsObj[a] = {
+                current: latest && latest.balance !== '' ? parseFloat(latest.balance) : 0,
+                startDate: latest ? parseDateLocal(latest.date) : new Date('1970-01-01')
+            };
         });
-        return bals;
+
+        activeData.forEach(t => {
+            const d = parseDateLocal(t.date);
+            if (balsObj[t.account] && d >= balsObj[t.account].startDate) {
+                if (t.rawType === 'INCOME') balsObj[t.account].current += t.amount;
+                else if (t.rawType === 'EXPENSE' || t.rawType === 'TRANSFER') balsObj[t.account].current -= t.amount;
+            }
+            if (t.rawType === 'TRANSFER' && balsObj[t.transfer_to] && d >= balsObj[t.transfer_to].startDate) {
+                balsObj[t.transfer_to].current += t.amount;
+            }
+        });
+        return balsObj;
       }, [activeData, appData.balances, appData.settings]);
 
       const totalBalance = Object.values(accountBalances).reduce((s, a) => s + a.current, 0);
@@ -977,6 +1056,7 @@
       };
 
       const allCatArray = useMemo(() => Array.from(new Set([...(appData?.settings?.incomeCats||[]), ...(appData?.settings?.expenseCats||[]), 'TRANSFER'])).sort(), [appData]);
+      const safeAccountsList = appData?.settings?.accounts||[];
 
       if (!isSetupComplete) return <SetupScreen onSave={(u, k, data) => { GLOBAL_API_URL=u; GLOBAL_API_KEY=k; try{localStorage.setItem('API_URL',u);localStorage.setItem('API_KEY',k); if(data)localStorage.setItem('finTrackerCache',JSON.stringify(data));}catch(e){} if(data)setAppData(data); setIsSetupComplete(true); }} />;
       if (isLoading) return ( <div className="h-screen w-full flex flex-col items-center justify-center bg-brand-bgLight dark:bg-brand-bgDark transition-colors duration-300"><div className="w-10 h-10 border-4 border-slate-200 dark:border-slate-800 border-t-brand-teal rounded-full animate-spin"></div><p className="mt-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest animate-pulse">Initializing...</p></div> );
@@ -996,7 +1076,7 @@
             <div className="hidden md:flex mb-8 w-full justify-center"><div className="w-10 h-10 bg-brand-teal rounded-xl flex items-center justify-center text-white font-black text-xl shadow-sm"><IndianRupee c="w-5 h-5"/></div></div>
             <button onClick={() => setActiveTab('overview')} onTouchStart={(e) => handleTouchStart('Dashboard', e, 'top')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'overview' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-teal/10 md:text-brand-teal dark:md:bg-brand-sidebarHover dark:md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:text-slate-400 md:hover:text-slate-800 md:hover:bg-slate-100 dark:md:hover:text-white dark:md:hover:bg-brand-sidebarHover/50'}`}><Activity c="w-6 h-6 sm:w-5 sm:h-5"/><span className="nav-tooltip">Dashboard</span></button>
             <button onClick={() => setActiveTab('analytics')} onTouchStart={(e) => handleTouchStart('Analytics', e, 'top')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'analytics' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-teal/10 md:text-brand-teal dark:md:bg-brand-sidebarHover dark:md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:text-slate-400 md:hover:text-slate-800 md:hover:bg-slate-100 dark:md:hover:text-white dark:md:hover:bg-brand-sidebarHover/50'}`}><PieChart c="w-6 h-6 sm:w-5 sm:h-5"/><span className="nav-tooltip">Analytics</span></button>
-            <div className="md:hidden relative w-16 h-12 flex justify-center items-center"><button onClick={handleOpenNewTxn} className="absolute -top-6 w-14 h-14 bg-brand-teal text-white rounded-full flex items-center justify-center shadow-[0_8px_16px_rgba(224,108,83,0.3)] transition-transform active:scale-95 border-4 border-brand-bgLight dark:border-brand-bgDark z-50"><Plus c="w-6 h-6"/></button></div>
+            <div className="md:hidden relative w-16 h-12 flex justify-center items-center nav-item"><button onClick={handleOpenNewTxn} className="absolute -top-6 w-14 h-14 bg-brand-teal text-white rounded-full flex items-center justify-center shadow-[0_8px_16px_rgba(224,108,83,0.3)] transition-transform active:scale-95 border-4 border-brand-bgLight dark:border-brand-bgDark z-50"><Plus c="w-6 h-6"/></button></div>
             <button onClick={() => setActiveTab('ledger')} onTouchStart={(e) => handleTouchStart('Transactions', e, 'top')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'ledger' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-teal/10 md:text-brand-teal dark:md:bg-brand-sidebarHover dark:md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:text-slate-400 md:hover:text-slate-800 md:hover:bg-slate-100 dark:md:hover:text-white dark:md:hover:bg-brand-sidebarHover/50'}`}><List c="w-6 h-6 sm:w-5 sm:h-5"/><span className="nav-tooltip">Transactions</span></button>
             <button onClick={() => setActiveTab('insights')} onTouchStart={(e) => handleTouchStart('Insights', e, 'top')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'insights' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-teal/10 md:text-brand-teal dark:md:bg-brand-sidebarHover dark:md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:text-slate-400 md:hover:text-slate-800 md:hover:bg-slate-100 dark:md:hover:text-white dark:md:hover:bg-brand-sidebarHover/50'}`}><Sparkles c="w-6 h-6 sm:w-5 sm:h-5"/><span className="nav-tooltip">Insights</span></button>
           </nav>
@@ -1035,8 +1115,8 @@
                  {appData.appPin && <button onClick={() => setIsAuthenticated(false)} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50"><LockIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Lock App</span></button>}
                  <button onClick={() => setIsPrivacyMode(!isPrivacyMode)} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${isPrivacyMode ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50'}`}>{isPrivacyMode ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Privacy Mode</span></button>
                  <button onClick={() => setIsDarkMode(!isDarkMode)} className="nav-item focus:outline-none relative p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50">{isDarkMode ? <Sun c="w-4 h-4"/> : <Moon c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Toggle Theme</span></button>
-                 <button onClick={() => setActiveTab('settings')} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50'}`}><SettingsIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Settings</span></button>
-                 <button onClick={handleOpenNewTxn} className="nav-item focus:outline-none relative ml-2 bg-brand-teal hover:bg-brand-tealHover text-white font-bold py-2 px-4 rounded-full flex items-center justify-center gap-2 transition-colors text-sm shadow-sm h-[38px]"><Plus c="w-4 h-4"/> Add entry <span className="nav-tooltip-bottom">New transaction</span></button>
+                 <button onClick={() => setActiveTab('settings')} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50'}`}><SettingsIcon c="w-4 h-4"/><span className="nav-tooltip-bottom transform right-0 translate-x-[-15%]">Settings</span></button>
+                 <button onClick={handleOpenNewTxn} className="nav-item focus:outline-none relative ml-2 bg-brand-teal hover:bg-brand-tealHover text-white font-bold py-2 px-4 rounded-full flex items-center justify-center gap-2 transition-colors text-sm shadow-sm h-[38px]"><Plus c="w-4 h-4"/> Add entry <span className="nav-tooltip-bottom transform right-0 translate-x-[-15%]">New transaction</span></button>
               </div>
             </header>
 
@@ -1045,7 +1125,14 @@
               {activeTab === 'overview' && (
                 <div className="animate-fade-in space-y-4 sm:space-y-6">
                   <div className="flex items-center justify-between cursor-pointer group" onClick={() => setBalancesExpanded(!balancesExpanded)}><div><h3 className="text-xl font-extrabold tracking-wide mb-1">Financial overview</h3><p className="text-xs font-medium text-slate-500">Income, expenses and transfers based on your saved transactions.</p></div><ChevronDown c={`w-5 h-5 text-slate-400 transition-transform ${balancesExpanded ? 'rotate-180' : ''}`} /></div>
-                  {balancesExpanded && (<div className="grid grid-cols-2 md:grid-cols-4 gap-3 animate-fade-in mt-4 border-t border-slate-100 dark:border-slate-800/50 pt-4">{Object.keys(accountBalances).map(acc => (<div key={acc} className="p-4 bg-white dark:bg-brand-cardDark rounded-2xl flex flex-col justify-between h-20 border border-slate-200 dark:border-slate-800 shadow-sm"><p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest truncate">{acc}</p><p className={`text-lg font-black tracking-tight blur-money ${accountBalances[acc].current >= 0 ? 'text-slate-800 dark:text-white' : 'text-brand-expense'}`}>{formatINR(accountBalances[acc].current, isPrivacyMode)}</p></div>))}</div>)}
+                  {balancesExpanded && (
+                     <div className="animate-fade-in mt-4 border-t border-slate-100 dark:border-slate-800/50 pt-5">
+                        <h4 className="text-sm font-extrabold mb-4 text-slate-800 dark:text-slate-200">Live Balances</h4>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                           {Object.keys(accountBalances).map(acc => (<div key={acc} className="p-4 bg-white dark:bg-brand-cardDark rounded-2xl flex flex-col justify-between h-20 border border-slate-200 dark:border-slate-800 shadow-sm"><p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest truncate">{acc}</p><p className={`text-lg font-black tracking-tight blur-money ${accountBalances[acc].current >= 0 ? 'text-slate-800 dark:text-white' : 'text-brand-expense'}`}>{formatINR(accountBalances[acc].current, isPrivacyMode)}</p></div>))}
+                        </div>
+                     </div>
+                  )}
                   <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">{[{ label:'Income', val:mIN, type:'income' }, { label:'Expenses', val:mOUT, type:'expense' }, { label:'Invested', val:mINV, type:'invested' }, { label:'Balance', val:totalBalance, type:'balance' }, { label:'Savings Rate', val:`${savRate}%`, type:'savings', raw:true }].map((m, i) => (<div key={i} className={i===4?'col-span-2 lg:col-span-1':''}><MetricCard title={m.label} value={m.raw && isPrivacyMode ? '......' : (m.raw ? m.val : formatINR(m.val, isPrivacyMode))} type={m.type} isDark={isDarkMode} /></div>))}</div>
                   <div className="modern-card p-5 sm:p-8"><div className="mb-6"><h3 className="text-sm font-extrabold tracking-wide">Calculated Cashflow Trend</h3></div>{chartData.length > 0 ? <AreaChart data={chartData} isDark={isDarkMode} isPrivacy={isPrivacyMode} /> : <div className="h-40 flex items-center justify-center text-slate-400 text-sm font-medium">No data for chart.</div>}</div>
                   <div className="modern-card p-5 sm:p-8"><h3 className="text-sm font-extrabold mb-6 tracking-wide">Top Spending Destinations</h3><TopExpensesList data={topMerchants} totalExpense={mOUT} isPrivacy={isPrivacyMode} /></div>
@@ -1068,7 +1155,16 @@
                 <div className="animate-fade-in space-y-4">
                   <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1">{['ALL', 'EXPENSE', 'INCOME', 'TRANSFER'].map(tab => (<button key={tab} onClick={() => setLedgerTypeFilter(tab)} className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-colors border shadow-sm ${ledgerTypeFilter === tab ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-white dark:bg-brand-cardDark text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>{tab}</button>))}</div>
                   
-                  <div className="modern-card p-3 flex flex-col sm:flex-row items-center justify-between gap-3 border border-slate-200 dark:border-slate-800"><div className="relative w-full flex items-center bg-brand-bgLight dark:bg-brand-bgDark rounded-xl px-3 flex-1 border border-slate-100 dark:border-slate-800"><SearchIcon c="w-5 h-5 text-slate-400 shrink-0" /><input type="text" placeholder="Search transactions..." value={searchQ} onChange={e => setSearchQ(e.target.value)} className="w-full bg-transparent border-none outline-none py-3 pl-3 text-sm font-bold text-slate-800 dark:text-white placeholder-slate-400" /></div><div className="w-full sm:w-64 shrink-0 z-20"><SearchableSelect options={['All Categories', ...allUniqueCategories]} value={ledgerCategoryFilter === 'All' ? 'All Categories' : ledgerCategoryFilter} onChange={(val) => setLedgerCategoryFilter(val === 'All Categories' ? 'All' : val)} placeholder="Filter Category..." compact={true} /></div></div>
+                  <div className="modern-card p-3 flex flex-col sm:flex-row items-center justify-between gap-3 border border-slate-200 dark:border-slate-800">
+                     <div className="relative w-full flex items-center bg-brand-bgLight dark:bg-brand-bgDark rounded-full px-3 flex-1 border border-slate-100 dark:border-slate-800">
+                        <SearchIcon c="w-5 h-5 text-slate-400 shrink-0" />
+                        <input type="text" placeholder="Search transactions..." value={searchQ} onChange={e => setSearchQ(e.target.value)} autoComplete="new-password" spellCheck="false" autoCorrect="off" name={`search_${Math.random()}`} className="w-full bg-transparent border-none outline-none py-3 pl-3 text-sm font-bold text-slate-800 dark:text-white placeholder-slate-400" />
+                     </div>
+                     <div className="grid grid-cols-2 sm:flex w-full sm:w-auto gap-3 shrink-0 z-20">
+                        <div className="w-full sm:w-40"><SearchableSelect options={['All Accounts', ...safeAccountsList]} value={ledgerAccountFilter === 'All' ? 'All Accounts' : ledgerAccountFilter} onChange={(val) => setLedgerAccountFilter(val === 'All Accounts' ? 'All' : val)} placeholder="Account..." compact={true} /></div>
+                        <div className="w-full sm:w-48"><SearchableSelect options={['All Categories', ...allUniqueCategories]} value={ledgerCategoryFilter === 'All' ? 'All Categories' : ledgerCategoryFilter} onChange={(val) => setLedgerCategoryFilter(val === 'All Categories' ? 'All' : val)} placeholder="Category..." compact={true} /></div>
+                     </div>
+                  </div>
                   
                   <div className="flex flex-wrap items-center gap-2 pb-1 px-1"><button onClick={() => setLedgerTagFilter(null)} className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors border shadow-sm ${!ledgerTagFilter ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-white dark:bg-brand-cardDark text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>All Tags</button>{allAvailableTags.map(tag => (<button key={tag} onClick={() => setLedgerTagFilter(tag === ledgerTagFilter ? null : tag)} className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors border shadow-sm ${tag === ledgerTagFilter ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-white dark:bg-brand-cardDark text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>{tag}</button>))}</div>
                   
@@ -1093,19 +1189,19 @@
                     </div>
                   )}
 
-                  {/* Mobile Compact Ledger Header With Scrollable Sort Keys */}
+                  {/* Mobile Compact Ledger Header With Even Spacing */}
                   {groupedLedger.length > 0 && (
-                    <div className="lg:hidden flex items-center px-4 py-2.5 mt-4 border-b border-slate-200 dark:border-slate-800 gap-3">
+                    <div className="lg:hidden flex items-center px-4 py-2.5 mt-4 border-b border-slate-200 dark:border-slate-800 gap-2">
                        <div className="flex items-center justify-center shrink-0">
                           <input type="checkbox" checked={selectedRows.length > 0 && selectedRows.length === ledgerFiltered.length} onChange={handleSelectAll} className="custom-check" />
                        </div>
                        
-                       <div className="flex-1 overflow-x-auto hide-scrollbar flex items-center gap-4 text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest px-1">
-                          <div className="shrink-0 cursor-pointer flex items-center gap-1 hover:text-brand-teal select-none" onClick={() => handleSort('date')}>Date <SortIcon colKey="date"/></div>
-                          <div className="shrink-0 cursor-pointer flex items-center gap-1 hover:text-brand-teal select-none" onClick={() => handleSort('category')}>Category <SortIcon colKey="category"/></div>
-                          <div className="shrink-0 cursor-pointer flex items-center gap-1 hover:text-brand-teal select-none" onClick={() => handleSort('amount')}>Amount <SortIcon colKey="amount"/></div>
-                          <div className="shrink-0 cursor-pointer flex items-center gap-1 hover:text-brand-teal select-none" onClick={() => handleSort('description')}>Desc <SortIcon colKey="description"/></div>
-                          <div className="shrink-0 cursor-pointer flex items-center gap-1 hover:text-brand-teal select-none" onClick={() => handleSort('account')}>Account <SortIcon colKey="account"/></div>
+                       <div className="flex-1 flex items-center justify-between text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wide px-1">
+                          <div className="shrink-0 cursor-pointer flex items-center gap-0.5 hover:text-brand-teal select-none" onClick={() => handleSort('date')}>Date <SortIcon colKey="date"/></div>
+                          <div className="shrink-0 cursor-pointer flex items-center gap-0.5 hover:text-brand-teal select-none" onClick={() => handleSort('category')}>Cat <SortIcon colKey="category"/></div>
+                          <div className="shrink-0 cursor-pointer flex items-center gap-0.5 hover:text-brand-teal select-none" onClick={() => handleSort('amount')}>Amt <SortIcon colKey="amount"/></div>
+                          <div className="shrink-0 cursor-pointer flex items-center gap-0.5 hover:text-brand-teal select-none" onClick={() => handleSort('description')}>Desc <SortIcon colKey="description"/></div>
+                          <div className="shrink-0 cursor-pointer flex items-center gap-0.5 hover:text-brand-teal select-none" onClick={() => handleSort('account')}>Acc <SortIcon colKey="account"/></div>
                        </div>
 
                        <button onClick={toggleExpandCollapseAll} onTouchStart={(e) => handleTouchStart(isAllCollapsed || Object.values(expandedGroups).filter(v=>v).length === 0 ? 'Expand All' : 'Collapse All', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="p-1.5 text-slate-400 hover:text-brand-teal transition-colors shrink-0 bg-slate-50 dark:bg-slate-800 rounded-lg">
