@@ -11,6 +11,10 @@
   <link rel="manifest" href="manifest.json">
   <title>FinTrack</title>
   
+  <!-- Inline SVG Favicon (No external image needed) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e06c53' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 3h12M6 8h12m-12 5 8.5 8M6 13h3M9 13c6.667 0 6.667-10 0-10'/%3E%3C/svg%3E">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e06c53' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 3h12M6 8h12m-12 5 8.5 8M6 13h3M9 13c6.667 0 6.667-10 0-10'/%3E%3C/svg%3E">
+
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => { try { navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW:', e)); } catch(e) {} });
@@ -217,15 +221,7 @@
 
     function LockScreen({ correctPin, onUnlock }) {
       const [input, setInput] = useState(''); const [error, setError] = useState(false); const pinStr = String(correctPin || '');
-      const handlePress = (n) => { 
-          setInput(prev => { 
-              if (error || prev.length >= pinStr.length) return prev; 
-              const newVal = prev + n; 
-              if (newVal === pinStr) setTimeout(() => onUnlock(), 150); 
-              else if (newVal.length === pinStr.length) { setError(true); setTimeout(() => { setInput(''); setError(false); }, 400); } 
-              return newVal; 
-          }); 
-      };
+      const handlePress = (n) => { setInput(prev => { if (error || prev.length >= pinStr.length) return prev; const newVal = prev + n; if (newVal === pinStr) setTimeout(() => onUnlock(), 150); else if (newVal.length === pinStr.length) { setError(true); setTimeout(() => { setInput(''); setError(false); }, 400); } return newVal; }); };
       const handleBackspace = () => setInput(p => error || p.length===0 ? p : p.slice(0, -1));
       useEffect(() => { const hk = (e) => { if (error) return; if(e.key>='0'&&e.key<='9') handlePress(e.key); else if(e.key==='Backspace'||e.key==='Delete') handleBackspace(); }; window.addEventListener('keydown', hk); return () => window.removeEventListener('keydown', hk); }, [error, pinStr]);
       return (
@@ -374,8 +370,7 @@
                 <p className={`text-lg sm:text-xl font-black tracking-tight blur-money ${textClass}`}>{value}</p>
             </div>
         );
-    }
-    function InsightsView({ analyticsFiltered = [], allUniqueCategories = [], isPrivacy, isDarkMode, chartData = [] }) {
+      function InsightsView({ analyticsFiltered = [], allUniqueCategories = [], isPrivacy, isDarkMode, chartData = [] }) {
         const [insightsCategoryFilter, setInsightsCategoryFilter] = useState('All');
         const insightsData = useMemo(() => insightsCategoryFilter === 'All' ? analyticsFiltered : (analyticsFiltered||[]).filter(r => r?.category === insightsCategoryFilter), [analyticsFiltered, insightsCategoryFilter]);
         const topTags = useMemo(() => { const map = {}; (insightsData||[]).forEach(r => { if (r?.rawType !== 'EXPENSE') return; extractTags(r?.tags).forEach(t => { map[t] = (map[t]||0) + (r?.amount||0); }); }); return Object.entries(map).map(([name, total]) => ({name, total})).sort((a,b) => b.total - a.total).slice(0, 10); }, [insightsData]);
@@ -782,6 +777,13 @@
       const activeData = useMemo(() => { const ex = appData?.excludedCats || []; return parsedData.filter(t => !ex.includes(t.category)); }, [parsedData, appData.excludedCats]);
       const allAvailableTags = useMemo(() => { const s = new Set(); parsedData.forEach(t => extractTags(t.tags).forEach(tag => s.add(tag))); return Array.from(s).sort(); }, [parsedData]);
       
+      const allUniqueCategories = useMemo(() => {
+         const defined = Array.from(new Set([...(appData?.settings?.incomeCats||[]), ...(appData?.settings?.expenseCats||[])]));
+         const historical = Array.from(new Set(parsedData.filter(d => d.rawType !== 'TRANSFER').map(d => d.category))).filter(Boolean);
+         const extras = historical.filter(c => !defined.includes(c) && c !== 'TRANSFER').sort();
+         return [...defined, ...extras];
+      }, [appData.settings, parsedData]);
+
       const ledgerCatOptions = useMemo(() => {
          let defined = [];
          if (ledgerTypeFilter === 'EXPENSE') defined = appData?.settings?.expenseCats || [];
@@ -995,7 +997,7 @@
                  {appData?.appPin && <button onClick={() => setIsAuthenticated(false)} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50"><LockIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Lock App</span></button>}
                  <button onClick={() => setIsPrivacyMode(!isPrivacyMode)} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${isPrivacyMode ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50'}`}>{isPrivacyMode ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Privacy Mode</span></button>
                  <button onClick={() => setIsDarkMode(!isDarkMode)} className="nav-item focus:outline-none relative p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50">{isDarkMode ? <Sun c="w-4 h-4"/> : <Moon c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Toggle Theme</span></button>
-                 <button onClick={() => setActiveTab('settings')} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50'}`}><SettingsIcon c="w-4 h-4"/><span className="nav-tooltip-bottom-right">Settings</span></button>
+                 <button onClick={() => setActiveTab('settings')} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50'}`><SettingsIcon c="w-4 h-4"/><span className="nav-tooltip-bottom-right">Settings</span></button>
                  <button onClick={handleOpenNewTxn} className="nav-item focus:outline-none relative ml-2 bg-brand-teal hover:bg-brand-tealHover text-white font-bold py-2 px-4 rounded-full flex items-center justify-center gap-2 transition-colors text-sm shadow-sm h-[38px]"><Plus c="w-4 h-4"/> Add entry <span className="nav-tooltip-bottom-right">New transaction</span></button>
               </div>
             </header>
@@ -1214,3 +1216,4 @@
   </script>
 </body>
 </html>
+    }
