@@ -16,9 +16,7 @@
 
   <script>
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        try { navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW:', e)); } catch(e) {}
-      });
+      window.addEventListener('load', () => { try { navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW:', e)); } catch(e) {} });
     }
   </script>
 
@@ -33,13 +31,8 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
     
-    /* GLOBAL MOBILE TAP OVERRIDE & RESET */
     * { -webkit-tap-highlight-color: transparent !important; }
-    button, a, input, select, textarea, .nav-item {
-      -webkit-touch-callout: none !important;
-      outline: none !important;
-    }
-
+    button, a, input, select, textarea, .nav-item { -webkit-touch-callout: none !important; outline: none !important; }
     body{font-family:'Plus Jakarta Sans',sans-serif;-webkit-font-smoothing:antialiased;transition:background-color .3s,color .3s;}
     .modern-card{background:#ffffff;border-radius:1.25rem;box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);border:1px solid #e2e8f0;transition:all .3s;}
     .dark .modern-card{background:#292524;box-shadow:0 10px 25px -5px rgba(0,0,0,0.3);border:1px solid #3f3f46;}
@@ -48,74 +41,27 @@
     .animate-fade-in{animation:fadeIn .3s forwards;}
     .animate-slide-up{animation:slideUp .4s forwards;}
     .privacy-active .blur-money{user-select:none;pointer-events:none;}
-    
-    /* Chrome Password Autofill Defeat Trick */
     .pin-input { -webkit-text-security: disc; }
 
-    /* FAST NATIVE CHECKBOX */
-    .custom-check {
-      appearance: none;
-      background-color: #f1f5f9;
-      width: 18px !important;
-      height: 18px !important;
-      min-width: 18px !important;
-      min-height: 18px !important;
-      border-radius: 50%;
-      display: grid;
-      place-content: center;
-      cursor: pointer;
-      border: 1px solid #cbd5e1;
-      transition: all 0.2s ease;
-      flex-shrink: 0;
-      margin: 0;
-    }
+    .custom-check { appearance:none;background-color:#f1f5f9;width:18px !important;height:18px !important;min-width:18px !important;min-height:18px !important;border-radius:50%;display:grid;place-content:center;cursor:pointer;border:1px solid #cbd5e1;transition:all 0.2s ease;flex-shrink:0;margin:0; }
     .dark .custom-check{background-color:#44403c;border-color:#57534e;}
-    .custom-check::before {
-      content: "";
-      width: 10px;
-      height: 10px;
-      transform: scale(0);
-      transition: 120ms transform ease-in-out;
-      box-shadow: inset 1em 1em white;
-      background-color: white;
-      clip-path: polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0%,43% 62%);
-    }
+    .custom-check::before { content:"";width:10px;height:10px;transform:scale(0);transition:120ms transform ease-in-out;box-shadow:inset 1em 1em white;background-color:white;clip-path:polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0%,43% 62%); }
     .custom-check:checked{background-color:#e06c53;border-color:#e06c53;}
     .dark .custom-check:checked{background-color:#e06c53;border-color:#e06c53;}
     .custom-check:checked::before{transform:scale(1);}
     .dark input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.8;cursor:pointer;}
 
-    /* Desktop Tooltip Hover System - Fixed Left Alignment */
-    .nav-tooltip, .nav-tooltip-bottom, .nav-tooltip-bottom-right {
-      position: absolute;
-      padding: 6px 12px;
-      background-color: #334155;
-      color: white;
-      font-size: 11px;
-      font-weight: 700;
-      border-radius: 8px;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: all .2s;
-      z-index: 50;
-      text-transform: uppercase;
-    }
-    .dark .nav-tooltip, .dark .nav-tooltip-bottom, .dark .nav-tooltip-bottom-right {
-      background-color: #1e293b;
-      border: 1px solid #334155;
-    }
+    .nav-tooltip, .nav-tooltip-bottom, .nav-tooltip-bottom-right { position:absolute;padding:6px 12px;background-color:#334155;color:white;font-size:11px;font-weight:700;border-radius:8px;white-space:nowrap;opacity:0;pointer-events:none;transition:all .2s;z-index:50;text-transform:uppercase; }
+    .dark .nav-tooltip, .dark .nav-tooltip-bottom, .dark .nav-tooltip-bottom-right { background-color:#1e293b;border:1px solid #334155; }
     @media (min-width: 768px) {
-      .nav-tooltip { left: 80px !important; top: 50%; transform: translateY(-50%); }
-      .nav-tooltip-bottom { top: calc(100% + 12px); left: 50%; transform: translateX(-50%); }
-      .nav-tooltip-bottom-right { top: calc(100% + 12px); right: 0; left: auto; transform: none; }
-      .nav-item:hover .nav-tooltip { opacity: 1; left: 80px !important; }
-      .nav-item:hover .nav-tooltip-bottom { opacity: 1; top: calc(100% + 16px); }
-      .nav-item:hover .nav-tooltip-bottom-right { opacity: 1; top: calc(100% + 16px); }
+      .nav-tooltip { left:80px !important; top:50%; transform:translateY(-50%); }
+      .nav-tooltip-bottom { top:calc(100% + 12px); left:50%; transform:translateX(-50%); }
+      .nav-tooltip-bottom-right { top:calc(100% + 12px); right:0; left:auto; transform:none; }
+      .nav-item:hover .nav-tooltip { opacity:1; left:80px !important; }
+      .nav-item:hover .nav-tooltip-bottom { opacity:1; top:calc(100% + 16px); }
+      .nav-item:hover .nav-tooltip-bottom-right { opacity:1; top:calc(100% + 16px); }
     }
-    @media (max-width: 767px) {
-      .nav-tooltip, .nav-tooltip-bottom, .nav-tooltip-bottom-right { display: none; }
-    }
+    @media (max-width: 767px) { .nav-tooltip, .nav-tooltip-bottom, .nav-tooltip-bottom-right { display:none; } }
   </style>
 </head>
 <body class="bg-brand-bgLight dark:bg-brand-bgDark text-slate-900 dark:text-slate-100 transition-colors duration-300">
@@ -125,20 +71,12 @@
   <script type="text/babel">
     const { useState, useMemo, useEffect, useRef } = React;
 
-    let GLOBAL_API_URL = "";
-    let GLOBAL_API_KEY = "";
-    try {
-        GLOBAL_API_URL = localStorage.getItem('API_URL') || "";
-        GLOBAL_API_KEY = localStorage.getItem('API_KEY') || "";
-    } catch(e) {}
+    let GLOBAL_API_URL = localStorage.getItem('API_URL') || "";
+    let GLOBAL_API_KEY = localStorage.getItem('API_KEY') || "";
 
     const apiCall = async (action, data = {}) => {
         if (!GLOBAL_API_URL || !GLOBAL_API_KEY) throw new Error("Missing Credentials.");
-        const response = await fetch(GLOBAL_API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action, apiKey: GLOBAL_API_KEY, ...data })
-        });
+        const response = await fetch(GLOBAL_API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action, apiKey: GLOBAL_API_KEY, ...data }) });
         const result = await response.json();
         if (result.status === 'error') throw new Error(result.message);
         return result.data;
@@ -146,11 +84,12 @@
 
     const Icon = ({ children, c }) => <svg className={c} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">{children}</svg>;
     const IndianRupee = ({c}) => <Icon c={c}><path d="M6 3h12M6 8h12m-12 5 8.5 8M6 13h3M9 13c6.667 0 6.667-10 0-10"/></Icon>;
+    const RefreshCw = ({c}) => <Icon c={c}><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></Icon>;
     const Plus = ({c}) => <Icon c={c}><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></Icon>;
     const Activity = ({c}) => <Icon c={c}><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></Icon>;
     const PieChart = ({c}) => <Icon c={c}><path d="M21.2 15.9A10 10 0 1 1 8 2.8M22 12A10 10 0 0 0 12 2v10z"/></Icon>;
     const List = ({c}) => <Icon c={c}><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></Icon>;
-    const Sparkles = ({c}) => <Icon c={c}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L12 3Z"/></Icon>;
+    const Sparkles = ({c}) => <Icon c={c}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></Icon>;
     const ArrowUpRight = ({c}) => <Icon c={c}><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></Icon>;
     const ArrowDownRight = ({c}) => <Icon c={c}><line x1="7" y1="7" x2="17" y2="17"/><polyline points="17 7 17 7 17 17"/></Icon>;
     const Repeat = ({c}) => <Icon c={c}><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></Icon>;
@@ -181,7 +120,6 @@
     const formatCompact = (v, p) => p ? '......' : (Math.abs(v)>=100000 ? `₹${(v/100000).toFixed(2)}L` : Math.abs(v)>=1000 ? `₹${(v/1000).toFixed(2)}k` : `₹${Math.round(v)}`);
     const extractTags = (s) => String(s||'').split(/[\s,;]+/).map(t=>t.trim().toLowerCase()).filter(t=>t.length>0&&t!=='#').map(t=>t.startsWith('#')?t:`#${t}`);
 
-    // Data Sweeper Normalizer (Title Case, except for TRANSFER)
     const normalizeCategory = (cat) => {
         if (!cat) return '';
         const upper = String(cat).toUpperCase().trim();
@@ -198,7 +136,7 @@
       return { style: { backgroundColor: '#e06c53' }, className: 'text-white font-black' };
     }
 
-    /* SMART VIRTUAL FOCUS DROPDOWN */
+    /* VIRTUAL FOCUS DROPDOWN */
     function SearchableSelect({ options, value, onChange, placeholder, compact = false, excludedList = [], disabled = false }) {
       const [isOpen, setIsOpen] = useState(false);
       const [search, setSearch] = useState('');
@@ -214,7 +152,6 @@
       }, []);
 
       const filtered = (options||[]).filter(o => String(o).toLowerCase().includes(String(search).toLowerCase()));
-
       useEffect(() => { setHlIdx(-1); }, [search]);
       
       useEffect(() => {
@@ -250,7 +187,7 @@
             <div ref={listRef} className="absolute z-[150] w-full top-full mt-2 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl max-h-48 overflow-y-auto hide-scrollbar">
               {compact && <div className="sticky top-0 bg-white dark:bg-brand-cardDark border-b border-slate-100 dark:border-slate-800 p-2 z-10"><input type="text" autoComplete={autoStr} autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" enterKeyHint="next" onKeyDown={handleKeyDown} value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search..." className="w-full bg-slate-50 dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-3 py-2 text-xs font-semibold outline-none text-slate-900 dark:text-white" /></div>}
               {filtered.length > 0 ? filtered.map((o, i) => {
-                  const isEx = excludedList.includes(o);
+                  const isEx = (excludedList || []).includes(o);
                   return ( <div key={o} onClick={(e) => { e.stopPropagation(); onChange(o); setIsOpen(false); setSearch(''); }} className={`px-4 py-3 border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer text-sm font-bold transition-colors flex justify-between items-center last:border-0 ${i === hlIdx ? 'bg-slate-50 dark:bg-slate-800 text-brand-teal' : (isEx ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-300')}`}><span>{o}</span> {isEx && <EyeOff c="w-3.5 h-3.5 opacity-50" />}</div> )
               }) : <div className="px-4 py-3 text-sm text-slate-400 font-medium text-center">No matches found</div>}
             </div>
@@ -265,10 +202,10 @@
         const [hlIdx, setHlIdx] = useState(-1);
         const listRef = useRef(null);
         
-        const words = value.split(',');
+        const words = String(value || '').split(',');
         const currentWord = words[words.length - 1].trim();
         const search = currentWord.startsWith('#') ? currentWord.slice(1) : currentWord;
-        const filtered = search.length > 0 ? availableTags.filter(t => t.toLowerCase().includes(search.toLowerCase()) && t !== `#${search}`) : [];
+        const filtered = search.length > 0 ? (availableTags || []).filter(t => t.toLowerCase().includes(search.toLowerCase()) && t !== `#${search}`) : [];
 
         useEffect(() => {
             if (filtered.length > 0) setIsOpen(true); else setIsOpen(false);
@@ -318,16 +255,9 @@
     }
 
     function SetupScreen({ onSave }) {
-        const [u, setU] = useState('');
-        const [k, setK] = useState('');
-        const [loading, setLoading] = useState(false);
-        const [errMsg, setErrMsg] = useState('');
-        
+        const [u, setU] = useState(''); const [k, setK] = useState(''); const [loading, setLoading] = useState(false); const [errMsg, setErrMsg] = useState('');
         const handle = async (e) => {
-            e.preventDefault();
-            if (!u.trim() || !k.trim()) return;
-            setLoading(true);
-            setErrMsg('');
+            e.preventDefault(); if (!u.trim() || !k.trim()) return; setLoading(true); setErrMsg('');
             try {
                 const res = await fetch(u.trim(), { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'GET_DATA', apiKey: k.trim() }) });
                 const result = await res.json();
@@ -335,7 +265,6 @@
                 onSave(u.trim(), k.trim(), result.data);
             } catch(error) { setErrMsg("Connection Failed: Incorrect URL or Secret Key."); setLoading(false); }
         };
-
         return (
             <div className="fixed inset-0 z-[300] flex items-center justify-center bg-brand-bgLight dark:bg-brand-bgDark p-4 transition-colors duration-300">
                 <div className="modern-card max-w-sm w-full p-8 animate-slide-up border border-slate-200 dark:border-slate-800 shadow-2xl">
@@ -354,21 +283,28 @@
     }
 
     function LockScreen({ correctPin, onUnlock }) {
-      const [input, setInput] = useState('');
-      const [error, setError] = useState(false);
-      const handlePress = (n) => { setInput(prev => { if (error || prev.length >= correctPin.length) return prev; const newVal = prev + n; if (newVal === correctPin) setTimeout(() => onUnlock(), 150); else if (newVal.length === correctPin.length) { setError(true); setTimeout(() => { setInput(''); setError(false); }, 400); } return newVal; }); };
+      const [input, setInput] = useState(''); const [error, setError] = useState(false); const pinStr = String(correctPin || '');
+      const handlePress = (n) => { 
+          setInput(prev => { 
+              if (error || prev.length >= pinStr.length) return prev; 
+              const newVal = prev + n; 
+              if (newVal === pinStr) setTimeout(() => onUnlock(), 150); 
+              else if (newVal.length === pinStr.length) { setError(true); setTimeout(() => { setInput(''); setError(false); }, 400); } 
+              return newVal; 
+          }); 
+      };
       const handleBackspace = () => setInput(p => error || p.length===0 ? p : p.slice(0, -1));
-      useEffect(() => { const hk = (e) => { if (error) return; if(e.key>='0'&&e.key<='9') handlePress(e.key); else if(e.key==='Backspace'||e.key==='Delete') handleBackspace(); }; window.addEventListener('keydown', hk); return () => window.removeEventListener('keydown', hk); }, [error, correctPin]);
+      useEffect(() => { const hk = (e) => { if (error) return; if(e.key>='0'&&e.key<='9') handlePress(e.key); else if(e.key==='Backspace'||e.key==='Delete') handleBackspace(); }; window.addEventListener('keydown', hk); return () => window.removeEventListener('keydown', hk); }, [error, pinStr]);
       return (
           <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-brand-bgLight dark:bg-brand-bgDark transition-colors duration-300">
               <div className="flex flex-col items-center mb-12 animate-slide-up"><div className="w-16 h-16 bg-brand-teal rounded-2xl flex items-center justify-center text-white mb-6 shadow-md"><LockIcon c="w-8 h-8"/></div><h2 className="text-xl font-black text-slate-800 dark:text-white mb-2">App Locked</h2><p className="text-sm font-bold text-slate-500 dark:text-slate-400">Enter your PIN to continue</p></div>
-              <div className="flex gap-4 mb-12 min-h-[1.5rem]">{Array.from({ length: correctPin.length }).map((_, i) => (<div key={i} className={`w-4 h-4 rounded-full transition-all ${i < input.length ? 'bg-brand-teal scale-110' : 'bg-slate-200 dark:bg-slate-800'} ${error ? 'animate-pulse bg-brand-expense' : ''}`} />))}</div>
+              <div className="flex gap-4 mb-12 min-h-[1.5rem]">{Array.from({ length: pinStr.length || 0 }).map((_, i) => (<div key={i} className={`w-4 h-4 rounded-full transition-all ${i < input.length ? 'bg-brand-teal scale-110' : 'bg-slate-200 dark:bg-slate-800'} ${error ? 'animate-pulse bg-brand-expense' : ''}`} />))}</div>
               <div className="grid grid-cols-3 gap-4 sm:gap-6 max-w-[320px] w-full px-4">{[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => <button key={n} onClick={()=>handlePress(String(n))} className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] flex items-center justify-center text-3xl font-black text-slate-800 dark:text-white bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-800 active:scale-90 mx-auto">{n}</button>)}<div className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px]"></div><button onClick={()=>handlePress('0')} className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] flex items-center justify-center text-3xl font-black text-slate-800 dark:text-white bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-800 active:scale-90 mx-auto">0</button><button onClick={handleBackspace} className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] flex items-center justify-center text-slate-500 dark:text-slate-400 bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-800 active:scale-90 mx-auto"><DeleteIcon c="w-8 h-8"/></button></div>
           </div>
       );
     }
 
-    function SavingsBarChart({ data, height = 250, isDark, isPrivacy }) {
+    function SavingsBarChart({ data = [], height = 250, isDark, isPrivacy }) {
       const isScrollable = data.length > 12;
       const width = isScrollable ? Math.max(600, data.length * 52) : 600;
       const pad = { t: 20, r: 15, b: 25, l: 45 };
@@ -421,7 +357,7 @@
       );
     }
 
-    function AreaChart({ data, height = 250, isDark, isPrivacy }) {
+    function AreaChart({ data = [], height = 250, isDark, isPrivacy }) {
       const [hoverIndex, setHoverIndex] = useState(null);
       const isScrollable = data.length > 12;
       const width = isScrollable ? Math.max(600, data.length * 52) : 600;
@@ -431,12 +367,8 @@
       
       let min = 0, max = 0; 
       data.forEach(d => { 
-        if(d.in>max)max=d.in; 
-        if(d.out>max)max=d.out; 
-        if(d.avail>max)max=d.avail; 
-        if(d.inv>max)max=d.inv; 
-        if(d.avail<min)min=d.avail; 
-        if(d.inv<min)min=d.inv; 
+        if(d.in>max)max=d.in; if(d.out>max)max=d.out; if(d.avail>max)max=d.avail; if(d.inv>max)max=d.inv; 
+        if(d.avail<min)min=d.avail; if(d.inv<min)min=d.inv; 
       }); 
       if(max===0) max=10000; 
       const range = max - min;
@@ -480,7 +412,7 @@
       );
     }
 
-    function TopExpensesList({ data, totalExpense, isPrivacy }) {
+    function TopExpensesList({ data = [], totalExpense, isPrivacy }) {
       if (!data || data.length === 0) return <p className="text-xs text-slate-500 font-bold p-4">No expenses logged.</p>;
       const maxVal = data.length > 0 && data[0].total > 0 ? data[0].total : 1;
       return (
@@ -501,7 +433,7 @@
       );
     }
 
-    function DonutChart({ data, total, selectedCategory, onSelectCategory, isPrivacy }) {
+    function DonutChart({ data = [], total, selectedCategory, onSelectCategory, isPrivacy }) {
       const activeSlice = selectedCategory !== 'All Categories' ? data.find(d => d.name === selectedCategory) : null;
       const size = 180; const radius = 75; const hole = 50; const center = size / 2; let curA = 0;
       const slices = data.map(item => {
@@ -552,7 +484,7 @@
         );
     }
 
-    function InsightsView({ analyticsFiltered, allUniqueCategories, isPrivacy, isDarkMode, chartData }) {
+    function InsightsView({ analyticsFiltered = [], allUniqueCategories = [], isPrivacy, isDarkMode, chartData }) {
         const [insightsCategoryFilter, setInsightsCategoryFilter] = useState('All');
         const insightsData = useMemo(() => insightsCategoryFilter === 'All' ? analyticsFiltered : analyticsFiltered.filter(r => r.category === insightsCategoryFilter), [analyticsFiltered, insightsCategoryFilter]);
         const topTags = useMemo(() => { const map = {}; insightsData.forEach(r => { if (r.rawType !== 'EXPENSE') return; extractTags(r.tags).forEach(t => { map[t] = (map[t]||0) + r.amount; }); }); return Object.entries(map).map(([name, total]) => ({name, total})).sort((a,b) => b.total - a.total).slice(0, 10); }, [insightsData]);
@@ -603,13 +535,13 @@
                       <div className="w-full overflow-x-auto hide-scrollbar pb-2">
                          <table className="w-full text-left whitespace-nowrap min-w-max">
                             <thead>
-                               <tr><th className="py-4 px-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800">Category</th>{categoryTagMatrix.tags.map(t => <th key={t} className="py-4 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center border-b border-slate-100 dark:border-slate-800">{t}</th>)}</tr>
+                               <tr><th className="py-4 px-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800">Category</th>{(categoryTagMatrix.tags||[]).map(t => <th key={t} className="py-4 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center border-b border-slate-100 dark:border-slate-800">{t}</th>)}</tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
-                               {categoryTagMatrix.cats.map(([catName, catData]) => (
+                               {(categoryTagMatrix.cats||[]).map(([catName, catData]) => (
                                   <tr key={catName} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
                                      <td className="py-3 px-5 text-xs font-bold truncate max-w-[140px] sm:max-w-[200px]">{catName}</td>
-                                     {categoryTagMatrix.tags.map(t => {
+                                     {(categoryTagMatrix.tags||[]).map(t => {
                                         const val = catData.tags[t] || 0;
                                         return (
                                            <td key={t} className="p-1.5 text-center">
@@ -618,7 +550,7 @@
                                         )
                                      })}
                                   </tr>
-                               ))}
+                                ))}
                             </tbody>
                          </table>
                       </div>
@@ -628,7 +560,7 @@
         );
     }
 
-    function TransactionModal({ isOpen, onClose, onSave, settings, editData, allAvailableTags, excludedCats, setIsBackgroundSyncing }) {
+    function TransactionModal({ isOpen, onClose, onSave, settings, editData, allAvailableTags, excludedCats = [], setIsBackgroundSyncing }) {
       const [type, setType] = useState('EXPENSE');
       const [date, setDate] = useState('');
       const [amount, setAmount] = useState('');
@@ -686,7 +618,7 @@
         const payload = { row_index: editData ? editData.row_index : null, date, type, amount, description, category: finalCat, account, transfer_to: type === 'TRANSFER' ? transferTo : '', tags, notes };
         
         onSave(prev => {
-            const newTxns = [...prev.transactions]; const fakeId = editData ? editData.row_index : 'temp_' + Date.now();
+            const newTxns = [...(prev.transactions || [])]; const fakeId = editData ? editData.row_index : 'temp_' + Date.now();
             const opt = { ...payload, row_index: fakeId, amount: parseFloat(amount) };
             if (editData) { const idx = newTxns.findIndex(t => t.row_index === editData.row_index); if (idx > -1) newTxns[idx] = opt; } else { newTxns.unshift(opt); }
             return { ...prev, transactions: newTxns };
@@ -754,7 +686,6 @@
       const [exCats, setExCats] = useState(appData.excludedCats||[]);
       const [bals, setBals] = useState(appData.balances||[]);
       
-      // ORIGIN-TRACKING ENGINE FOR BULLETPROOF REORDERING
       const [incCats, setIncCats] = useState([]);
       const [expCats, setExpCats] = useState([]);
       
@@ -805,14 +736,14 @@
          incCats.forEach(c => {
              const cleanVal = normalizeCategory(c.val);
              if (cleanVal !== '') finalIncCats.push(cleanVal);
-             if (c.orig && c.orig !== cleanVal && cleanVal !== '') renames.push({ old: c.orig, new: cleanVal });
+             if (c.orig && normalizeCategory(c.orig) !== cleanVal && cleanVal !== '') renames.push({ old: c.orig, new: cleanVal });
          });
 
          const finalExpCats = [];
          expCats.forEach(c => {
              const cleanVal = normalizeCategory(c.val);
              if (cleanVal !== '') finalExpCats.push(cleanVal);
-             if (c.orig && c.orig !== cleanVal && cleanVal !== '') renames.push({ old: c.orig, new: cleanVal });
+             if (c.orig && normalizeCategory(c.orig) !== cleanVal && cleanVal !== '') renames.push({ old: c.orig, new: cleanVal });
          });
          
          const cleanBals = bals.map(b => ({...b, balance: b.balance === '' ? 0 : parseFloat(b.balance)}));
@@ -820,9 +751,9 @@
          const payload = { excludedCats: exCats, balances: cleanBals, incomeCats: finalIncCats, expenseCats: finalExpCats, categoryRenames: renames, appPin: pin, autoLockTime: lockTime };
          
          onSave(prev => {
-             let updatedTxns = [...prev.transactions];
+             let updatedTxns = [...(prev.transactions || [])];
              renames.forEach(r => {
-                 updatedTxns = updatedTxns.map(t => t.category === r.old ? { ...t, category: r.new } : t);
+                 updatedTxns = updatedTxns.map(t => normalizeCategory(t.category) === normalizeCategory(r.old) ? { ...t, category: r.new } : t);
              });
              return {
                  ...prev,
@@ -899,7 +830,7 @@
                                              <button type="button" onClick={()=>moveCat(i, 'UP', 'INC')} disabled={i===0} className={`p-0.5 rounded ${i===0?'text-slate-200 dark:text-slate-800':'text-slate-400 hover:text-brand-teal'}`}><ChevronUp c="w-3 h-3"/></button>
                                              <button type="button" onClick={()=>moveCat(i, 'DOWN', 'INC')} disabled={i===incCats.length-1} className={`p-0.5 rounded ${i===incCats.length-1?'text-slate-200 dark:text-slate-800':'text-slate-400 hover:text-brand-teal'}`}><ChevronDown c="w-3 h-3"/></button>
                                          </div>
-                                         <input value={item.val} onChange={(e)=>{const n=[...incCats];n[i].val=e.target.value;setIncCats(n);}} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className={`flex-1 min-w-0 bg-transparent outline-none text-sm font-bold px-2 ${isEx?'line-through opacity-50':''}`} />
+                                         <input value={item.val} onChange={(e)=>{const n=[...incCats];n[i]={...n[i], val:e.target.value};setIncCats(n);}} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className={`flex-1 min-w-0 bg-transparent outline-none text-sm font-bold px-2 ${isEx?'line-through opacity-50':''}`} />
                                          <div className="flex gap-2 pr-2 shrink-0 items-center">
                                              <div onClick={()=>setExCats(isEx?exCats.filter(x=>x!==item.val):[...exCats,item.val])} className={`w-9 h-5 flex items-center rounded-full p-1 cursor-pointer transition-colors ${!isEx?'bg-brand-teal':'bg-slate-300 dark:bg-slate-700'}`}><div className={`bg-white w-3 h-3 rounded-full transition-transform ${!isEx?'translate-x-4':''}`}></div></div>
                                              <button type="button" onClick={()=>setIncCats(incCats.filter((_,x)=>x!==i))} className="text-slate-300 hover:text-brand-expense p-1"><Trash2 c="w-4 h-4"/></button>
@@ -921,7 +852,7 @@
                                              <button type="button" onClick={()=>moveCat(i, 'UP', 'EXP')} disabled={i===0} className={`p-0.5 rounded ${i===0?'text-slate-200 dark:text-slate-800':'text-slate-400 hover:text-brand-teal'}`}><ChevronUp c="w-3 h-3"/></button>
                                              <button type="button" onClick={()=>moveCat(i, 'DOWN', 'EXP')} disabled={i===expCats.length-1} className={`p-0.5 rounded ${i===expCats.length-1?'text-slate-200 dark:text-slate-800':'text-slate-400 hover:text-brand-teal'}`}><ChevronDown c="w-3 h-3"/></button>
                                          </div>
-                                         <input value={item.val} onChange={(e)=>{const n=[...expCats];n[i].val=e.target.value;setExpCats(n);}} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className={`flex-1 min-w-0 bg-transparent outline-none text-sm font-bold px-2 ${isEx?'line-through opacity-50':''}`} />
+                                         <input value={item.val} onChange={(e)=>{const n=[...expCats];n[i]={...n[i], val:e.target.value};setExpCats(n);}} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className={`flex-1 min-w-0 bg-transparent outline-none text-sm font-bold px-2 ${isEx?'line-through opacity-50':''}`} />
                                          <div className="flex gap-2 pr-2 shrink-0 items-center">
                                              <div onClick={()=>setExCats(isEx?exCats.filter(x=>x!==item.val):[...exCats,item.val])} className={`w-9 h-5 flex items-center rounded-full p-1 cursor-pointer transition-colors ${!isEx?'bg-brand-teal':'bg-slate-300 dark:bg-slate-700'}`}><div className={`bg-white w-3 h-3 rounded-full transition-transform ${!isEx?'translate-x-4':''}`}></div></div>
                                              <button type="button" onClick={()=>setExpCats(expCats.filter((_,x)=>x!==i))} className="text-slate-300 hover:text-brand-expense p-1"><Trash2 c="w-4 h-4"/></button>
@@ -1016,7 +947,6 @@
       const [isDarkMode, setIsDarkMode] = useState(() => { try { return localStorage.getItem('theme') === 'dark'; } catch(e) { return false; } });
       const [isPrivacyMode, setIsPrivacyMode] = useState(() => { try { const s = localStorage.getItem('privacyMode'); return s !== null ? s === 'true' : true; } catch(e) { return true; } });
 
-      // Mobile Delayed Tooltip System
       const [mobileTooltip, setMobileTooltip] = useState({ text: '', x: 0, y: 0, visible: false, pos: 'top' });
       const touchShowTimer = useRef(null);
       const touchHideTimer = useRef(null);
@@ -1024,9 +954,7 @@
       const handleTouchStart = (text, e, pos = 'top') => {
         if (touchHideTimer.current) clearTimeout(touchHideTimer.current);
         const touch = e.touches[0];
-        let clampX = touch.clientX;
-        if (clampX < 60) clampX = 60;
-        if (clampX > window.innerWidth - 60) clampX = window.innerWidth - 60;
+        let clampX = touch.clientX; if (clampX < 60) clampX = 60; if (clampX > window.innerWidth - 60) clampX = window.innerWidth - 60;
         touchShowTimer.current = setTimeout(() => { setMobileTooltip({ text, x: clampX, y: pos === 'top' ? touch.clientY - 55 : touch.clientY + 45, visible: true, pos }); }, 400);
       };
 
@@ -1037,91 +965,44 @@
 
       useEffect(() => {
         let aT;
-        const rT = () => {
-          if (aT) clearTimeout(aT);
-          if (appData.autoLockTime && appData.autoLockTime !== '0' && isAuthenticated) {
-            aT = setTimeout(() => { setIsAuthenticated(false); }, parseInt(appData.autoLockTime) * 60000);
-          }
-        };
+        const rT = () => { if (aT) clearTimeout(aT); if (appData.autoLockTime && appData.autoLockTime !== '0' && isAuthenticated) { aT = setTimeout(() => { setIsAuthenticated(false); }, parseInt(appData.autoLockTime) * 60000); } };
         const hA = () => rT();
-        ['mousemove','keydown','touchstart','scroll','click'].forEach(e => window.addEventListener(e, hA));
-        rT();
+        ['mousemove','keydown','touchstart','scroll','click'].forEach(e => window.addEventListener(e, hA)); rT();
         return () => { ['mousemove','keydown','touchstart','scroll','click'].forEach(e => window.removeEventListener(e, hA)); if (aT) clearTimeout(aT); };
       }, [appData.autoLockTime, isAuthenticated]);
       
       useEffect(() => { 
           if (!isSetupComplete) return;
-          try {
-            const c = localStorage.getItem('finTrackerCache');
-            if (c) { setAppData(JSON.parse(c)); setIsLoading(false); setIsBackgroundSyncing(true); }
-          } catch(e) {} 
+          try { const c = localStorage.getItem('finTrackerCache'); if (c) { setAppData(JSON.parse(c)); setIsLoading(false); setIsBackgroundSyncing(true); } } catch(e) {} 
           apiCall('GET_DATA').then(res => {
-            setAppData(res);
-            try { localStorage.setItem('finTrackerCache', JSON.stringify(res)); } catch(e) {}
-            setIsLoading(false);
-            setIsBackgroundSyncing(false);
-          }).catch(e => {
-            console.error(e);
-            setIsLoading(false);
-            setIsBackgroundSyncing(false);
-          }); 
+            setAppData(res); try { localStorage.setItem('finTrackerCache', JSON.stringify(res)); } catch(e) {} setIsLoading(false); setIsBackgroundSyncing(false);
+          }).catch(e => { console.error(e); setIsLoading(false); setIsBackgroundSyncing(false); }); 
       }, [isSetupComplete]);
 
-      useEffect(() => {
-        if (appData.transactions.length > 0) {
-          try { localStorage.setItem('finTrackerCache', JSON.stringify(appData)); } catch(e) {}
-        }
-      }, [appData]);
+      useEffect(() => { if (appData.transactions.length > 0) { try { localStorage.setItem('finTrackerCache', JSON.stringify(appData)); } catch(e) {} } }, [appData]);
 
       useEffect(() => {
         const m = document.getElementById("theme-color-meta");
-        if (isDarkMode) {
-          document.documentElement.classList.add('dark');
-          try { localStorage.setItem('theme','dark'); } catch(e) {}
-          if (m) m.setAttribute("content","#1c1917");
-        } else {
-          document.documentElement.classList.remove('dark');
-          try { localStorage.setItem('theme','light'); } catch(e) {}
-          if (m) m.setAttribute("content","#e06c53");
-        }
+        if (isDarkMode) { document.documentElement.classList.add('dark'); try { localStorage.setItem('theme','dark'); } catch(e) {} if (m) m.setAttribute("content","#1c1917"); } 
+        else { document.documentElement.classList.remove('dark'); try { localStorage.setItem('theme','light'); } catch(e) {} if (m) m.setAttribute("content","#e06c53"); }
       }, [isDarkMode]);
 
       useEffect(() => {
-        if (isPrivacyMode) {
-          document.body.classList.add('privacy-active');
-          try { localStorage.setItem('privacyMode','true'); } catch(e) {}
-        } else {
-          document.body.classList.remove('privacy-active');
-          try { localStorage.setItem('privacyMode','false'); } catch(e) {}
-        }
+        if (isPrivacyMode) { document.body.classList.add('privacy-active'); try { localStorage.setItem('privacyMode','true'); } catch(e) {} } 
+        else { document.body.classList.remove('privacy-active'); try { localStorage.setItem('privacyMode','false'); } catch(e) {} }
       }, [isPrivacyMode]);
 
       const handleManualRefresh = () => {
         setIsBackgroundSyncing(true);
-        apiCall('GET_DATA').then(res => {
-          setAppData(res);
-          try { localStorage.setItem('finTrackerCache', JSON.stringify(res)); } catch(e) {}
-          setIsBackgroundSyncing(false);
-        }).catch(e => {
-          setTimeout(() => setIsBackgroundSyncing(false), 800);
-        });
+        apiCall('GET_DATA').then(res => { setAppData(res); try { localStorage.setItem('finTrackerCache', JSON.stringify(res)); } catch(e) {} setIsBackgroundSyncing(false); }).catch(e => { setTimeout(() => setIsBackgroundSyncing(false), 800); });
       };
 
       const handleSort = (k) => setSortConfig(p => ({ key: k, direction: p.key===k && p.direction==='desc' ? 'asc' : 'desc' }));
       const SortIcon = ({ colKey }) => sortConfig.key !== colKey ? <div className="w-3 h-3 opacity-0"></div> : (sortConfig.direction === 'asc' ? <ChevronUp c="w-3 h-3 text-brand-teal" /> : <ChevronDown c="w-3 h-3 text-brand-teal" />);
 
-      // NORMALIZE CATEGORIES IMMEDIATELY ON PARSE
-      const parsedData = useMemo(() => appData.transactions.map((r, i) => { 
+      const parsedData = useMemo(() => (appData.transactions || []).map((r, i) => { 
           const d = new Date(r.date); 
-          return { 
-              ...r, 
-              id: i, 
-              amount: parseAmt(r.amount), 
-              monthIdx: isNaN(d.getMonth()) ? -1 : d.getMonth(), 
-              year: isNaN(d.getFullYear()) ? -1 : d.getFullYear(), 
-              rawType: String(r.type||'').toUpperCase(),
-              category: normalizeCategory(r.category)
-          }; 
+          return { ...r, id: i, amount: parseAmt(r.amount), monthIdx: isNaN(d.getMonth()) ? -1 : d.getMonth(), year: isNaN(d.getFullYear()) ? -1 : d.getFullYear(), rawType: String(r.type||'').toUpperCase(), category: normalizeCategory(r.category) }; 
       }).filter(r => r.amount > 0 && r.year !== -1).sort((a,b) => new Date(b.date) - new Date(a.date)), [appData.transactions]);
 
       const activeData = useMemo(() => { const ex = appData.excludedCats || []; return parsedData.filter(t => !ex.includes(t.category)); }, [parsedData, appData.excludedCats]);
@@ -1132,7 +1013,6 @@
          if (ledgerTypeFilter === 'EXPENSE') defined = appData?.settings?.expenseCats || [];
          else if (ledgerTypeFilter === 'INCOME') defined = appData?.settings?.incomeCats || [];
          else defined = Array.from(new Set([...(appData?.settings?.incomeCats||[]), ...(appData?.settings?.expenseCats||[])]));
-         
          const historical = Array.from(new Set(parsedData.filter(d => d.rawType !== 'TRANSFER').map(d => d.category))).filter(Boolean);
          const extras = historical.filter(c => !defined.includes(c) && c !== 'TRANSFER').sort();
          return ['All Categories', ...defined, ...extras];
@@ -1150,28 +1030,18 @@
             else if (r.rawType === 'EXPENSE') aggs[k].out += r.amount;
           });
           let run = 0;
-          return Object.keys(aggs).sort().map(k => {
-            const m = aggs[k];
-            const avail = run + m.in;
-            run += (m.in - m.out - m.inv);
-            return { ...m, avail, key: k };
-          });
+          return Object.keys(aggs).sort().map(k => { const m = aggs[k]; const avail = run + m.in; run += (m.in - m.out - m.inv); return { ...m, avail, key: k }; });
       }, [activeData]);
 
       const filterByPeriod = (dStr, y, mIdx) => {
-          const d = parseDateLocal(dStr);
-          const { year, monthIdx } = latestInfo;
+          const d = parseDateLocal(dStr); const { year, monthIdx } = latestInfo;
           if (period === 'This Month') return y === year && mIdx === monthIdx;
           if (period === 'Last Month') return y === (monthIdx === 0 ? year-1 : year) && mIdx === (monthIdx === 0 ? 11 : monthIdx-1);
           if (period === '3M') return d >= new Date(year, monthIdx - 2, 1) && d <= new Date(year, monthIdx + 1, 0);
           if (period === '6M') return d >= new Date(year, monthIdx - 5, 1) && d <= new Date(year, monthIdx + 1, 0);
           if (period === 'YTD') return y === year && mIdx <= monthIdx;
           if (period === '12M') return d >= new Date(year, monthIdx - 11, 1) && d <= new Date(year, monthIdx + 1, 0);
-          if (period === 'Custom') {
-            if (customFrom && d < parseDateLocal(customFrom)) return false;
-            if (customTo && d > parseDateLocal(customTo)) return false;
-            return true;
-          }
+          if (period === 'Custom') { if (customFrom && d < parseDateLocal(customFrom)) return false; if (customTo && d > parseDateLocal(customTo)) return false; return true; }
           return true;
       };
 
@@ -1184,8 +1054,7 @@
         if (ledgerAccountFilter !== 'All') f = f.filter(r => r.account === ledgerAccountFilter || r.transfer_to === ledgerAccountFilter);
         if (ledgerTagFilter) f = f.filter(r => extractTags(r.tags).includes(ledgerTagFilter));
         if (searchQ) {
-          const q = searchQ.toLowerCase().trim();
-          const isNum = !isNaN(q) && q !== '';
+          const q = searchQ.toLowerCase().trim(); const isNum = !isNaN(q) && q !== '';
           f = f.filter(r => {
              const matchText = `${String(r.description||'')} ${String(r.category||'')} ${String(r.tags||'')} ${String(r.notes||'')} ${String(r.account||'')} ${String(r.transfer_to||'')}`.toLowerCase().includes(q);
              const matchNum = isNum ? String(r.amount).includes(q) || Number(r.amount) === Number(q) : false;
@@ -1196,57 +1065,34 @@
       }, [parsedData, searchQ, ledgerCategoryFilter, ledgerTagFilter, ledgerTypeFilter, ledgerAccountFilter, period, latestInfo, customFrom, customTo]);
 
       const selectedSum = useMemo(() => ledgerFiltered.filter(t => selectedRows.includes(t.row_index)).reduce((s, t) => {
-        if (t.rawType === 'TRANSFER') return s;
-        return s + (t.rawType === 'INCOME' ? t.amount : -t.amount);
+        if (t.rawType === 'TRANSFER') return s; return s + (t.rawType === 'INCOME' ? t.amount : -t.amount);
       }, 0), [selectedRows, ledgerFiltered]);
 
       const groupedLedger = useMemo(() => {
-          const grps = {};
-          const cy = new Date().getFullYear()*100 + new Date().getMonth();
+          const grps = {}; const cy = new Date().getFullYear()*100 + new Date().getMonth();
           ledgerFiltered.forEach(t => {
-            const d = parseDateLocal(t.date);
-            const y = isNaN(d.getTime()) ? '' : d.getFullYear();
-            const lbl = isNaN(d.getTime()) ? 'Unknown' : `${MONTH_NAMES_FULL[d.getMonth()]} ${y}`;
-            const sK = isNaN(d.getTime()) ? 0 : y*100+d.getMonth();
+            const d = parseDateLocal(t.date); const y = isNaN(d.getTime()) ? '' : d.getFullYear(); const lbl = isNaN(d.getTime()) ? 'Unknown' : `${MONTH_NAMES_FULL[d.getMonth()]} ${y}`; const sK = isNaN(d.getTime()) ? 0 : y*100+d.getMonth();
             if (!grps[lbl]) grps[lbl] = { label: lbl, sortKey: sK, isCurrentMonth: sK===cy, entries: [], count: 0, spent: 0, invested: 0 };
-            grps[lbl].entries.push(t);
-            grps[lbl].count++;
-            if (t.rawType==='EXPENSE') {
-              if (t.category && String(t.category).toLowerCase()==='investment') grps[lbl].invested += t.amount;
-              else grps[lbl].spent += t.amount;
-            }
+            grps[lbl].entries.push(t); grps[lbl].count++;
+            if (t.rawType==='EXPENSE') { if (t.category && String(t.category).toLowerCase()==='investment') grps[lbl].invested += t.amount; else grps[lbl].spent += t.amount; }
           });
           const arr = Object.values(grps).sort((a,b) => b.sortKey - a.sortKey);
           arr.forEach(g => g.entries.sort((a,b) => {
-            let vA = a[sortConfig.key];
-            let vB = b[sortConfig.key];
-            if (sortConfig.key==='amount') { vA = parseFloat(vA)||0; vB = parseFloat(vB)||0; }
-            else if (sortConfig.key==='date') { vA = new Date(vA).getTime(); vB = new Date(vB).getTime(); }
-            else { vA = String(vA||'').toLowerCase(); vB = String(vB||'').toLowerCase(); }
-            if (vA < vB) return sortConfig.direction==='asc' ? -1 : 1;
-            if (vA > vB) return sortConfig.direction==='asc' ? 1 : -1;
-            return 0;
+            let vA = a[sortConfig.key]; let vB = b[sortConfig.key];
+            if (sortConfig.key==='amount') { vA = parseFloat(vA)||0; vB = parseFloat(vB)||0; } else if (sortConfig.key==='date') { vA = new Date(vA).getTime(); vB = new Date(vB).getTime(); } else { vA = String(vA||'').toLowerCase(); vB = String(vB||'').toLowerCase(); }
+            if (vA < vB) return sortConfig.direction==='asc' ? -1 : 1; if (vA > vB) return sortConfig.direction==='asc' ? 1 : -1; return 0;
           }));
           return arr;
       }, [ledgerFiltered, sortConfig]);
 
-      useEffect(() => {
-        if (groupedLedger.length > 0 && Object.keys(expandedGroups).length === 0) {
-          setExpandedGroups({ [groupedLedger[0].label]: true });
-        }
-      }, [groupedLedger]);
+      useEffect(() => { if (groupedLedger.length > 0 && Object.keys(expandedGroups).length === 0) setExpandedGroups({ [groupedLedger[0].label]: true }); }, [groupedLedger]);
 
       const toggleGroup = (label) => { setExpandedGroups(prev => ({ ...prev, [label]: !prev[label] })); };
 
       const isAllCollapsed = groupedLedger.length > 0 && groupedLedger.every(g => !expandedGroups[g.label]);
       const toggleExpandCollapseAll = () => {
-        if (isAllCollapsed || Object.values(expandedGroups).filter(v=>v).length === 0) {
-          const allExpanded = {};
-          groupedLedger.forEach(g => allExpanded[g.label] = true);
-          setExpandedGroups(allExpanded);
-        } else {
-          setExpandedGroups({});
-        }
+        if (isAllCollapsed || Object.values(expandedGroups).filter(v=>v).length === 0) { const allExpanded = {}; groupedLedger.forEach(g => allExpanded[g.label] = true); setExpandedGroups(allExpanded); } 
+        else setExpandedGroups({});
       };
 
       const mIN = analyticsFiltered.filter(r => r.rawType === 'INCOME').reduce((a,b) => a + b.amount, 0);
@@ -1255,26 +1101,15 @@
       const savRate = mIN > 0 ? (((mIN - mOUT) / mIN) * 100).toFixed(1) : 0;
 
       const accountBalances = useMemo(() => {
-        const balsObj = {};
-        const safeAccounts = appData?.settings?.accounts||[];
+        const balsObj = {}; const safeAccounts = appData?.settings?.accounts||[];
         safeAccounts.forEach(a => {
-            const snaps = (appData.balances || []).filter(b => b.account === a);
-            snaps.sort((x, y) => parseDateLocal(y.date) - parseDateLocal(x.date));
-            const latest = snaps[0];
-            balsObj[a] = {
-                current: latest && latest.balance !== '' ? parseFloat(latest.balance) : 0,
-                startDate: latest ? parseDateLocal(latest.date) : new Date('1970-01-01')
-            };
+            const snaps = (appData.balances || []).filter(b => b.account === a); snaps.sort((x, y) => parseDateLocal(y.date) - parseDateLocal(x.date)); const latest = snaps[0];
+            balsObj[a] = { current: latest && latest.balance !== '' ? parseFloat(latest.balance) : 0, startDate: latest ? parseDateLocal(latest.date) : new Date('1970-01-01') };
         });
         activeData.forEach(t => {
             const d = parseDateLocal(t.date);
-            if (balsObj[t.account] && d >= balsObj[t.account].startDate) {
-                if (t.rawType === 'INCOME') balsObj[t.account].current += t.amount;
-                else if (t.rawType === 'EXPENSE' || t.rawType === 'TRANSFER') balsObj[t.account].current -= t.amount;
-            }
-            if (t.rawType === 'TRANSFER' && balsObj[t.transfer_to] && d >= balsObj[t.transfer_to].startDate) {
-                balsObj[t.transfer_to].current += t.amount;
-            }
+            if (balsObj[t.account] && d >= balsObj[t.account].startDate) { if (t.rawType === 'INCOME') balsObj[t.account].current += t.amount; else if (t.rawType === 'EXPENSE' || t.rawType === 'TRANSFER') balsObj[t.account].current -= t.amount; }
+            if (t.rawType === 'TRANSFER' && balsObj[t.transfer_to] && d >= balsObj[t.transfer_to].startDate) balsObj[t.transfer_to].current += t.amount;
         });
         return balsObj;
       }, [activeData, appData.balances, appData.settings]);
@@ -1282,29 +1117,18 @@
       const totalBalance = Object.values(accountBalances).reduce((s, a) => s + a.current, 0);
       const chartData = useMemo(() => monthlyAggsForAllTime.filter(r => filterByPeriod(new Date(r.year, r.monthIdx, 1), r.year, r.monthIdx)), [monthlyAggsForAllTime, period, latestInfo, customFrom, customTo]);
       const topMerchants = useMemo(() => {
-        const m = {};
-        analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => {
-          const d = String(r.description || 'Unknown');
-          if (!m[d]) m[d] = { name: d, cat: r.category, total: 0 };
-          m[d].total += r.amount;
-        });
+        const m = {}; analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { const d = String(r.description || 'Unknown'); if (!m[d]) m[d] = { name: d, cat: r.category, total: 0 }; m[d].total += r.amount; });
         return Object.values(m).sort((a,b) => b.total - a.total).slice(0, 10);
       }, [analyticsFiltered]);
 
       const categorySplitData = useMemo(() => {
-        const map = {};
-        analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { 
-            const cat = String(r.category || 'Uncategorized'); if (!map[cat]) map[cat] = 0; map[cat] += r.amount; 
-        });
+        const map = {}; analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { const cat = String(r.category || 'Uncategorized'); if (!map[cat]) map[cat] = 0; map[cat] += r.amount; });
         const colors = ['#e06c53', '#cb5a42', '#1d8b4e', '#f59e0b', '#2563eb', '#ec4899', '#8b5cf6', '#14b8a6'];
         return Object.entries(map).map(([name, value], idx) => ({ name, value, color: colors[idx % colors.length] })).sort((a, b) => b.value - a.value);
       }, [analyticsFiltered]);
 
       const accountSplitData = useMemo(() => {
-        const map = {};
-        analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { 
-            const acc = String(r.account || 'Cash/Other'); if (!map[acc]) map[acc] = 0; map[acc] += r.amount; 
-        });
+        const map = {}; analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { const acc = String(r.account || 'Cash/Other'); if (!map[acc]) map[acc] = 0; map[acc] += r.amount; });
         return Object.entries(map).map(([acc, total]) => ({ acc, total })).sort((a, b) => b.total - a.total);
       }, [analyticsFiltered]);
 
@@ -1314,19 +1138,9 @@
         if (!expenses.length) return { topCategories: [], monthCols: [], matrix: {}, maxVal: 0 };
         
         const catTotals = {}; const catMonthMatrix = {};
-        expenses.forEach(row => {
-          const cat = String(row.category || 'Uncategorized');
-          if (!catTotals[cat]) { catTotals[cat] = 0; catMonthMatrix[cat] = {}; }
-          catTotals[cat] += row.amount; const mKey = MONTH_NAMES[row.monthIdx];
-          if (!catMonthMatrix[cat][mKey]) catMonthMatrix[cat][mKey] = 0; catMonthMatrix[cat][mKey] += row.amount;
-        });
-        
-        const topCategories = Object.keys(catTotals).sort((a, b) => catTotals[b] - catTotals[a]).slice(0, 10);
-        const activeMonthIndices = Array.from(new Set(expenses.map(r => r.monthIdx))).sort((a,b) => a - b);
-        const monthCols = activeMonthIndices.map(mIdx => ({ index: mIdx, key: MONTH_NAMES[mIdx], label: MONTH_NAMES[mIdx] }));
-        
-        let maxVal = 0;
-        topCategories.forEach(cat => { monthCols.forEach(m => { const val = (catMonthMatrix[cat] && catMonthMatrix[cat][m.key]) || 0; if (val > maxVal) maxVal = val; }); });
+        expenses.forEach(row => { const cat = String(row.category || 'Uncategorized'); if (!catTotals[cat]) { catTotals[cat] = 0; catMonthMatrix[cat] = {}; } catTotals[cat] += row.amount; const mKey = MONTH_NAMES[row.monthIdx]; if (!catMonthMatrix[cat][mKey]) catMonthMatrix[cat][mKey] = 0; catMonthMatrix[cat][mKey] += row.amount; });
+        const topCategories = Object.keys(catTotals).sort((a, b) => catTotals[b] - catTotals[a]).slice(0, 10); const activeMonthIndices = Array.from(new Set(expenses.map(r => r.monthIdx))).sort((a,b) => a - b); const monthCols = activeMonthIndices.map(mIdx => ({ index: mIdx, key: MONTH_NAMES[mIdx], label: MONTH_NAMES[mIdx] }));
+        let maxVal = 0; topCategories.forEach(cat => { monthCols.forEach(m => { const val = (catMonthMatrix[cat] && catMonthMatrix[cat][m.key]) || 0; if (val > maxVal) maxVal = val; }); });
         return { topCategories, monthCols, matrix: catMonthMatrix, maxVal };
       }, [analyticsFiltered, analyticsCategory]);
 
@@ -1336,35 +1150,18 @@
       const handleSelectAll = (e) => setSelectedRows(e.target.checked ? ledgerFiltered.map(t=>t.row_index) : []);
 
       const executeBulkAction = (updates) => {
-        setIsBackgroundSyncing(true);
-        const isDel = bulkModal.action === 'DELETE';
-        setAppData(p => {
-          let n = [...p.transactions];
-          if (isDel) n = n.filter(t => !selectedRows.includes(t.row_index));
-          else n = n.map(t => selectedRows.includes(t.row_index) ? { ...t, ...updates } : t);
-          return { ...p, transactions: n };
-        });
-        setBulkModal({ isOpen: false, action: null });
-        setSelectedRows([]);
-        setIsActionsMenuOpen(false);
-        apiCall('BULK_ACTION', { actionType: isDel ? 'DELETE' : 'UPDATE', rowIndices: selectedRows, updates: updates || {} })
-          .then(res => { setAppData(res); setIsBackgroundSyncing(false); })
-          .catch(e => setIsBackgroundSyncing(false));
+        setIsBackgroundSyncing(true); const isDel = bulkModal.action === 'DELETE';
+        setAppData(p => { let n = [...(p.transactions || [])]; if (isDel) n = n.filter(t => !selectedRows.includes(t.row_index)); else n = n.map(t => selectedRows.includes(t.row_index) ? { ...t, ...updates } : t); return { ...p, transactions: n }; });
+        setBulkModal({ isOpen: false, action: null }); setSelectedRows([]); setIsActionsMenuOpen(false);
+        apiCall('BULK_ACTION', { actionType: isDel ? 'DELETE' : 'UPDATE', rowIndices: selectedRows, updates: updates || {} }).then(res => { setAppData(res); setIsBackgroundSyncing(false); }).catch(e => setIsBackgroundSyncing(false));
       };
 
       const executeDeleteSingle = () => {
-         if (!deleteModalId) return;
-         setIsBackgroundSyncing(true);
-         const id = deleteModalId;
-         setAppData(p => ({ ...p, transactions: p.transactions.filter(t => t.row_index !== id) }));
-         setSelectedRows(p => p.filter(r => r !== id));
-         setDeleteModalId(null);
-         apiCall('BULK_ACTION', { actionType: 'DELETE', rowIndices: [id], updates: {} })
-          .then(res => { setAppData(res); setIsBackgroundSyncing(false); })
-          .catch(e => setIsBackgroundSyncing(false));
+         if (!deleteModalId) return; setIsBackgroundSyncing(true); const id = deleteModalId;
+         setAppData(p => ({ ...p, transactions: (p.transactions||[]).filter(t => t.row_index !== id) })); setSelectedRows(p => p.filter(r => r !== id)); setDeleteModalId(null);
+         apiCall('BULK_ACTION', { actionType: 'DELETE', rowIndices: [id], updates: {} }).then(res => { setAppData(res); setIsBackgroundSyncing(false); }).catch(e => setIsBackgroundSyncing(false));
       };
 
-      // Smart Contextual Bulk Edit Engine
       const selectedTxns = useMemo(() => ledgerFiltered.filter(t => selectedRows.includes(t.row_index)), [selectedRows, ledgerFiltered]);
       const selectedTypes = useMemo(() => new Set(selectedTxns.map(t => t.rawType)), [selectedTxns]);
       const canRecategorize = !selectedTypes.has('TRANSFER') && selectedTypes.size === 1;
@@ -1379,11 +1176,8 @@
       return (
         <div className="flex flex-col md:flex-row h-screen overflow-hidden bg-brand-bgLight dark:bg-brand-bgDark transition-colors duration-300 relative">
 
-          {/* Floating Mobile Delay Tooltip */}
           {mobileTooltip.visible && (
-            <div className="fixed z-[150] px-2 py-1 bg-slate-800 dark:bg-slate-700 text-white text-[10px] font-bold tracking-wider uppercase rounded-md shadow-lg pointer-events-none -translate-x-1/2 transition-opacity duration-200" style={{ left: `${mobileTooltip.x}px`, top: `${mobileTooltip.y}px` }}>
-              {mobileTooltip.text}
-            </div>
+            <div className="fixed z-[150] px-2 py-1 bg-slate-800 dark:bg-slate-700 text-white text-[10px] font-bold tracking-wider uppercase rounded-md shadow-lg pointer-events-none -translate-x-1/2 transition-opacity duration-200" style={{ left: `${mobileTooltip.x}px`, top: `${mobileTooltip.y}px` }}>{mobileTooltip.text}</div>
           )}
 
           <nav className="shrink-0 w-full md:w-[76px] md:h-full bg-white dark:bg-brand-cardDark md:bg-white md:dark:bg-brand-sidebar z-40 flex flex-row md:flex-col items-center shadow-[0_-10px_40px_rgba(0,0,0,0.03)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.4)] md:shadow-none transition-colors border-t border-slate-200 dark:border-slate-800 md:border-t-0 md:border-r py-2 md:py-6 pb-safe justify-around md:justify-start gap-0 md:gap-4 overflow-visible fixed md:relative bottom-0 left-0">
@@ -1407,7 +1201,7 @@
                     {appData.appPin && <button onClick={() => setIsAuthenticated(false)} onTouchStart={(e) => handleTouchStart('Lock App', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><LockIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Lock App</span></button>}
                     <button onClick={() => setIsPrivacyMode(!isPrivacyMode)} onTouchStart={(e) => handleTouchStart('Privacy Mode', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${isPrivacyMode ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`}>{isPrivacyMode ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Privacy</span></button>
                     <button onClick={() => setIsDarkMode(!isDarkMode)} onTouchStart={(e) => handleTouchStart('Toggle Theme', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800">{isDarkMode ? <Sun c="w-4 h-4"/> : <Moon c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Theme</span></button>
-                    <button onClick={() => setActiveTab('settings')} onTouchStart={(e) => handleTouchStart('Settings', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`}><SettingsIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Settings</span></button>
+                    <button onClick={() => setActiveTab('settings')} onTouchStart={(e) => handleTouchStart('Settings', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`><SettingsIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Settings</span></button>
                  </div>
               </div>
 
@@ -1498,7 +1292,6 @@
                      )}
                   </div>
                   
-                  {/* Desktop Ledger Header */}
                   {groupedLedger.length > 0 && (
                     <div className="hidden lg:grid grid-cols-[2.5rem_6rem_12rem_8rem_1fr_10rem_5rem] gap-4 px-6 py-3 mt-6 items-center text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest border-b border-slate-200 dark:border-slate-800">
                       <div className="flex items-center justify-center nav-item relative group">
@@ -1511,21 +1304,17 @@
                       <div className="min-w-0 px-4 cursor-pointer hover:text-brand-teal flex items-center gap-1 select-none" onClick={() => handleSort('description')}>Description <SortIcon colKey="description"/></div>
                       <div className="shrink-0 cursor-pointer hover:text-brand-teal flex items-center gap-1 select-none" onClick={() => handleSort('account')}>Account <SortIcon colKey="account"/></div>
                       <div className="flex items-center justify-end nav-item relative group">
-                        <button onClick={toggleExpandCollapseAll} className="p-1.5 text-slate-400 hover:text-brand-teal transition-colors">
-                          <ChevronsUpDown c="w-4 h-4"/>
-                        </button>
+                        <button onClick={toggleExpandCollapseAll} className="p-1.5 text-slate-400 hover:text-brand-teal transition-colors"><ChevronsUpDown c="w-4 h-4"/></button>
                         <span className="nav-tooltip-bottom">{isAllCollapsed || Object.values(expandedGroups).filter(v=>v).length === 0 ? 'Expand All' : 'Collapse All'}</span>
                       </div>
                     </div>
                   )}
 
-                  {/* Mobile Compact Ledger Header With Even Spacing */}
                   {groupedLedger.length > 0 && (
                     <div className="lg:hidden flex items-center px-4 py-2.5 mt-4 border-b border-slate-200 dark:border-slate-800 gap-2">
                        <div className="flex items-center justify-center shrink-0">
                           <input type="checkbox" checked={selectedRows.length > 0 && selectedRows.length === ledgerFiltered.length} onChange={handleSelectAll} className="custom-check" />
                        </div>
-                       
                        <div className="flex-1 flex items-center justify-between text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wide px-1">
                           <div className="shrink-0 cursor-pointer flex items-center gap-0.5 hover:text-brand-teal select-none" onClick={() => handleSort('date')}>Date <SortIcon colKey="date"/></div>
                           <div className="shrink-0 cursor-pointer flex items-center gap-0.5 hover:text-brand-teal select-none" onClick={() => handleSort('category')}>Cat <SortIcon colKey="category"/></div>
@@ -1533,7 +1322,6 @@
                           <div className="shrink-0 cursor-pointer flex items-center gap-0.5 hover:text-brand-teal select-none" onClick={() => handleSort('description')}>Desc <SortIcon colKey="description"/></div>
                           <div className="shrink-0 cursor-pointer flex items-center gap-0.5 hover:text-brand-teal select-none" onClick={() => handleSort('account')}>Acc <SortIcon colKey="account"/></div>
                        </div>
-
                        <button onClick={toggleExpandCollapseAll} onTouchStart={(e) => handleTouchStart(isAllCollapsed || Object.values(expandedGroups).filter(v=>v).length === 0 ? 'Expand All' : 'Collapse All', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="p-1.5 text-slate-400 hover:text-brand-teal transition-colors shrink-0 bg-slate-50 dark:bg-slate-800 rounded-lg">
                           <ChevronsUpDown c="w-4 h-4"/>
                        </button>
@@ -1593,10 +1381,13 @@
                                               </div>
                                            </div>
                                            <div className="hidden lg:grid grid-cols-[2.5rem_6rem_12rem_8rem_1fr_10rem_5rem] gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                                              <div className="flex items-center justify-center">
-                                                <input type="checkbox" checked={selectedRows.includes(t.row_index)} onChange={() => handleSelectRow(t.row_index)} className="custom-check" />
-                                              </div>
-                                              <div className="text-xs font-bold text-slate-500 dark:text-slate-400">{formatDateStr(t.date)}</div><div className="flex flex-col items-start justify-center min-w-0 pr-2">{t.category && <span className={`text-[10px] font-bold px-2 py-1 rounded-lg truncate max-w-full ${badgeClass}`}>{t.category}</span>}</div><div className={`text-right text-sm font-black blur-money ${amtColor}`}>{sign}{formatINR(t.amount, isPrivacyMode)}</div><div className="flex flex-col min-w-0 px-4"><span className="text-sm font-extrabold truncate">{t.description}</span>{t.notes && <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">{t.notes}</span>}{txTags.length > 0 && <span className="text-[10px] text-brand-teal font-bold truncate mt-0.5">{txTags.join(' ')}</span>}</div><div className="text-xs font-bold text-slate-600 dark:text-slate-400 truncate flex items-center gap-1.5">{isTRF ? <Repeat c="w-3 h-3 text-slate-400 shrink-0"/> : <Wallet c="w-3 h-3 text-slate-400 shrink-0"/>}<span className="truncate">{isTRF ? `${t.account} ➔ ${t.transfer_to}` : t.account}</span></div><div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity"><button onClick={() => handleOpenEditTxn(t)} className="p-1.5 text-slate-400 hover:text-brand-teal bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg"><EditPencil c="w-3.5 h-3.5" /></button><button onClick={() => setDeleteModalId(t.row_index)} className="p-1.5 text-slate-400 hover:text-brand-expense bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 shadow-sm hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg"><Trash2 c="w-3.5 h-3.5" /></button></div>
+                                              <div className="flex items-center justify-center"><input type="checkbox" checked={selectedRows.includes(t.row_index)} onChange={() => handleSelectRow(t.row_index)} className="custom-check" /></div>
+                                              <div className="text-xs font-bold text-slate-500 dark:text-slate-400">{formatDateStr(t.date)}</div>
+                                              <div className="flex flex-col items-start justify-center min-w-0 pr-2">{t.category && <span className={`text-[10px] font-bold px-2 py-1 rounded-lg truncate max-w-full ${badgeClass}`}>{t.category}</span>}</div>
+                                              <div className={`text-right text-sm font-black blur-money ${amtColor}`}>{sign}{formatINR(t.amount, isPrivacyMode)}</div>
+                                              <div className="flex flex-col min-w-0 px-4"><span className="text-sm font-extrabold truncate">{t.description}</span>{t.notes && <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">{t.notes}</span>}{txTags.length > 0 && <span className="text-[10px] text-brand-teal font-bold truncate mt-0.5">{txTags.join(' ')}</span>}</div>
+                                              <div className="text-xs font-bold text-slate-600 dark:text-slate-400 truncate flex items-center gap-1.5">{isTRF ? <Repeat c="w-3 h-3 text-slate-400 shrink-0"/> : <Wallet c="w-3 h-3 text-slate-400 shrink-0"/>}<span className="truncate">{isTRF ? `${t.account} ➔ ${t.transfer_to}` : t.account}</span></div>
+                                              <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity"><button onClick={() => handleOpenEditTxn(t)} className="p-1.5 text-slate-400 hover:text-brand-teal bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg"><EditPencil c="w-3.5 h-3.5" /></button><button onClick={() => setDeleteModalId(t.row_index)} className="p-1.5 text-slate-400 hover:text-brand-expense bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 shadow-sm hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg"><Trash2 c="w-3.5 h-3.5" /></button></div>
                                            </div>
                                         </div>
                                       );
@@ -1616,7 +1407,6 @@
             </div>
           </main>
 
-          {/* Centered Bulk Edit Bar */}
           {selectedRows.length > 0 && activeTab === 'ledger' && (
              <div className="fixed bottom-[88px] md:bottom-8 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-max z-50 animate-slide-up mx-auto">
                 <div className="bg-white dark:bg-brand-sidebar shadow-[0_8px_30px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.5)] rounded-2xl border border-slate-200 dark:border-slate-700/50 flex flex-row items-center p-2 relative">
