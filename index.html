@@ -11,26 +11,24 @@
   <link rel="manifest" href="manifest.json">
   <title>FinTrack</title>
   
-  <link rel="icon" type="image/png" href="Icon-192.png">
-  <link rel="apple-touch-icon" href="Icon-192.png">
-
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => { try { navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW:', e)); } catch(e) {} });
     }
   </script>
 
-  <style>#crash-log{display:none;padding:20px;color:#ef4444;background:#fee2e2;font-family:monospace;font-size:12px;font-weight:bold;height:100vh;width:100vw;overflow:auto;}</style>
-  <script>window.onerror=function(m,s,l,c,e){console.error("Caught:", m, l);};</script>
+  <style>#crash-log{display:none;padding:20px;color:#ef4444;background:#fee2e2;font-family:monospace;font-size:12px;font-weight:bold;height:100vh;width:100vw;overflow:auto;position:fixed;z-index:9999;top:0;left:0;}</style>
+  <script>window.onerror=function(m,s,l,c,e){var lg=document.getElementById('crash-log');if(lg){lg.style.display='block';lg.innerHTML+='<br/>ERROR: '+m+' at line '+l+':'+c;}console.error("Caught:",m,l,e);};</script>
   <script>try{if(localStorage.getItem('theme')==='dark'||(!('theme' in localStorage)&&window.matchMedia('(prefers-color-scheme: dark)').matches)){document.documentElement.classList.add('dark');let m=document.getElementById('theme-color-meta');if(m)m.setAttribute("content","#1c1917");}else{document.documentElement.classList.remove('dark');let m=document.getElementById('theme-color-meta');if(m)m.setAttribute("content","#e06c53");}}catch(e){}</script>
+  
   <script src="https://cdn.tailwindcss.com"></script>
   <script>tailwind.config={darkMode:'class',theme:{extend:{colors:{brand:{bgLight:'#faf6f3',bgDark:'#1c1917',sidebar:'#292524',sidebarHover:'#44403c',cardLight:'#ffffff',cardDark:'#292524',teal:'#e06c53',tealHover:'#c2553d',expense:'#ef4444',income:'#22c55e',transfer:'#f59e0b'}}}}}</script>
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
-    
     * { -webkit-tap-highlight-color: transparent !important; }
     button, a, input, select, textarea, .nav-item { -webkit-touch-callout: none !important; outline: none !important; }
     body{font-family:'Plus Jakarta Sans',sans-serif;-webkit-font-smoothing:antialiased;transition:background-color .3s,color .3s;}
@@ -65,14 +63,14 @@
   </style>
 </head>
 <body class="bg-brand-bgLight dark:bg-brand-bgDark text-slate-900 dark:text-slate-100 transition-colors duration-300">
-  <div id="crash-log"></div>
+  <div id="crash-log"><strong>App crashed. Please send a screenshot of this error.</strong></div>
   <div id="root"></div>
 
   <script type="text/babel">
     const { useState, useMemo, useEffect, useRef } = React;
 
-    let GLOBAL_API_URL = localStorage.getItem('API_URL') || "";
-    let GLOBAL_API_KEY = localStorage.getItem('API_KEY') || "";
+    let GLOBAL_API_URL = ""; let GLOBAL_API_KEY = "";
+    try { GLOBAL_API_URL = localStorage.getItem('API_URL') || ""; GLOBAL_API_KEY = localStorage.getItem('API_KEY') || ""; } catch(e) {}
 
     const apiCall = async (action, data = {}) => {
         if (!GLOBAL_API_URL || !GLOBAL_API_KEY) throw new Error("Missing Credentials.");
@@ -115,16 +113,16 @@
     const parseDateLocal = (s) => { if (!s) return new Date(); const p=String(s).split('-'); return p.length===3 ? new Date(p[0],p[1]-1,p[2]) : new Date(s); };
     const formatDateStr = (s) => { const d=parseDateLocal(s); return isNaN(d)?'':`${String(d.getDate()).padStart(2,'0')}-${MONTH_NAMES[d.getMonth()]}-${String(d.getFullYear()).slice(-2)}`; };
     const formatDateShort = (s) => { const d=parseDateLocal(s); return isNaN(d)?'':`${String(d.getDate()).padStart(2,'0')} ${MONTH_NAMES[d.getMonth()]}`; };
-    const parseAmt = (v) => { const n=parseFloat(String(v).replace(/[^\d.-]/g, '')); return isNaN(n)?0:n; };
-    const formatINR = (v, p) => p ? '₹ ......' : new Intl.NumberFormat('en-IN', { style:'currency',currency:'INR',maximumFractionDigits:0 }).format(v);
-    const formatCompact = (v, p) => p ? '......' : (Math.abs(v)>=100000 ? `₹${(v/100000).toFixed(2)}L` : Math.abs(v)>=1000 ? `₹${(v/1000).toFixed(2)}k` : `₹${Math.round(v)}`);
+    const parseAmt = (v) => { const n=parseFloat(String(v||'').replace(/[^\d.-]/g, '')); return isNaN(n)?0:n; };
+    const formatINR = (v, p) => p ? '₹ ......' : new Intl.NumberFormat('en-IN', { style:'currency',currency:'INR',maximumFractionDigits:0 }).format(v||0);
+    const formatCompact = (v, p) => p ? '......' : (Math.abs(v||0)>=100000 ? `₹${((v||0)/100000).toFixed(2)}L` : Math.abs(v||0)>=1000 ? `₹${((v||0)/1000).toFixed(2)}k` : `₹${Math.round(v||0)}`);
     const extractTags = (s) => String(s||'').split(/[\s,;]+/).map(t=>t.trim().toLowerCase()).filter(t=>t.length>0&&t!=='#').map(t=>t.startsWith('#')?t:`#${t}`);
 
     const normalizeCategory = (cat) => {
         if (!cat) return '';
         const upper = String(cat).toUpperCase().trim();
         if (upper === 'TRANSFER') return 'TRANSFER';
-        return String(cat).trim().toLowerCase().split(/\s+/).map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+        return String(cat).trim().toLowerCase().split(/\s+/).map(w => w ? w.charAt(0).toUpperCase() + w.slice(1) : '').join(' ');
     };
 
     function getHeatmapCellStyles(val, maxVal, isDark) {
@@ -136,30 +134,14 @@
       return { style: { backgroundColor: '#e06c53' }, className: 'text-white font-black' };
     }
 
-    /* VIRTUAL FOCUS DROPDOWN */
-    function SearchableSelect({ options, value, onChange, placeholder, compact = false, excludedList = [], disabled = false }) {
-      const [isOpen, setIsOpen] = useState(false);
-      const [search, setSearch] = useState('');
-      const [hlIdx, setHlIdx] = useState(-1);
-      const wrapperRef = useRef(null);
-      const inputRef = useRef(null);
-      const listRef = useRef(null);
+    function SearchableSelect({ options = [], value, onChange, placeholder, compact = false, excludedList = [], disabled = false }) {
+      const [isOpen, setIsOpen] = useState(false); const [search, setSearch] = useState(''); const [hlIdx, setHlIdx] = useState(-1);
+      const wrapperRef = useRef(null); const inputRef = useRef(null); const listRef = useRef(null);
 
-      useEffect(() => { 
-        function h(e) { if (wrapperRef.current && !wrapperRef.current.contains(e.target)) { setIsOpen(false); setSearch(''); if (inputRef.current) inputRef.current.blur(); } } 
-        document.addEventListener("mousedown", h); document.addEventListener("touchstart", h);
-        return () => { document.removeEventListener("mousedown", h); document.removeEventListener("touchstart", h); } 
-      }, []);
-
-      const filtered = (options||[]).filter(o => String(o).toLowerCase().includes(String(search).toLowerCase()));
+      useEffect(() => { function h(e) { if (wrapperRef.current && !wrapperRef.current.contains(e.target)) { setIsOpen(false); setSearch(''); if (inputRef.current) inputRef.current.blur(); } } document.addEventListener("mousedown", h); document.addEventListener("touchstart", h); return () => { document.removeEventListener("mousedown", h); document.removeEventListener("touchstart", h); } }, []);
+      const filtered = (options||[]).filter(o => String(o||'').toLowerCase().includes(String(search||'').toLowerCase()));
       useEffect(() => { setHlIdx(-1); }, [search]);
-      
-      useEffect(() => {
-          if (isOpen && hlIdx >= 0 && listRef.current) {
-              const el = listRef.current.children[hlIdx + (compact ? 1 : 0)]; 
-              if (el) el.scrollIntoView({ block: 'nearest' });
-          }
-      }, [hlIdx, isOpen, compact]);
+      useEffect(() => { if (isOpen && hlIdx >= 0 && listRef.current) { const el = listRef.current.children[hlIdx + (compact ? 1 : 0)]; if (el) el.scrollIntoView({ block: 'nearest' }); } }, [hlIdx, isOpen, compact]);
 
       const handleKeyDown = (e) => {
           if (disabled) return;
@@ -167,11 +149,7 @@
           if (!isOpen) return;
           if (e.key === 'ArrowDown') { e.preventDefault(); setHlIdx(p => Math.min(p + 1, filtered.length - 1)); }
           else if (e.key === 'ArrowUp') { e.preventDefault(); setHlIdx(p => Math.max(p - 1, 0)); }
-          else if (e.key === 'Enter') {
-              e.preventDefault();
-              if (hlIdx >= 0 && hlIdx < filtered.length) { onChange(filtered[hlIdx]); setIsOpen(false); setSearch(''); }
-              else if (filtered.length > 0) { onChange(filtered[0]); setIsOpen(false); setSearch(''); }
-          }
+          else if (e.key === 'Enter') { e.preventDefault(); if (hlIdx >= 0 && hlIdx < filtered.length) { onChange(filtered[hlIdx]); setIsOpen(false); setSearch(''); } else if (filtered.length > 0) { onChange(filtered[0]); setIsOpen(false); setSearch(''); } }
           else if (e.key === 'Escape') { setIsOpen(false); }
       };
 
@@ -186,85 +164,40 @@
           {isOpen && !disabled && (
             <div ref={listRef} className="absolute z-[150] w-full top-full mt-2 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl max-h-48 overflow-y-auto hide-scrollbar">
               {compact && <div className="sticky top-0 bg-white dark:bg-brand-cardDark border-b border-slate-100 dark:border-slate-800 p-2 z-10"><input type="text" autoComplete={autoStr} autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" enterKeyHint="next" onKeyDown={handleKeyDown} value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search..." className="w-full bg-slate-50 dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-3 py-2 text-xs font-semibold outline-none text-slate-900 dark:text-white" /></div>}
-              {filtered.length > 0 ? filtered.map((o, i) => {
-                  const isEx = (excludedList || []).includes(o);
-                  return ( <div key={o} onClick={(e) => { e.stopPropagation(); onChange(o); setIsOpen(false); setSearch(''); }} className={`px-4 py-3 border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer text-sm font-bold transition-colors flex justify-between items-center last:border-0 ${i === hlIdx ? 'bg-slate-50 dark:bg-slate-800 text-brand-teal' : (isEx ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-300')}`}><span>{o}</span> {isEx && <EyeOff c="w-3.5 h-3.5 opacity-50" />}</div> )
-              }) : <div className="px-4 py-3 text-sm text-slate-400 font-medium text-center">No matches found</div>}
+              {filtered.length > 0 ? filtered.map((o, i) => { const isEx = (excludedList || []).includes(o); return ( <div key={o} onClick={(e) => { e.stopPropagation(); onChange(o); setIsOpen(false); setSearch(''); }} className={`px-4 py-3 border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer text-sm font-bold transition-colors flex justify-between items-center last:border-0 ${i === hlIdx ? 'bg-slate-50 dark:bg-slate-800 text-brand-teal' : (isEx ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-300')}`}><span>{o}</span> {isEx && <EyeOff c="w-3.5 h-3.5 opacity-50" />}</div> ) }) : <div className="px-4 py-3 text-sm text-slate-400 font-medium text-center">No matches found</div>}
             </div>
           )}
         </div>
       );
     }
 
-    /* SMART TAG TYPEAHEAD */
-    function TagAutocomplete({ value, onChange, availableTags }) {
-        const [isOpen, setIsOpen] = useState(false);
-        const [hlIdx, setHlIdx] = useState(-1);
-        const listRef = useRef(null);
-        
-        const words = String(value || '').split(',');
-        const currentWord = words[words.length - 1].trim();
-        const search = currentWord.startsWith('#') ? currentWord.slice(1) : currentWord;
-        const filtered = search.length > 0 ? (availableTags || []).filter(t => t.toLowerCase().includes(search.toLowerCase()) && t !== `#${search}`) : [];
-
-        useEffect(() => {
-            if (filtered.length > 0) setIsOpen(true); else setIsOpen(false);
-            setHlIdx(-1);
-        }, [currentWord, availableTags]);
-
-        useEffect(() => {
-            if (isOpen && hlIdx >= 0 && listRef.current) {
-                const el = listRef.current.children[hlIdx];
-                if (el) el.scrollIntoView({ block: 'nearest' });
-            }
-        }, [hlIdx, isOpen]);
+    function TagAutocomplete({ value, onChange, availableTags = [] }) {
+        const [isOpen, setIsOpen] = useState(false); const [hlIdx, setHlIdx] = useState(-1); const listRef = useRef(null);
+        const words = String(value || '').split(','); const currentWord = words[words.length - 1].trim(); const search = currentWord.startsWith('#') ? currentWord.slice(1) : currentWord;
+        const filtered = search.length > 0 ? (availableTags || []).filter(t => String(t||'').toLowerCase().includes(search.toLowerCase()) && t !== `#${search}`) : [];
+        useEffect(() => { if (filtered.length > 0) setIsOpen(true); else setIsOpen(false); setHlIdx(-1); }, [currentWord, availableTags]);
+        useEffect(() => { if (isOpen && hlIdx >= 0 && listRef.current) { const el = listRef.current.children[hlIdx]; if (el) el.scrollIntoView({ block: 'nearest' }); } }, [hlIdx, isOpen]);
 
         const handleKeyDown = (e) => {
-            if (e.key === 'Enter') e.preventDefault(); 
-            if (!isOpen) return;
-            if (e.key === 'ArrowDown') { e.preventDefault(); setHlIdx(p => Math.min(p + 1, filtered.length - 1)); }
-            else if (e.key === 'ArrowUp') { e.preventDefault(); setHlIdx(p => Math.max(p - 1, 0)); }
-            else if (e.key === 'Enter') {
-                if (hlIdx >= 0 && hlIdx < filtered.length) selectTag(filtered[hlIdx]);
-            }
-            else if (e.key === 'Escape') { setIsOpen(false); }
+            if (e.key === 'Enter') e.preventDefault(); if (!isOpen) return;
+            if (e.key === 'ArrowDown') { e.preventDefault(); setHlIdx(p => Math.min(p + 1, filtered.length - 1)); } else if (e.key === 'ArrowUp') { e.preventDefault(); setHlIdx(p => Math.max(p - 1, 0)); }
+            else if (e.key === 'Enter') { if (hlIdx >= 0 && hlIdx < filtered.length) selectTag(filtered[hlIdx]); } else if (e.key === 'Escape') { setIsOpen(false); }
         };
 
-        const selectTag = (tag) => {
-            const cleanTag = tag.replace(/^#/, '');
-            const newWords = [...words];
-            newWords[newWords.length - 1] = (newWords.length===1 ? '' : ' ') + cleanTag;
-            onChange(newWords.join(',') + ', ');
-            setIsOpen(false);
-        };
-
+        const selectTag = (tag) => { const cleanTag = String(tag||'').replace(/^#/, ''); const newWords = [...words]; newWords[newWords.length - 1] = (newWords.length===1 ? '' : ' ') + cleanTag; onChange(newWords.join(',') + ', '); setIsOpen(false); };
         const autoStr = useMemo(() => "nope_" + Math.random().toString(36).substring(7), []);
 
         return (
             <div className="relative w-full">
-                <input type="text" placeholder="#paycheck" enterKeyHint="next" autoComplete={autoStr} autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" value={value} onChange={e=>onChange(e.target.value)} onKeyDown={handleKeyDown} onFocus={(e)=>{setTimeout(() => {e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });}, 300);}} className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none dark:text-white" />
-                {isOpen && (
-                    <div ref={listRef} className="absolute z-[200] w-full top-full mt-2 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl max-h-40 overflow-y-auto hide-scrollbar">
-                        {filtered.map((t, i) => (
-                            <div key={t} onClick={()=>selectTag(t)} className={`px-4 py-2.5 border-b border-slate-50 dark:border-slate-800 cursor-pointer text-sm font-bold transition-colors last:border-0 ${i === hlIdx ? 'bg-slate-50 dark:bg-slate-800 text-brand-teal' : 'text-slate-700 dark:text-slate-300'}`}>{t}</div>
-                        ))}
-                    </div>
-                )}
+                <input type="text" placeholder="#paycheck" enterKeyHint="next" autoComplete={autoStr} autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" value={value || ''} onChange={e=>onChange(e.target.value)} onKeyDown={handleKeyDown} onFocus={(e)=>{setTimeout(() => {e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });}, 300);}} className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none dark:text-white" />
+                {isOpen && ( <div ref={listRef} className="absolute z-[200] w-full top-full mt-2 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl max-h-40 overflow-y-auto hide-scrollbar">{filtered.map((t, i) => ( <div key={t} onClick={()=>selectTag(t)} className={`px-4 py-2.5 border-b border-slate-50 dark:border-slate-800 cursor-pointer text-sm font-bold transition-colors last:border-0 ${i === hlIdx ? 'bg-slate-50 dark:bg-slate-800 text-brand-teal' : 'text-slate-700 dark:text-slate-300'}`}>{t}</div> ))}</div> )}
             </div>
         );
     }
 
     function SetupScreen({ onSave }) {
         const [u, setU] = useState(''); const [k, setK] = useState(''); const [loading, setLoading] = useState(false); const [errMsg, setErrMsg] = useState('');
-        const handle = async (e) => {
-            e.preventDefault(); if (!u.trim() || !k.trim()) return; setLoading(true); setErrMsg('');
-            try {
-                const res = await fetch(u.trim(), { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'GET_DATA', apiKey: k.trim() }) });
-                const result = await res.json();
-                if (result.status === 'error') throw new Error(result.message);
-                onSave(u.trim(), k.trim(), result.data);
-            } catch(error) { setErrMsg("Connection Failed: Incorrect URL or Secret Key."); setLoading(false); }
-        };
+        const handle = async (e) => { e.preventDefault(); if (!u.trim() || !k.trim()) return; setLoading(true); setErrMsg(''); try { const res = await fetch(u.trim(), { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'GET_DATA', apiKey: k.trim() }) }); const result = await res.json(); if (result.status === 'error') throw new Error(result.message); onSave(u.trim(), k.trim(), result.data); } catch(error) { setErrMsg("Connection Failed: Incorrect URL or Secret Key."); setLoading(false); } };
         return (
             <div className="fixed inset-0 z-[300] flex items-center justify-center bg-brand-bgLight dark:bg-brand-bgDark p-4 transition-colors duration-300">
                 <div className="modern-card max-w-sm w-full p-8 animate-slide-up border border-slate-200 dark:border-slate-800 shadow-2xl">
@@ -305,53 +238,21 @@
     }
 
     function SavingsBarChart({ data = [], height = 250, isDark, isPrivacy }) {
-      const isScrollable = data.length > 12;
-      const width = isScrollable ? Math.max(600, data.length * 52) : 600;
-      const pad = { t: 20, r: 15, b: 25, l: 45 };
-      const gW = width - pad.l - pad.r;
-      const gH = height - pad.t - pad.b;
-
-      const plotData = data.map(d => ({ ...d, net: d.in - d.out }));
-      let min = 0, max = 0;
-      plotData.forEach(d => { if(d.net > max) max = d.net; if(d.net < min) min = d.net; });
-      if(max === 0 && min === 0) max = 1000;
-      max = max > 0 ? max * 1.1 : max;
-      min = min < 0 ? min * 1.1 : min;
-      const range = max - min;
-
+      const isScrollable = (data||[]).length > 12; const width = isScrollable ? Math.max(600, (data||[]).length * 52) : 600;
+      const pad = { t: 20, r: 15, b: 25, l: 45 }; const gW = width - pad.l - pad.r; const gH = height - pad.t - pad.b;
+      const plotData = (data||[]).map(d => ({ ...d, net: (d?.in||0) - (d?.out||0) }));
+      let min = 0, max = 0; plotData.forEach(d => { if(d.net > max) max = d.net; if(d.net < min) min = d.net; });
+      if(max === 0 && min === 0) max = 1000; max = max > 0 ? max * 1.1 : max; min = min < 0 ? min * 1.1 : min; const range = max - min;
       const getX = (i) => pad.l + (i * (gW / Math.max(plotData.length, 1))) + (gW / Math.max(plotData.length, 1))/2;
-      const getY = (v) => pad.t + gH - ((v - min) / range) * gH;
-      const zeroY = getY(0);
-      const barW = Math.min(24, (gW / Math.max(plotData.length, 1)) * 0.6);
+      const getY = (v) => pad.t + gH - ((v - min) / range) * gH; const zeroY = getY(0); const barW = Math.min(24, (gW / Math.max(plotData.length, 1)) * 0.6);
 
       return (
         <div className="w-full overflow-x-auto hide-scrollbar">
            <div className="flex justify-end gap-3 sm:gap-5 text-[9px] sm:text-[10px] font-extrabold tracking-widest mb-4 uppercase"><span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-brand-income"></span> Positive Savings</span><span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-brand-expense"></span> Deficit</span></div>
            <svg viewBox={`0 0 ${width} ${height}`} style={{ minWidth: isScrollable ? `${width}px` : '100%' }} className="w-full h-auto font-sans relative">
               <line x1={pad.l} y1={zeroY} x2={width - pad.r} y2={zeroY} stroke={isDark ? '#3f3f46' : '#cbd5e1'} strokeWidth="2" />
-              {[max, max/2, min/2, min].map((val, idx) => {
-                 if(val===0 || isNaN(val)) return null;
-                 const y = getY(val);
-                 return (
-                   <g key={idx}>
-                      <line x1={pad.l} y1={y} x2={width - pad.r} y2={y} stroke={isDark ? '#27272a' : '#e2e8f0'} strokeDasharray="4 4" />
-                      <text x={pad.l - 10} y={y + 4} textAnchor="end" className="text-[10px] md:text-[8px] fill-slate-400 font-bold blur-money">{formatCompact(val, isPrivacy)}</text>
-                   </g>
-                 )
-              })}
-              {plotData.map((d, i) => {
-                 const x = getX(i) - barW/2;
-                 const y = d.net >= 0 ? getY(d.net) : zeroY;
-                 const h = Math.abs(getY(d.net) - zeroY);
-                 const fill = d.net >= 0 ? '#10b981' : '#f43f5e';
-                 return (
-                    <g key={i}>
-                       <text x={getX(i)} y={height - 5} textAnchor="middle" className="text-[10px] md:text-[9px] fill-slate-500 font-extrabold tracking-wide">{d.label}</text>
-                       <rect x={x} y={y} width={barW} height={Math.max(h, 2)} fill={fill} rx="2" />
-                       <text x={getX(i)} y={d.net >= 0 ? y - 6 : y + h + 12} textAnchor="middle" fill={fill} className="text-[9px] md:text-[8px] font-black blur-money">{formatCompact(d.net, isPrivacy)}</text>
-                    </g>
-                 );
-              })}
+              {[max, max/2, min/2, min].map((val, idx) => { if(val===0 || isNaN(val)) return null; const y = getY(val); return ( <g key={idx}><line x1={pad.l} y1={y} x2={width - pad.r} y2={y} stroke={isDark ? '#27272a' : '#e2e8f0'} strokeDasharray="4 4" /><text x={pad.l - 10} y={y + 4} textAnchor="end" className="text-[10px] md:text-[8px] fill-slate-400 font-bold blur-money">{formatCompact(val, isPrivacy)}</text></g> ) })}
+              {plotData.map((d, i) => { const x = getX(i) - barW/2; const y = d.net >= 0 ? getY(d.net) : zeroY; const h = Math.abs(getY(d.net) - zeroY); const fill = d.net >= 0 ? '#10b981' : '#f43f5e'; return ( <g key={i}><text x={getX(i)} y={height - 5} textAnchor="middle" className="text-[10px] md:text-[9px] fill-slate-500 font-extrabold tracking-wide">{d.label}</text><rect x={x} y={y} width={barW} height={Math.max(h, 2)} fill={fill} rx="2" /><text x={getX(i)} y={d.net >= 0 ? y - 6 : y + h + 12} textAnchor="middle" fill={fill} className="text-[9px] md:text-[8px] font-black blur-money">{formatCompact(d.net, isPrivacy)}</text></g> ); })}
            </svg>
         </div>
       );
@@ -359,24 +260,15 @@
 
     function AreaChart({ data = [], height = 250, isDark, isPrivacy }) {
       const [hoverIndex, setHoverIndex] = useState(null);
-      const isScrollable = data.length > 12;
-      const width = isScrollable ? Math.max(600, data.length * 52) : 600;
-      const pad = { t: 15, r: 15, b: 25, l: 45 }; 
-      const gW = width - pad.l - pad.r; 
-      const gH = height - pad.t - pad.b;
+      const isScrollable = (data||[]).length > 12; const width = isScrollable ? Math.max(600, (data||[]).length * 52) : 600;
+      const pad = { t: 15, r: 15, b: 25, l: 45 }; const gW = width - pad.l - pad.r; const gH = height - pad.t - pad.b;
       
       let min = 0, max = 0; 
-      data.forEach(d => { 
-        if(d.in>max)max=d.in; if(d.out>max)max=d.out; if(d.avail>max)max=d.avail; if(d.inv>max)max=d.inv; 
-        if(d.avail<min)min=d.avail; if(d.inv<min)min=d.inv; 
-      }); 
-      if(max===0) max=10000; 
-      const range = max - min;
-      
-      const getX = (i) => pad.l + (i / Math.max(data.length - 1, 1)) * gW; 
-      const getY = (v) => pad.t + gH - ((v - min) / range) * gH;
-      const makePath = (k) => data.map((d, i) => (i===0?'M':'L') + ' ' + getX(i) + ' ' + getY(d[k])).join(' ');
-      const makeArea = (k) => makePath(k) + ' L ' + getX(data.length-1) + ' ' + getY(0) + ' L ' + getX(0) + ' ' + getY(0) + ' Z';
+      (data||[]).forEach(d => { if((d?.in||0)>max)max=(d?.in||0); if((d?.out||0)>max)max=(d?.out||0); if((d?.avail||0)>max)max=(d?.avail||0); if((d?.inv||0)>max)max=(d?.inv||0); if((d?.avail||0)<min)min=(d?.avail||0); if((d?.inv||0)<min)min=(d?.inv||0); }); 
+      if(max===0) max=10000; const range = max - min;
+      const getX = (i) => pad.l + (i / Math.max((data||[]).length - 1, 1)) * gW; const getY = (v) => pad.t + gH - ((v - min) / range) * gH;
+      const makePath = (k) => (data||[]).map((d, i) => (i===0?'M':'L') + ' ' + getX(i) + ' ' + getY(d[k]||0)).join(' ');
+      const makeArea = (k) => makePath(k) + ' L ' + getX(Math.max((data||[]).length-1, 0)) + ' ' + getY(0) + ' L ' + getX(0) + ' ' + getY(0) + ' Z';
       let toolX = hoverIndex !== null ? getX(hoverIndex) : 0;
       
       return (
@@ -390,20 +282,20 @@
             <path d={makeArea('out')} fill="url(#gOUT)" pointerEvents="none" /><path d={makePath('out')} fill="none" stroke="#f43f5e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" pointerEvents="none" />
             <path d={makePath('inv')} fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" pointerEvents="none" />
             <path d={makePath('avail')} fill="none" stroke="#e06c53" strokeWidth="2.5" strokeDasharray="6 4" strokeLinecap="round" pointerEvents="none" />
-            {data.map((d, i) => ( <g key={i} pointerEvents="none"><text x={getX(i)} y={height - 5} textAnchor="middle" className="text-[10px] md:text-[9px] fill-slate-500 font-extrabold tracking-wide">{d.label}</text><circle cx={getX(i)} cy={getY(d.in)} r="5" fill={isDark ? '#121e1f' : '#fff'} stroke="#10b981" strokeWidth="2.5" /><circle cx={getX(i)} cy={getY(d.out)} r="5" fill={isDark ? '#121e1f' : '#fff'} stroke="#f43f5e" strokeWidth="2.5" /><circle cx={getX(i)} cy={getY(d.inv)} r="5" fill={isDark ? '#121e1f' : '#fff'} stroke="#f59e0b" strokeWidth="2.5" /><circle cx={getX(i)} cy={getY(d.avail)} r="5" fill={isDark ? '#121e1f' : '#fff'} stroke="#e06c53" strokeWidth="2.5" /></g> ))}
+            {(data||[]).map((d, i) => ( <g key={i} pointerEvents="none"><text x={getX(i)} y={height - 5} textAnchor="middle" className="text-[10px] md:text-[9px] fill-slate-500 font-extrabold tracking-wide">{d?.label||''}</text><circle cx={getX(i)} cy={getY(d?.in||0)} r="5" fill={isDark ? '#121e1f' : '#fff'} stroke="#10b981" strokeWidth="2.5" /><circle cx={getX(i)} cy={getY(d?.out||0)} r="5" fill={isDark ? '#121e1f' : '#fff'} stroke="#f43f5e" strokeWidth="2.5" /><circle cx={getX(i)} cy={getY(d?.inv||0)} r="5" fill={isDark ? '#121e1f' : '#fff'} stroke="#f59e0b" strokeWidth="2.5" /><circle cx={getX(i)} cy={getY(d?.avail||0)} r="5" fill={isDark ? '#121e1f' : '#fff'} stroke="#e06c53" strokeWidth="2.5" /></g> ))}
             {hoverIndex !== null && <line x1={getX(hoverIndex)} y1={pad.t} x2={getX(hoverIndex)} y2={height - pad.b} stroke={isDark ? '#3f3f46' : '#94a3b8'} strokeWidth="1.5" strokeDasharray="4 4" pointerEvents="none" />}
-            {data.map((d, i) => <rect key={`h-${i}`} x={getX(i)-(gW/Math.max(data.length-1,1))/2} y={0} width={gW/Math.max(data.length-1,1)} height={height} fill="transparent" onMouseEnter={()=>setHoverIndex(i)} onMouseLeave={()=>setHoverIndex(null)} onTouchStart={()=>setHoverIndex(i)} className="cursor-crosshair outline-none" /> )}
-            {hoverIndex !== null && (() => {
+            {(data||[]).map((d, i) => <rect key={`h-${i}`} x={getX(i)-(gW/Math.max((data||[]).length-1,1))/2} y={0} width={gW/Math.max((data||[]).length-1,1)} height={height} fill="transparent" onMouseEnter={()=>setHoverIndex(i)} onMouseLeave={()=>setHoverIndex(null)} onTouchStart={()=>setHoverIndex(i)} className="cursor-crosshair outline-none" /> )}
+            {hoverIndex !== null && data && data[hoverIndex] && (() => {
                const bX = toolX > width / 2 ? -160 : 10;
                return (
                    <g transform={`translate(${toolX}, 5)`} pointerEvents="none" className="animate-fade-in z-50">
                       <rect x={bX} y="0" width="150" height="96" rx="16" fill={isDark ? '#1a2e2f' : '#122b2c'} opacity="0.98" filter="drop-shadow(0 10px 15px rgba(0,0,0,0.15))" />
-                      <text x={bX+75} y="20" textAnchor="middle" fill="#ffffff" className="text-[12px] md:text-[11px] font-extrabold tracking-wider">{data[hoverIndex].label}</text>
+                      <text x={bX+75} y="20" textAnchor="middle" fill="#ffffff" className="text-[12px] md:text-[11px] font-extrabold tracking-wider">{data[hoverIndex]?.label||''}</text>
                       <line x1={bX+15} y1="26" x2={bX+135} y2="26" stroke={isDark ? '#274041' : '#1a3d3e'} strokeWidth="1" />
-                      <text x={bX+15} y="42" fill="#94a3b8" className="text-[10px] md:text-[9px] font-bold">Inc:</text><text x={bX+135} y="42" textAnchor="end" fill="#10b981" className="text-[11px] md:text-[10px] font-black blur-money">{formatCompact(data[hoverIndex].in, isPrivacy)}</text>
-                      <text x={bX+15} y="58" fill="#94a3b8" className="text-[10px] md:text-[9px] font-bold">Exp:</text><text x={bX+135} y="58" textAnchor="end" fill="#f43f5e" className="text-[11px] md:text-[10px] font-black blur-money">{formatCompact(data[hoverIndex].out, isPrivacy)}</text>
-                      <text x={bX+15} y="74" fill="#94a3b8" className="text-[10px] md:text-[9px] font-bold">Inv:</text><text x={bX+135} y="74" textAnchor="end" fill="#f59e0b" className="text-[11px] md:text-[10px] font-black blur-money">{formatCompact(data[hoverIndex].inv, isPrivacy)}</text>
-                      <text x={bX+15} y="90" fill="#94a3b8" className="text-[10px] md:text-[9px] font-bold">Avail:</text><text x={bX+135} y="90" textAnchor="end" fill="#e06c53" className="text-[11px] md:text-[10px] font-black blur-money">{formatCompact(data[hoverIndex].avail, isPrivacy)}</text>
+                      <text x={bX+15} y="42" fill="#94a3b8" className="text-[10px] md:text-[9px] font-bold">Inc:</text><text x={bX+135} y="42" textAnchor="end" fill="#10b981" className="text-[11px] md:text-[10px] font-black blur-money">{formatCompact(data[hoverIndex]?.in||0, isPrivacy)}</text>
+                      <text x={bX+15} y="58" fill="#94a3b8" className="text-[10px] md:text-[9px] font-bold">Exp:</text><text x={bX+135} y="58" textAnchor="end" fill="#f43f5e" className="text-[11px] md:text-[10px] font-black blur-money">{formatCompact(data[hoverIndex]?.out||0, isPrivacy)}</text>
+                      <text x={bX+15} y="74" fill="#94a3b8" className="text-[10px] md:text-[9px] font-bold">Inv:</text><text x={bX+135} y="74" textAnchor="end" fill="#f59e0b" className="text-[11px] md:text-[10px] font-black blur-money">{formatCompact(data[hoverIndex]?.inv||0, isPrivacy)}</text>
+                      <text x={bX+15} y="90" fill="#94a3b8" className="text-[10px] md:text-[9px] font-bold">Avail:</text><text x={bX+135} y="90" textAnchor="end" fill="#e06c53" className="text-[11px] md:text-[10px] font-black blur-money">{formatCompact(data[hoverIndex]?.avail||0, isPrivacy)}</text>
                    </g>
                );
             })()}
@@ -414,18 +306,18 @@
 
     function TopExpensesList({ data = [], totalExpense, isPrivacy }) {
       if (!data || data.length === 0) return <p className="text-xs text-slate-500 font-bold p-4">No expenses logged.</p>;
-      const maxVal = data.length > 0 && data[0].total > 0 ? data[0].total : 1;
+      const maxVal = data.length > 0 && data[0]?.total > 0 ? data[0].total : 1;
       return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
-          {data.map((item, i) => {
-            const pct = totalExpense > 0 ? (item.total / totalExpense) * 100 : 0;
+          {(data||[]).map((item, i) => {
+            const pct = totalExpense > 0 ? ((item?.total||0) / totalExpense) * 100 : 0;
             return (
               <div key={i} className="flex flex-col gap-2">
                 <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-3 min-w-0 pr-4"><div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-brand-bgDark border border-slate-200 dark:border-slate-800 flex items-center justify-center shrink-0 text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase">{String(item.name || 'NA').substring(0, 2)}</div><div className="min-w-0"><p className="text-sm font-extrabold text-slate-800 dark:text-white truncate">{String(item.name || 'Unknown')}</p><p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest truncate mt-0.5">{String(item.cat || 'Uncategorized')}</p></div></div>
-                  <div className="text-right shrink-0"><p className="text-sm font-black text-slate-900 dark:text-white blur-money">{formatINR(item.total, isPrivacy)}</p><p className="text-[10px] font-bold text-slate-400 blur-money mt-0.5">({isPrivacy ? '...' : pct.toFixed(1)}%)</p></div>
+                  <div className="flex items-center gap-3 min-w-0 pr-4"><div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-brand-bgDark border border-slate-200 dark:border-slate-800 flex items-center justify-center shrink-0 text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase">{String(item?.name || 'NA').substring(0, 2)}</div><div className="min-w-0"><p className="text-sm font-extrabold text-slate-800 dark:text-white truncate">{String(item?.name || 'Unknown')}</p><p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest truncate mt-0.5">{String(item?.cat || 'Uncategorized')}</p></div></div>
+                  <div className="text-right shrink-0"><p className="text-sm font-black text-slate-900 dark:text-white blur-money">{formatINR(item?.total||0, isPrivacy)}</p><p className="text-[10px] font-bold text-slate-400 blur-money mt-0.5">({isPrivacy ? '...' : pct.toFixed(1)}%)</p></div>
                 </div>
-                <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden"><div className="h-full bg-brand-teal rounded-full transition-all duration-500" style={{ width: `${(item.total/maxVal)*100}%` }}></div></div>
+                <div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden"><div className="h-full bg-brand-teal rounded-full transition-all duration-500" style={{ width: `${((item?.total||0)/maxVal)*100}%` }}></div></div>
               </div>
             );
           })}
@@ -434,10 +326,10 @@
     }
 
     function DonutChart({ data = [], total, selectedCategory, onSelectCategory, isPrivacy }) {
-      const activeSlice = selectedCategory !== 'All Categories' ? data.find(d => d.name === selectedCategory) : null;
+      const activeSlice = selectedCategory !== 'All Categories' ? (data||[]).find(d => d?.name === selectedCategory) : null;
       const size = 180; const radius = 75; const hole = 50; const center = size / 2; let curA = 0;
-      const slices = data.map(item => {
-        const a = total > 0 ? (item.value / total) * 360 : 0; const sA = curA; curA += a; const eA = curA; const sR = (sA - 90) * (Math.PI / 180); const eR = (eA - 90) * (Math.PI / 180); const lA = a > 180 ? 1 : 0;
+      const slices = (data||[]).map(item => {
+        const a = total > 0 ? ((item?.value||0) / total) * 360 : 0; const sA = curA; curA += a; const eA = curA; const sR = (sA - 90) * (Math.PI / 180); const eR = (eA - 90) * (Math.PI / 180); const lA = a > 180 ? 1 : 0;
         const x1 = center + radius * Math.cos(sR); const y1 = center + radius * Math.sin(sR); const x2 = center + radius * Math.cos(eR); const y2 = center + radius * Math.sin(eR);
         const x1_in = center + hole * Math.cos(sR); const y1_in = center + hole * Math.sin(sR); const x2_in = center + hole * Math.cos(eR); const y2_in = center + hole * Math.sin(eR);
         const d = a >= 359.9 ? ` M ${center - radius} ${center} A ${radius} ${radius} 0 1 0 ${center + radius} ${center} A ${radius} ${radius} 0 1 0 ${center - radius} ${center} M ${center - hole} ${center} A ${hole} ${hole} 0 1 1 ${center + hole} ${center} A ${hole} ${hole} 0 1 1 ${center - hole} ${center} Z ` : ` M ${x1} ${y1} A ${radius} ${radius} 0 ${lA} 1 ${x2} ${y2} L ${x2_in} ${y2_in} A ${hole} ${hole} 0 ${lA} 0 ${x1_in} ${y1_in} Z `;
@@ -449,7 +341,7 @@
             {slices.map((s, i) => ( <path key={i} d={s.d} fill={s.color} opacity={activeSlice?(activeSlice.name===s.name?1:0.2):1} style={{ transform: activeSlice&&activeSlice.name===s.name ? 'scale(1.05)' : 'scale(1)', transformOrigin: `${center}px ${center}px`, transition: 'all 0.3s' }} className="cursor-pointer hover:opacity-80" onClick={() => onSelectCategory && onSelectCategory(selectedCategory === s.name ? 'All Categories' : s.name)} /> ))}
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none p-2">
-            {activeSlice ? ( <><span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 truncate max-w-[90px]">{activeSlice.name}</span><span className="text-xs font-black text-slate-800 dark:text-slate-100 mt-1 blur-money">{formatINR(activeSlice.value, isPrivacy)}</span></> ) : ( <><span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Total</span><span className="text-sm font-black text-slate-800 dark:text-slate-100 mt-1 blur-money">{formatINR(total, isPrivacy)}</span></> )}
+            {activeSlice ? ( <><span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 truncate max-w-[90px]">{activeSlice.name}</span><span className="text-xs font-black text-slate-800 dark:text-slate-100 mt-1 blur-money">{formatINR(activeSlice.value||0, isPrivacy)}</span></> ) : ( <><span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Total</span><span className="text-sm font-black text-slate-800 dark:text-slate-100 mt-1 blur-money">{formatINR(total||0, isPrivacy)}</span></> )}
           </div>
         </div>
       );
@@ -483,28 +375,27 @@
             </div>
         );
     }
-
-    function InsightsView({ analyticsFiltered = [], allUniqueCategories = [], isPrivacy, isDarkMode, chartData }) {
+    function InsightsView({ analyticsFiltered = [], allUniqueCategories = [], isPrivacy, isDarkMode, chartData = [] }) {
         const [insightsCategoryFilter, setInsightsCategoryFilter] = useState('All');
-        const insightsData = useMemo(() => insightsCategoryFilter === 'All' ? analyticsFiltered : analyticsFiltered.filter(r => r.category === insightsCategoryFilter), [analyticsFiltered, insightsCategoryFilter]);
-        const topTags = useMemo(() => { const map = {}; insightsData.forEach(r => { if (r.rawType !== 'EXPENSE') return; extractTags(r.tags).forEach(t => { map[t] = (map[t]||0) + r.amount; }); }); return Object.entries(map).map(([name, total]) => ({name, total})).sort((a,b) => b.total - a.total).slice(0, 10); }, [insightsData]);
-        const largestTxns = useMemo(() => [...insightsData].filter(r => r.rawType === 'EXPENSE').sort((a,b) => b.amount - a.amount).slice(0, 5), [insightsData]);
-        const frequentPayees = useMemo(() => { const map = {}; insightsData.filter(r => r.rawType === 'EXPENSE').forEach(r => { const desc = String(r.description || 'Unknown'); if (!map[desc]) map[desc] = { name: desc, count: 0, total: 0 }; map[desc].count += 1; map[desc].total += r.amount; }); return Object.values(map).sort((a,b) => b.count - a.count).slice(0, 5); }, [insightsData]);
-        const incomeSplitData = useMemo(() => { const map = {}; insightsData.filter(r => r.rawType === 'INCOME').forEach(r => { const cat = String(r.category || 'Uncategorized'); map[cat] = (map[cat]||0) + r.amount; }); const colors = ['#1d8b4e', '#e06c53', '#047857', '#059669', '#10b981']; return Object.entries(map).map(([name, value], idx) => ({ name, value, color: colors[idx % colors.length] })).sort((a,b) => b.value - a.value); }, [insightsData]);
-        const expenseTxns = insightsData.filter(r => r.rawType === 'EXPENSE'); const totalExpense = expenseTxns.reduce((a,b) => a + b.amount, 0); const avgExpense = expenseTxns.length > 0 ? totalExpense / expenseTxns.length : 0; const totalIncome = insightsData.filter(r => r.rawType === 'INCOME').reduce((a,b) => a + b.amount, 0);
+        const insightsData = useMemo(() => insightsCategoryFilter === 'All' ? analyticsFiltered : (analyticsFiltered||[]).filter(r => r?.category === insightsCategoryFilter), [analyticsFiltered, insightsCategoryFilter]);
+        const topTags = useMemo(() => { const map = {}; (insightsData||[]).forEach(r => { if (r?.rawType !== 'EXPENSE') return; extractTags(r?.tags).forEach(t => { map[t] = (map[t]||0) + (r?.amount||0); }); }); return Object.entries(map).map(([name, total]) => ({name, total})).sort((a,b) => b.total - a.total).slice(0, 10); }, [insightsData]);
+        const largestTxns = useMemo(() => [...(insightsData||[])].filter(r => r?.rawType === 'EXPENSE').sort((a,b) => (b?.amount||0) - (a?.amount||0)).slice(0, 5), [insightsData]);
+        const frequentPayees = useMemo(() => { const map = {}; (insightsData||[]).filter(r => r?.rawType === 'EXPENSE').forEach(r => { const desc = String(r?.description || 'Unknown'); if (!map[desc]) map[desc] = { name: desc, count: 0, total: 0 }; map[desc].count += 1; map[desc].total += (r?.amount||0); }); return Object.values(map).sort((a,b) => b.count - a.count).slice(0, 5); }, [insightsData]);
+        const incomeSplitData = useMemo(() => { const map = {}; (insightsData||[]).filter(r => r?.rawType === 'INCOME').forEach(r => { const cat = String(r?.category || 'Uncategorized'); map[cat] = (map[cat]||0) + (r?.amount||0); }); const colors = ['#1d8b4e', '#e06c53', '#047857', '#059669', '#10b981']; return Object.entries(map).map(([name, value], idx) => ({ name, value, color: colors[idx % colors.length] })).sort((a,b) => b.value - a.value); }, [insightsData]);
+        const expenseTxns = (insightsData||[]).filter(r => r?.rawType === 'EXPENSE'); const totalExpense = expenseTxns.reduce((a,b) => a + (b?.amount||0), 0); const avgExpense = expenseTxns.length > 0 ? totalExpense / expenseTxns.length : 0; const totalIncome = (insightsData||[]).filter(r => r?.rawType === 'INCOME').reduce((a,b) => a + (b?.amount||0), 0);
 
         const categoryTagMatrix = useMemo(() => {
-            let expenses = insightsData.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment'));
+            let expenses = (insightsData||[]).filter(r => r?.rawType === 'EXPENSE' && (!r?.category || String(r.category).toLowerCase() !== 'investment'));
             if (!expenses.length) return null;
-            const tagMap = {}; expenses.forEach(r => { extractTags(r.tags).forEach(t => tagMap[t] = (tagMap[t]||0) + r.amount); });
+            const tagMap = {}; expenses.forEach(r => { extractTags(r?.tags).forEach(t => tagMap[t] = (tagMap[t]||0) + (r?.amount||0)); });
             const top5Tags = Object.entries(tagMap).sort((a,b)=>b[1]-a[1]).slice(0,5).map(x=>x[0]);
             if (top5Tags.length === 0) return null;
             const catMap = {};
             expenses.forEach(r => {
-                const c = String(r.category || 'Uncategorized');
+                const c = String(r?.category || 'Uncategorized');
                 if (!catMap[c]) catMap[c] = { total: 0, tags: {} };
-                catMap[c].total += r.amount;
-                extractTags(r.tags).forEach(t => { if (top5Tags.includes(t)) catMap[c].tags[t] = (catMap[c].tags[t]||0) + r.amount; });
+                catMap[c].total += (r?.amount||0);
+                extractTags(r?.tags).forEach(t => { if (top5Tags.includes(t)) catMap[c].tags[t] = (catMap[c].tags[t]||0) + (r?.amount||0); });
             });
             const sortedCats = Object.entries(catMap).sort((a,b)=>b[1].total - a[1].total).slice(0,8);
             return { tags: top5Tags, cats: sortedCats };
@@ -512,10 +403,10 @@
 
         return (
             <div className="animate-fade-in space-y-4 sm:space-y-6 max-w-4xl mx-auto pb-8">
-                <div className="modern-card p-3 flex flex-col sm:flex-row items-center justify-between gap-3 border border-slate-200 dark:border-slate-800"><span className="text-xs font-extrabold text-slate-800 dark:text-slate-200 pl-3 uppercase tracking-widest">Filter Insights</span><div className="w-full sm:w-64"><SearchableSelect options={['All Categories', ...allUniqueCategories]} value={insightsCategoryFilter === 'All' ? 'All Categories' : insightsCategoryFilter} onChange={(val) => setInsightsCategoryFilter(val === 'All Categories' ? 'All' : val)} placeholder="Search category..." compact={true} /></div></div>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4"><MetricCard title="Transactions" value={isPrivacy ? '......' : insightsData.length} icon={List} type="default" /><MetricCard title="Avg. Expense" value={formatINR(avgExpense, isPrivacy)} icon={Activity} type="expense" /><MetricCard title="Total Income" value={formatINR(totalIncome, isPrivacy)} type="income" /><MetricCard title="Net Change" value={formatINR(totalIncome - totalExpense, isPrivacy)} type="default" /></div>
+                <div className="modern-card p-3 flex flex-col sm:flex-row items-center justify-between gap-3 border border-slate-200 dark:border-slate-800"><span className="text-xs font-extrabold text-slate-800 dark:text-slate-200 pl-3 uppercase tracking-widest">Filter Insights</span><div className="w-full sm:w-64"><SearchableSelect options={['All Categories', ...(allUniqueCategories||[])]} value={insightsCategoryFilter === 'All' ? 'All Categories' : insightsCategoryFilter} onChange={(val) => setInsightsCategoryFilter(val === 'All Categories' ? 'All' : val)} placeholder="Search category..." compact={true} /></div></div>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4"><MetricCard title="Transactions" value={isPrivacy ? '......' : (insightsData||[]).length} icon={List} type="default" /><MetricCard title="Avg. Expense" value={formatINR(avgExpense, isPrivacy)} icon={Activity} type="expense" /><MetricCard title="Total Income" value={formatINR(totalIncome, isPrivacy)} type="income" /><MetricCard title="Net Change" value={formatINR(totalIncome - totalExpense, isPrivacy)} type="default" /></div>
                 
-                {chartData && chartData.length > 0 && (
+                {chartData && (chartData||[]).length > 0 && (
                    <div className="modern-card p-5 sm:p-8">
                       <div className="mb-6"><h3 className="text-sm font-extrabold tracking-wide">Net Wealth Growth (Savings)</h3></div>
                       <SavingsBarChart data={chartData} isDark={isDarkMode} isPrivacy={isPrivacy} />
@@ -523,10 +414,10 @@
                 )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                    <div className="modern-card p-6 sm:p-8"><h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><TagIcon c="w-5 h-5 text-brand-teal" /> Spending by Tags</h3>{topTags.length === 0 ? <p className="text-xs text-slate-500 font-medium">No tags used.</p> : (<div className="space-y-5">{topTags.map((tag) => { const pct = totalExpense > 0 ? (tag.total / totalExpense) * 100 : 0; return (<div key={tag.name}><div className="flex justify-between items-center mb-1.5"><span className="text-xs font-extrabold text-brand-teal dark:text-teal-300 bg-teal-50 dark:bg-teal-900/30 border border-teal-100 dark:border-teal-800 px-2 py-0.5 rounded-md">{tag.name}</span><div className="text-right"><span className="text-xs font-black text-slate-900 dark:text-white blur-money">{formatINR(tag.total, isPrivacy)}</span> <span className="text-[10px] font-bold text-slate-400 blur-money ml-1">({isPrivacy ? '...' : pct.toFixed(1)}%)</span></div></div><div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden"><div className="h-full bg-brand-teal rounded-full" style={{width: `${(tag.total / topTags[0].total) * 100}%`}}></div></div></div>) })}</div>)}</div>
-                    <div className="modern-card p-6 sm:p-8"><h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><Repeat c="w-5 h-5 text-[#f59e0b]" /> Most Frequent Payees</h3><div className="divide-y divide-slate-50 dark:divide-slate-800">{frequentPayees.length === 0 ? <p className="text-xs text-slate-500 font-medium">No payees found.</p> : (frequentPayees.map((t, idx) => { return(<div key={idx} className="py-3.5 flex justify-between items-center"><div className="min-w-0 pr-4"><p className="text-sm font-extrabold text-slate-800 dark:text-slate-100 truncate">{t.name}</p></div><div className="text-right shrink-0"><p className="text-xs font-black text-slate-800 dark:text-slate-200 blur-money">{isPrivacy ? '......' : t.count + 'x'}</p><p className="text-[10px] font-bold text-slate-400 blur-money mt-0.5">{formatINR(t.total, isPrivacy)} <span className="ml-1">({isPrivacy?'...':((t.total/totalExpense)*100).toFixed(1)}%)</span></p></div></div>) }))}</div></div>
-                    <div className="modern-card p-6 sm:p-8"><h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><ArrowUpRight c="w-5 h-5 text-brand-expense"/> Largest Single Expenses</h3><div className="divide-y divide-slate-50 dark:divide-slate-800">{largestTxns.length === 0 ? <p className="text-xs text-slate-500 font-medium">No expenses found.</p> : (largestTxns.map((t, idx) => { const pct = totalExpense > 0 ? (t.amount / totalExpense) * 100 : 0; return(<div key={idx} className="py-3.5 flex justify-between items-center"><div className="min-w-0 pr-4"><p className="text-sm font-extrabold text-slate-800 dark:text-slate-100 truncate mb-1">{t.description}</p><div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest"><span>{formatDateStr(t.date)}</span></div></div><div className="text-right shrink-0"><p className="text-sm font-black text-brand-expense blur-money">-{formatINR(t.amount, isPrivacy)}</p><p className="text-[10px] font-bold text-slate-400 blur-money mt-0.5">({isPrivacy?'...':pct.toFixed(1)}%)</p></div></div>) }))}</div></div>
-                    <div className="modern-card p-6 sm:p-8"><h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><ArrowDownRight c="w-5 h-5 text-brand-income"/> Income Sources</h3>{incomeSplitData.length === 0 ? <p className="text-xs text-slate-500 font-medium">No income found.</p> : (<div className="space-y-5">{incomeSplitData.map((inc) => { const pct = totalIncome > 0 ? (inc.value / totalIncome) * 100 : 0; return (<div key={inc.name}><div className="flex justify-between items-center mb-1.5"><div className="flex items-center gap-2"><div className="w-2.5 h-2.5 rounded-sm" style={{backgroundColor: inc.color}}></div><span className="text-xs font-bold text-slate-700 dark:text-slate-300">{inc.name}</span></div><div className="text-right"><span className="text-xs font-black text-slate-900 dark:text-white blur-money">{formatINR(inc.value, isPrivacy)}</span> <span className="text-[10px] font-bold text-slate-400 blur-money ml-1">({isPrivacy ? '...' : pct.toFixed(1)}%)</span></div></div><div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden"><div className="h-full bg-brand-income rounded-full" style={{width: `${pct}%`, backgroundColor: inc.color}}></div></div></div>) })}</div>)}</div>
+                    <div className="modern-card p-6 sm:p-8"><h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><TagIcon c="w-5 h-5 text-brand-teal" /> Spending by Tags</h3>{(topTags||[]).length === 0 ? <p className="text-xs text-slate-500 font-medium">No tags used.</p> : (<div className="space-y-5">{(topTags||[]).map((tag) => { const pct = totalExpense > 0 ? ((tag?.total||0) / totalExpense) * 100 : 0; return (<div key={tag?.name||Math.random()}><div className="flex justify-between items-center mb-1.5"><span className="text-xs font-extrabold text-brand-teal dark:text-teal-300 bg-teal-50 dark:bg-teal-900/30 border border-teal-100 dark:border-teal-800 px-2 py-0.5 rounded-md">{tag?.name||'NA'}</span><div className="text-right"><span className="text-xs font-black text-slate-900 dark:text-white blur-money">{formatINR(tag?.total||0, isPrivacy)}</span> <span className="text-[10px] font-bold text-slate-400 blur-money ml-1">({isPrivacy ? '...' : pct.toFixed(1)}%)</span></div></div><div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden"><div className="h-full bg-brand-teal rounded-full" style={{width: `${((tag?.total||0) / ((topTags[0]&&topTags[0].total)||1)) * 100}%`}}></div></div></div>) })}</div>)}</div>
+                    <div className="modern-card p-6 sm:p-8"><h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><Repeat c="w-5 h-5 text-[#f59e0b]" /> Most Frequent Payees</h3><div className="divide-y divide-slate-50 dark:divide-slate-800">{(frequentPayees||[]).length === 0 ? <p className="text-xs text-slate-500 font-medium">No payees found.</p> : ((frequentPayees||[]).map((t, idx) => { return(<div key={idx} className="py-3.5 flex justify-between items-center"><div className="min-w-0 pr-4"><p className="text-sm font-extrabold text-slate-800 dark:text-slate-100 truncate">{t?.name||'NA'}</p></div><div className="text-right shrink-0"><p className="text-xs font-black text-slate-800 dark:text-slate-200 blur-money">{isPrivacy ? '......' : (t?.count||0) + 'x'}</p><p className="text-[10px] font-bold text-slate-400 blur-money mt-0.5">{formatINR(t?.total||0, isPrivacy)} <span className="ml-1">({isPrivacy?'...':(((t?.total||0)/totalExpense)*100).toFixed(1)}%)</span></p></div></div>) }))}</div></div>
+                    <div className="modern-card p-6 sm:p-8"><h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><ArrowUpRight c="w-5 h-5 text-brand-expense"/> Largest Single Expenses</h3><div className="divide-y divide-slate-50 dark:divide-slate-800">{(largestTxns||[]).length === 0 ? <p className="text-xs text-slate-500 font-medium">No expenses found.</p> : ((largestTxns||[]).map((t, idx) => { const pct = totalExpense > 0 ? ((t?.amount||0) / totalExpense) * 100 : 0; return(<div key={idx} className="py-3.5 flex justify-between items-center"><div className="min-w-0 pr-4"><p className="text-sm font-extrabold text-slate-800 dark:text-slate-100 truncate mb-1">{t?.description||'NA'}</p><div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest"><span>{formatDateStr(t?.date)}</span></div></div><div className="text-right shrink-0"><p className="text-sm font-black text-brand-expense blur-money">-{formatINR(t?.amount||0, isPrivacy)}</p><p className="text-[10px] font-bold text-slate-400 blur-money mt-0.5">({isPrivacy?'...':pct.toFixed(1)}%)</p></div></div>) }))}</div></div>
+                    <div className="modern-card p-6 sm:p-8"><h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><ArrowDownRight c="w-5 h-5 text-brand-income"/> Income Sources</h3>{(incomeSplitData||[]).length === 0 ? <p className="text-xs text-slate-500 font-medium">No income found.</p> : (<div className="space-y-5">{(incomeSplitData||[]).map((inc) => { const pct = totalIncome > 0 ? ((inc?.value||0) / totalIncome) * 100 : 0; return (<div key={inc?.name||Math.random()}><div className="flex justify-between items-center mb-1.5"><div className="flex items-center gap-2"><div className="w-2.5 h-2.5 rounded-sm" style={{backgroundColor: inc?.color}}></div><span className="text-xs font-bold text-slate-700 dark:text-slate-300">{inc?.name||'NA'}</span></div><div className="text-right"><span className="text-xs font-black text-slate-900 dark:text-white blur-money">{formatINR(inc?.value||0, isPrivacy)}</span> <span className="text-[10px] font-bold text-slate-400 blur-money ml-1">({isPrivacy ? '...' : pct.toFixed(1)}%)</span></div></div><div className="w-full h-1.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden"><div className="h-full bg-brand-income rounded-full" style={{width: `${pct}%`, backgroundColor: inc?.color}}></div></div></div>) })}</div>)}</div>
                 </div>
 
                 {categoryTagMatrix && (
@@ -535,14 +426,14 @@
                       <div className="w-full overflow-x-auto hide-scrollbar pb-2">
                          <table className="w-full text-left whitespace-nowrap min-w-max">
                             <thead>
-                               <tr><th className="py-4 px-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800">Category</th>{(categoryTagMatrix.tags||[]).map(t => <th key={t} className="py-4 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center border-b border-slate-100 dark:border-slate-800">{t}</th>)}</tr>
+                               <tr><th className="py-4 px-5 text-[10px] font-bold text-slate-400 uppercase tracking-widest border-b border-slate-100 dark:border-slate-800">Category</th>{(categoryTagMatrix?.tags||[]).map(t => <th key={t} className="py-4 px-3 text-[10px] font-bold text-slate-400 uppercase tracking-widest text-center border-b border-slate-100 dark:border-slate-800">{t}</th>)}</tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
-                               {(categoryTagMatrix.cats||[]).map(([catName, catData]) => (
+                               {(categoryTagMatrix?.cats||[]).map(([catName, catData]) => (
                                   <tr key={catName} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
                                      <td className="py-3 px-5 text-xs font-bold truncate max-w-[140px] sm:max-w-[200px]">{catName}</td>
-                                     {(categoryTagMatrix.tags||[]).map(t => {
-                                        const val = catData.tags[t] || 0;
+                                     {(categoryTagMatrix?.tags||[]).map(t => {
+                                        const val = (catData?.tags && catData.tags[t]) ? catData.tags[t] : 0;
                                         return (
                                            <td key={t} className="p-1.5 text-center">
                                               {val > 0 ? <div className="bg-brand-teal/10 text-brand-teal text-[11px] font-black py-2 px-3 rounded-xl blur-money">{formatCompact(val, isPrivacy)}</div> : <span className="text-slate-300 dark:text-slate-700">-</span>}
@@ -550,7 +441,7 @@
                                         )
                                      })}
                                   </tr>
-                                ))}
+                               ))}
                             </tbody>
                          </table>
                       </div>
@@ -560,43 +451,16 @@
         );
     }
 
-    function TransactionModal({ isOpen, onClose, onSave, settings, editData, allAvailableTags, excludedCats = [], setIsBackgroundSyncing }) {
-      const [type, setType] = useState('EXPENSE');
-      const [date, setDate] = useState('');
-      const [amount, setAmount] = useState('');
-      const [description, setDescription] = useState('');
-      const [category, setCategory] = useState('');
-      const [account, setAccount] = useState('');
-      const [transferTo, setTransferTo] = useState('');
-      const [tags, setTags] = useState('');
-      const [notes, setNotes] = useState('');
-      const [errorMsg, setErrorMsg] = useState('');
+    function TransactionModal({ isOpen, onClose, onSave, settings, editData, allAvailableTags = [], excludedCats = [], setIsBackgroundSyncing }) {
+      const [type, setType] = useState('EXPENSE'); const [date, setDate] = useState(''); const [amount, setAmount] = useState(''); const [description, setDescription] = useState(''); const [category, setCategory] = useState(''); const [account, setAccount] = useState(''); const [transferTo, setTransferTo] = useState(''); const [tags, setTags] = useState(''); const [notes, setNotes] = useState(''); const [errorMsg, setErrorMsg] = useState('');
 
-      const safeIncomeCats = settings?.incomeCats||[];
-      const safeExpenseCats = settings?.expenseCats||[];
-      const safeAccounts = settings?.accounts||[];
+      const safeIncomeCats = settings?.incomeCats||[]; const safeExpenseCats = settings?.expenseCats||[]; const safeAccounts = settings?.accounts||[];
 
       useEffect(() => {
         if (editData) {
-          setType(editData.rawType||'EXPENSE');
-          setDate(editData.date||new Date().toISOString().split('T')[0]);
-          setAmount(editData.amount||'');
-          setDescription(editData.description?String(editData.description):'');
-          setCategory(editData.category||'');
-          setAccount(editData.account||'');
-          setTransferTo(editData.transfer_to||'');
-          setTags(editData.tags||'');
-          setNotes(editData.notes||'');
+          setType(editData.rawType||'EXPENSE'); setDate(editData.date||new Date().toISOString().split('T')[0]); setAmount(editData.amount||''); setDescription(editData.description?String(editData.description):''); setCategory(editData.category||''); setAccount(editData.account||''); setTransferTo(editData.transfer_to||''); setTags(editData.tags||''); setNotes(editData.notes||'');
         } else {
-          setType('EXPENSE');
-          setDate(new Date().toISOString().split('T')[0]);
-          setAmount('');
-          setDescription('');
-          setCategory('');
-          setAccount('');
-          setTransferTo('');
-          setTags('');
-          setNotes('');
+          setType('EXPENSE'); setDate(new Date().toISOString().split('T')[0]); setAmount(''); setDescription(''); setCategory(''); setAccount(''); setTransferTo(''); setTags(''); setNotes('');
         }
         setErrorMsg('');
       }, [editData, isOpen, settings]);
@@ -607,7 +471,7 @@
 
       const handleSubmit = (e) => {
         e.preventDefault(); 
-        if (!String(description).trim()) return setErrorMsg("Please enter a description.");
+        if (!String(description||'').trim()) return setErrorMsg("Please enter a description.");
         if (!amount || parseFloat(amount) <= 0) return setErrorMsg("Please enter a valid amount.");
         if (!category && type !== 'TRANSFER') return setErrorMsg("Please select a Category.");
         if (!account) return setErrorMsg("Please select an Account.");
@@ -618,22 +482,14 @@
         const payload = { row_index: editData ? editData.row_index : null, date, type, amount, description, category: finalCat, account, transfer_to: type === 'TRANSFER' ? transferTo : '', tags, notes };
         
         onSave(prev => {
-            const newTxns = [...(prev.transactions || [])]; const fakeId = editData ? editData.row_index : 'temp_' + Date.now();
+            const newTxns = [...(prev?.transactions || [])]; const fakeId = editData ? editData.row_index : 'temp_' + Date.now();
             const opt = { ...payload, row_index: fakeId, amount: parseFloat(amount) };
             if (editData) { const idx = newTxns.findIndex(t => t.row_index === editData.row_index); if (idx > -1) newTxns[idx] = opt; } else { newTxns.unshift(opt); }
             return { ...prev, transactions: newTxns };
         });
         
-        setIsBackgroundSyncing(true);
-        onClose();
-        apiCall('SAVE_TRANSACTION', { data: payload }).then(res => {
-            onSave(res);
-            setIsBackgroundSyncing(false);
-        }).catch(e => {
-            console.error(e);
-            setIsBackgroundSyncing(false);
-            alert("Save failed: " + e.message);
-        });
+        setIsBackgroundSyncing(true); onClose();
+        apiCall('SAVE_TRANSACTION', { data: payload }).then(res => { if(res) onSave(res); setIsBackgroundSyncing(false); }).catch(e => { console.error(e); setIsBackgroundSyncing(false); alert("Save failed: " + e.message); });
       };
 
       const catOptions = type === 'INCOME' ? safeIncomeCats : safeExpenseCats;
@@ -656,7 +512,7 @@
                 {type === 'TRANSFER' ? (
                    <div className="flex gap-4 animate-fade-in">
                       <div className="flex-1"><label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Account (From)</label><SearchableSelect options={safeAccounts} value={account} onChange={setAccount} placeholder="Select..." compact={true} /></div>
-                      <div className="flex-1"><label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Transfer To</label><SearchableSelect options={safeAccounts.filter(a => a !== account)} value={transferTo} onChange={setTransferTo} placeholder="Select target..." compact={true} /></div>
+                      <div className="flex-1"><label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Transfer To</label><SearchableSelect options={(safeAccounts||[]).filter(a => a !== account)} value={transferTo} onChange={setTransferTo} placeholder="Select target..." compact={true} /></div>
                    </div>
                 ) : (
                    <div className="flex gap-4 animate-fade-in">
@@ -679,106 +535,45 @@
     }
 
     function SettingsView({ appData, onSave, appPin, autoLockTime, setIsBackgroundSyncing }) {
-      const safeIncomeCats = appData?.settings?.incomeCats||[];
-      const safeExpenseCats = appData?.settings?.expenseCats||[];
-      const safeAccounts = appData?.settings?.accounts||[];
-      
-      const [exCats, setExCats] = useState(appData.excludedCats||[]);
-      const [bals, setBals] = useState(appData.balances||[]);
-      
-      const [incCats, setIncCats] = useState([]);
-      const [expCats, setExpCats] = useState([]);
-      
-      const [pin, setPin] = useState(appPin||'');
-      const [showPin, setShowPin] = useState(false);
-      const [lockTime, setLockTime] = useState(autoLockTime||'0');
-      const [saving, setSaving] = useState(false);
-      const [saveError, setSaveError] = useState('');
+      const safeIncomeCats = appData?.settings?.incomeCats||[]; const safeExpenseCats = appData?.settings?.expenseCats||[]; const safeAccounts = appData?.settings?.accounts||[];
+      const [exCats, setExCats] = useState(appData?.excludedCats||[]); const [bals, setBals] = useState(appData?.balances||[]);
+      const [incCats, setIncCats] = useState([]); const [expCats, setExpCats] = useState([]);
+      const [pin, setPin] = useState(appPin||''); const [showPin, setShowPin] = useState(false); const [lockTime, setLockTime] = useState(autoLockTime||'0');
+      const [saving, setSaving] = useState(false); const [saveError, setSaveError] = useState('');
 
       const [snapshotDate, setSnapshotDate] = useState(() => {
-         if (appData.balances && appData.balances.length > 0) {
-             const latest = [...appData.balances].sort((a,b) => parseDateLocal(b.date) - parseDateLocal(a.date))[0];
-             if (latest && latest.date) return latest.date;
-         }
+         if (appData?.balances && appData.balances.length > 0) { const latest = [...(appData.balances||[])].sort((a,b) => parseDateLocal(b?.date) - parseDateLocal(a?.date))[0]; if (latest && latest.date) return latest.date; }
          return new Date().toISOString().split('T')[0];
       });
 
       useEffect(() => {
-        setIncCats(safeIncomeCats.map((c, i) => ({ id: `inc_${i}`, orig: c, val: c })));
-        setExpCats(safeExpenseCats.map((c, i) => ({ id: `exp_${i}`, orig: c, val: c })));
-        setExCats(appData.excludedCats||[]);
-        setBals(appData.balances||[]);
+        setIncCats((safeIncomeCats||[]).map((c, i) => ({ id: `inc_${i}`, orig: c, val: c }))); setExpCats((safeExpenseCats||[]).map((c, i) => ({ id: `exp_${i}`, orig: c, val: c })));
+        setExCats(appData?.excludedCats||[]); setBals(appData?.balances||[]);
       }, [appData]);
 
       const moveCat = (idx, dir, type) => {
-          const list = type === 'INC' ? [...incCats] : [...expCats];
-          const setter = type === 'INC' ? setIncCats : setExpCats;
-          if (dir === 'UP' && idx > 0) {
-              [list[idx-1], list[idx]] = [list[idx], list[idx-1]];
-              setter(list);
-          } else if (dir === 'DOWN' && idx < list.length - 1) {
-              [list[idx+1], list[idx]] = [list[idx], list[idx+1]];
-              setter(list);
-          }
+          const list = type === 'INC' ? [...incCats] : [...expCats]; const setter = type === 'INC' ? setIncCats : setExpCats;
+          if (dir === 'UP' && idx > 0) { [list[idx-1], list[idx]] = [list[idx], list[idx-1]]; setter(list); } else if (dir === 'DOWN' && idx < list.length - 1) { [list[idx+1], list[idx]] = [list[idx], list[idx+1]]; setter(list); }
       };
 
       const handleSave = () => {
-         if (pin.length > 0 && (pin.length < 4 || pin.length > 8)) {
-             setSaveError("PIN must be between 4 and 8 digits.");
-             return;
-         }
-         setSaveError('');
-         setSaving(true);
-         setIsBackgroundSyncing(true);
+         if (pin.length > 0 && (pin.length < 4 || pin.length > 8)) { setSaveError("PIN must be between 4 and 8 digits."); return; }
+         setSaveError(''); setSaving(true); setIsBackgroundSyncing(true);
          
-         const renames = [];
-         const finalIncCats = [];
-         incCats.forEach(c => {
-             const cleanVal = normalizeCategory(c.val);
-             if (cleanVal !== '') finalIncCats.push(cleanVal);
-             if (c.orig && normalizeCategory(c.orig) !== cleanVal && cleanVal !== '') renames.push({ old: c.orig, new: cleanVal });
-         });
-
-         const finalExpCats = [];
-         expCats.forEach(c => {
-             const cleanVal = normalizeCategory(c.val);
-             if (cleanVal !== '') finalExpCats.push(cleanVal);
-             if (c.orig && normalizeCategory(c.orig) !== cleanVal && cleanVal !== '') renames.push({ old: c.orig, new: cleanVal });
-         });
+         const renames = []; const finalIncCats = []; const finalExpCats = [];
+         incCats.forEach(c => { const cleanVal = normalizeCategory(c.val); if (cleanVal !== '') finalIncCats.push(cleanVal); if (c.orig && normalizeCategory(c.orig) !== cleanVal && cleanVal !== '') renames.push({ old: c.orig, new: cleanVal }); });
+         expCats.forEach(c => { const cleanVal = normalizeCategory(c.val); if (cleanVal !== '') finalExpCats.push(cleanVal); if (c.orig && normalizeCategory(c.orig) !== cleanVal && cleanVal !== '') renames.push({ old: c.orig, new: cleanVal }); });
          
          const cleanBals = bals.map(b => ({...b, balance: b.balance === '' ? 0 : parseFloat(b.balance)}));
-
          const payload = { excludedCats: exCats, balances: cleanBals, incomeCats: finalIncCats, expenseCats: finalExpCats, categoryRenames: renames, appPin: pin, autoLockTime: lockTime };
          
          onSave(prev => {
-             let updatedTxns = [...(prev.transactions || [])];
-             renames.forEach(r => {
-                 updatedTxns = updatedTxns.map(t => normalizeCategory(t.category) === normalizeCategory(r.old) ? { ...t, category: r.new } : t);
-             });
-             return {
-                 ...prev,
-                 transactions: updatedTxns,
-                 settings: {
-                     ...prev.settings,
-                     incomeCats: payload.incomeCats,
-                     expenseCats: payload.expenseCats
-                 },
-                 balances: payload.balances,
-                 excludedCats: payload.excludedCats,
-                 appPin: payload.appPin,
-                 autoLockTime: payload.autoLockTime
-             };
+             let updatedTxns = [...(prev?.transactions || [])];
+             renames.forEach(r => { updatedTxns = updatedTxns.map(t => normalizeCategory(t.category) === normalizeCategory(r.old) ? { ...t, category: r.new } : t); });
+             return { ...prev, transactions: updatedTxns, settings: { ...(prev?.settings||{}), incomeCats: payload.incomeCats, expenseCats: payload.expenseCats }, balances: payload.balances, excludedCats: payload.excludedCats, appPin: payload.appPin, autoLockTime: payload.autoLockTime };
          });
 
-         apiCall('SAVE_SETTINGS', { payload }).then(() => {
-             setSaving(false);
-             setIsBackgroundSyncing(false);
-         }).catch(e => {
-             console.error(e);
-             setSaving(false);
-             setIsBackgroundSyncing(false);
-             alert("Settings save failed. Please check your connection.");
-         });
+         apiCall('SAVE_SETTINGS', { payload }).then(() => { setSaving(false); setIsBackgroundSyncing(false); }).catch(e => { console.error(e); setSaving(false); setIsBackgroundSyncing(false); alert("Settings save failed. Please check your connection."); });
       };
 
       return (
@@ -788,20 +583,16 @@
                {saveError && <div className="mb-6 p-3 bg-rose-50 text-brand-expense rounded-full text-xs font-bold text-center border border-rose-100">{saveError}</div>}
                <h4 className="text-sm font-bold mb-4">Account Snapshots</h4>
                <div className="mb-6 bg-slate-50 dark:bg-brand-bgDark border border-slate-100 dark:border-slate-800 p-5 rounded-3xl"><label className="block text-[11px] font-bold mb-1">Global Snapshot Date</label><input type="date" value={snapshotDate} onChange={e=>setSnapshotDate(e.target.value)} className="w-full sm:w-64 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-semibold outline-none" /></div>
-               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">{safeAccounts.map(acc => { 
-                   const ex = bals.find(b => b.account === acc && b.date === snapshotDate) || { balance: '' }; 
+               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">{(safeAccounts||[]).map(acc => { 
+                   const ex = (bals||[]).find(b => b?.account === acc && b?.date === snapshotDate) || { balance: '' }; 
                    return (
                      <div key={acc} className="p-5 bg-slate-50 dark:bg-brand-bgDark rounded-3xl border border-slate-100 dark:border-slate-800"><h4 className="font-bold text-sm mb-3 truncate">{acc}</h4><input type="number" step="0.01" value={ex.balance} onChange={e => {
-                         const val = parseFloat(e.target.value);
-                         const isNaNVal = isNaN(val);
+                         const val = parseFloat(e.target.value); const isNaNVal = isNaN(val);
                          setBals(prev => {
-                             const existingIndex = prev.findIndex(b => b.account === acc && b.date === snapshotDate);
-                             let newBals = [...prev];
-                             if (existingIndex >= 0) {
-                                 newBals[existingIndex] = { ...newBals[existingIndex], balance: isNaNVal ? '' : val };
-                             } else {
-                                 newBals.push({ account: acc, date: snapshotDate, balance: isNaNVal ? '' : val });
-                             }
+                             const existingIndex = (prev||[]).findIndex(b => b?.account === acc && b?.date === snapshotDate);
+                             let newBals = [...(prev||[])];
+                             if (existingIndex >= 0) { newBals[existingIndex] = { ...newBals[existingIndex], balance: isNaNVal ? '' : val }; } 
+                             else { newBals.push({ account: acc, date: snapshotDate, balance: isNaNVal ? '' : val }); }
                              return newBals;
                          });
                      }} className="w-full bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none" /></div>
@@ -823,7 +614,7 @@
                           <h4 className="text-xs font-bold mb-4 uppercase tracking-widest">Income Categories</h4>
                           <div className="space-y-2">
                              {incCats.map((item, i) => { 
-                                 const isEx = exCats.includes(item.val); 
+                                 const isEx = (exCats||[]).includes(item.val); 
                                  return (
                                      <div key={item.id} className="flex justify-between items-center p-1 bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-700">
                                          <div className="flex flex-col mx-1 shrink-0">
@@ -832,7 +623,7 @@
                                          </div>
                                          <input value={item.val} onChange={(e)=>{const n=[...incCats];n[i]={...n[i], val:e.target.value};setIncCats(n);}} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className={`flex-1 min-w-0 bg-transparent outline-none text-sm font-bold px-2 ${isEx?'line-through opacity-50':''}`} />
                                          <div className="flex gap-2 pr-2 shrink-0 items-center">
-                                             <div onClick={()=>setExCats(isEx?exCats.filter(x=>x!==item.val):[...exCats,item.val])} className={`w-9 h-5 flex items-center rounded-full p-1 cursor-pointer transition-colors ${!isEx?'bg-brand-teal':'bg-slate-300 dark:bg-slate-700'}`}><div className={`bg-white w-3 h-3 rounded-full transition-transform ${!isEx?'translate-x-4':''}`}></div></div>
+                                             <div onClick={()=>setExCats(isEx?(exCats||[]).filter(x=>x!==item.val):[...(exCats||[]),item.val])} className={`w-9 h-5 flex items-center rounded-full p-1 cursor-pointer transition-colors ${!isEx?'bg-brand-teal':'bg-slate-300 dark:bg-slate-700'}`}><div className={`bg-white w-3 h-3 rounded-full transition-transform ${!isEx?'translate-x-4':''}`}></div></div>
                                              <button type="button" onClick={()=>setIncCats(incCats.filter((_,x)=>x!==i))} className="text-slate-300 hover:text-brand-expense p-1"><Trash2 c="w-4 h-4"/></button>
                                          </div>
                                      </div>
@@ -845,7 +636,7 @@
                           <h4 className="text-xs font-bold mb-4 uppercase tracking-widest">Expense Categories</h4>
                           <div className="space-y-2">
                              {expCats.map((item, i) => { 
-                                 const isEx = exCats.includes(item.val); 
+                                 const isEx = (exCats||[]).includes(item.val); 
                                  return (
                                      <div key={item.id} className="flex justify-between items-center p-1 bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-700">
                                          <div className="flex flex-col mx-1 shrink-0">
@@ -854,7 +645,7 @@
                                          </div>
                                          <input value={item.val} onChange={(e)=>{const n=[...expCats];n[i]={...n[i], val:e.target.value};setExpCats(n);}} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className={`flex-1 min-w-0 bg-transparent outline-none text-sm font-bold px-2 ${isEx?'line-through opacity-50':''}`} />
                                          <div className="flex gap-2 pr-2 shrink-0 items-center">
-                                             <div onClick={()=>setExCats(isEx?exCats.filter(x=>x!==item.val):[...exCats,item.val])} className={`w-9 h-5 flex items-center rounded-full p-1 cursor-pointer transition-colors ${!isEx?'bg-brand-teal':'bg-slate-300 dark:bg-slate-700'}`}><div className={`bg-white w-3 h-3 rounded-full transition-transform ${!isEx?'translate-x-4':''}`}></div></div>
+                                             <div onClick={()=>setExCats(isEx?(exCats||[]).filter(x=>x!==item.val):[...(exCats||[]),item.val])} className={`w-9 h-5 flex items-center rounded-full p-1 cursor-pointer transition-colors ${!isEx?'bg-brand-teal':'bg-slate-300 dark:bg-slate-700'}`}><div className={`bg-white w-3 h-3 rounded-full transition-transform ${!isEx?'translate-x-4':''}`}></div></div>
                                              <button type="button" onClick={()=>setExpCats(expCats.filter((_,x)=>x!==i))} className="text-slate-300 hover:text-brand-expense p-1"><Trash2 c="w-4 h-4"/></button>
                                          </div>
                                      </div>
@@ -873,36 +664,21 @@
       );
     }
 
-    function BulkActionModal({ isOpen, action, count, onClose, onConfirm, bulkCategoryOptions, excludedCats }) {
+    function BulkActionModal({ isOpen, action, count, onClose, onConfirm, bulkCategoryOptions = [], excludedCats = [] }) {
       const [val, setVal] = useState('');
-      
-      useEffect(() => {
-        if (!isOpen) setVal('');
-      }, [isOpen]);
-
+      useEffect(() => { if (!isOpen) setVal(''); }, [isOpen]);
       if (!isOpen) return null;
 
       const handleSubmit = (e) => {
         e.preventDefault();
         if (action === 'CATEGORY' && !val) return alert("Select Category");
-        let up = {};
-        if (action === 'CATEGORY') up.category = normalizeCategory(val);
-        if (action === 'TAGS') up.tags = val;
-        if (action === 'DESC') up.description = val;
-        onConfirm(up);
+        let up = {}; if (action === 'CATEGORY') up.category = normalizeCategory(val); if (action === 'TAGS') up.tags = val; if (action === 'DESC') up.description = val; onConfirm(up);
       };
 
       let t = "", l = "", inp = null;
-      if (action === 'CATEGORY') {
-        t = "Recategorize"; l = "Select new category:";
-        inp = <SearchableSelect options={bulkCategoryOptions} value={val} onChange={setVal} placeholder="Select..." excludedList={excludedCats} />;
-      } else if (action === 'TAGS') {
-        t = "Overwrite Tags"; l = "Enter new tags:";
-        inp = <input type="text" placeholder="#vacation" value={val} onChange={e=>setVal(e.target.value)} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none" />;
-      } else if (action === 'DESC') {
-        t = "Redescribe"; l = "Enter description:";
-        inp = <input type="text" placeholder="e.g. Swiggy" value={val} onChange={e=>setVal(e.target.value)} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none" />;
-      }
+      if (action === 'CATEGORY') { t = "Recategorize"; l = "Select new category:"; inp = <SearchableSelect options={bulkCategoryOptions} value={val} onChange={setVal} placeholder="Select..." excludedList={excludedCats} />; } 
+      else if (action === 'TAGS') { t = "Overwrite Tags"; l = "Enter new tags:"; inp = <input type="text" placeholder="#vacation" value={val} onChange={e=>setVal(e.target.value)} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none" />; } 
+      else if (action === 'DESC') { t = "Redescribe"; l = "Enter description:"; inp = <input type="text" placeholder="e.g. Swiggy" value={val} onChange={e=>setVal(e.target.value)} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none" />; }
 
       return (
         <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
@@ -948,13 +724,11 @@
       const [isPrivacyMode, setIsPrivacyMode] = useState(() => { try { const s = localStorage.getItem('privacyMode'); return s !== null ? s === 'true' : true; } catch(e) { return true; } });
 
       const [mobileTooltip, setMobileTooltip] = useState({ text: '', x: 0, y: 0, visible: false, pos: 'top' });
-      const touchShowTimer = useRef(null);
-      const touchHideTimer = useRef(null);
+      const touchShowTimer = useRef(null); const touchHideTimer = useRef(null);
 
       const handleTouchStart = (text, e, pos = 'top') => {
         if (touchHideTimer.current) clearTimeout(touchHideTimer.current);
-        const touch = e.touches[0];
-        let clampX = touch.clientX; if (clampX < 60) clampX = 60; if (clampX > window.innerWidth - 60) clampX = window.innerWidth - 60;
+        const touch = e.touches[0]; let clampX = touch.clientX; if (clampX < 60) clampX = 60; if (clampX > window.innerWidth - 60) clampX = window.innerWidth - 60;
         touchShowTimer.current = setTimeout(() => { setMobileTooltip({ text, x: clampX, y: pos === 'top' ? touch.clientY - 55 : touch.clientY + 45, visible: true, pos }); }, 400);
       };
 
@@ -965,21 +739,21 @@
 
       useEffect(() => {
         let aT;
-        const rT = () => { if (aT) clearTimeout(aT); if (appData.autoLockTime && appData.autoLockTime !== '0' && isAuthenticated) { aT = setTimeout(() => { setIsAuthenticated(false); }, parseInt(appData.autoLockTime) * 60000); } };
-        const hA = () => rT();
-        ['mousemove','keydown','touchstart','scroll','click'].forEach(e => window.addEventListener(e, hA)); rT();
+        const rT = () => { if (aT) clearTimeout(aT); if (appData?.autoLockTime && appData.autoLockTime !== '0' && isAuthenticated) { aT = setTimeout(() => { setIsAuthenticated(false); }, parseInt(appData.autoLockTime) * 60000); } };
+        const hA = () => rT(); ['mousemove','keydown','touchstart','scroll','click'].forEach(e => window.addEventListener(e, hA)); rT();
         return () => { ['mousemove','keydown','touchstart','scroll','click'].forEach(e => window.removeEventListener(e, hA)); if (aT) clearTimeout(aT); };
-      }, [appData.autoLockTime, isAuthenticated]);
+      }, [appData?.autoLockTime, isAuthenticated]);
       
       useEffect(() => { 
           if (!isSetupComplete) return;
           try { const c = localStorage.getItem('finTrackerCache'); if (c) { setAppData(JSON.parse(c)); setIsLoading(false); setIsBackgroundSyncing(true); } } catch(e) {} 
           apiCall('GET_DATA').then(res => {
-            setAppData(res); try { localStorage.setItem('finTrackerCache', JSON.stringify(res)); } catch(e) {} setIsLoading(false); setIsBackgroundSyncing(false);
+            if(res) { setAppData(res); try { localStorage.setItem('finTrackerCache', JSON.stringify(res)); } catch(e) {} }
+            setIsLoading(false); setIsBackgroundSyncing(false);
           }).catch(e => { console.error(e); setIsLoading(false); setIsBackgroundSyncing(false); }); 
       }, [isSetupComplete]);
 
-      useEffect(() => { if (appData.transactions.length > 0) { try { localStorage.setItem('finTrackerCache', JSON.stringify(appData)); } catch(e) {} } }, [appData]);
+      useEffect(() => { if (appData && appData.transactions && appData.transactions.length > 0) { try { localStorage.setItem('finTrackerCache', JSON.stringify(appData)); } catch(e) {} } }, [appData]);
 
       useEffect(() => {
         const m = document.getElementById("theme-color-meta");
@@ -994,18 +768,18 @@
 
       const handleManualRefresh = () => {
         setIsBackgroundSyncing(true);
-        apiCall('GET_DATA').then(res => { setAppData(res); try { localStorage.setItem('finTrackerCache', JSON.stringify(res)); } catch(e) {} setIsBackgroundSyncing(false); }).catch(e => { setTimeout(() => setIsBackgroundSyncing(false), 800); });
+        apiCall('GET_DATA').then(res => { if(res) { setAppData(res); try { localStorage.setItem('finTrackerCache', JSON.stringify(res)); } catch(e) {} } setIsBackgroundSyncing(false); }).catch(e => { setTimeout(() => setIsBackgroundSyncing(false), 800); });
       };
 
       const handleSort = (k) => setSortConfig(p => ({ key: k, direction: p.key===k && p.direction==='desc' ? 'asc' : 'desc' }));
       const SortIcon = ({ colKey }) => sortConfig.key !== colKey ? <div className="w-3 h-3 opacity-0"></div> : (sortConfig.direction === 'asc' ? <ChevronUp c="w-3 h-3 text-brand-teal" /> : <ChevronDown c="w-3 h-3 text-brand-teal" />);
 
-      const parsedData = useMemo(() => (appData.transactions || []).map((r, i) => { 
+      const parsedData = useMemo(() => (appData?.transactions || []).map((r, i) => { 
           const d = new Date(r.date); 
           return { ...r, id: i, amount: parseAmt(r.amount), monthIdx: isNaN(d.getMonth()) ? -1 : d.getMonth(), year: isNaN(d.getFullYear()) ? -1 : d.getFullYear(), rawType: String(r.type||'').toUpperCase(), category: normalizeCategory(r.category) }; 
       }).filter(r => r.amount > 0 && r.year !== -1).sort((a,b) => new Date(b.date) - new Date(a.date)), [appData.transactions]);
 
-      const activeData = useMemo(() => { const ex = appData.excludedCats || []; return parsedData.filter(t => !ex.includes(t.category)); }, [parsedData, appData.excludedCats]);
+      const activeData = useMemo(() => { const ex = appData?.excludedCats || []; return parsedData.filter(t => !ex.includes(t.category)); }, [parsedData, appData.excludedCats]);
       const allAvailableTags = useMemo(() => { const s = new Set(); parsedData.forEach(t => extractTags(t.tags).forEach(tag => s.add(tag))); return Array.from(s).sort(); }, [parsedData]);
       
       const ledgerCatOptions = useMemo(() => {
@@ -1086,7 +860,6 @@
       }, [ledgerFiltered, sortConfig]);
 
       useEffect(() => { if (groupedLedger.length > 0 && Object.keys(expandedGroups).length === 0) setExpandedGroups({ [groupedLedger[0].label]: true }); }, [groupedLedger]);
-
       const toggleGroup = (label) => { setExpandedGroups(prev => ({ ...prev, [label]: !prev[label] })); };
 
       const isAllCollapsed = groupedLedger.length > 0 && groupedLedger.every(g => !expandedGroups[g.label]);
@@ -1103,7 +876,7 @@
       const accountBalances = useMemo(() => {
         const balsObj = {}; const safeAccounts = appData?.settings?.accounts||[];
         safeAccounts.forEach(a => {
-            const snaps = (appData.balances || []).filter(b => b.account === a); snaps.sort((x, y) => parseDateLocal(y.date) - parseDateLocal(x.date)); const latest = snaps[0];
+            const snaps = (appData?.balances || []).filter(b => b?.account === a); snaps.sort((x, y) => parseDateLocal(y?.date) - parseDateLocal(x?.date)); const latest = snaps[0];
             balsObj[a] = { current: latest && latest.balance !== '' ? parseFloat(latest.balance) : 0, startDate: latest ? parseDateLocal(latest.date) : new Date('1970-01-01') };
         });
         activeData.forEach(t => {
@@ -1136,7 +909,6 @@
         let expenses = analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment'));
         if (analyticsCategory !== 'All Categories') expenses = expenses.filter(r => String(r.category || 'Uncategorized') === analyticsCategory);
         if (!expenses.length) return { topCategories: [], monthCols: [], matrix: {}, maxVal: 0 };
-        
         const catTotals = {}; const catMonthMatrix = {};
         expenses.forEach(row => { const cat = String(row.category || 'Uncategorized'); if (!catTotals[cat]) { catTotals[cat] = 0; catMonthMatrix[cat] = {}; } catTotals[cat] += row.amount; const mKey = MONTH_NAMES[row.monthIdx]; if (!catMonthMatrix[cat][mKey]) catMonthMatrix[cat][mKey] = 0; catMonthMatrix[cat][mKey] += row.amount; });
         const topCategories = Object.keys(catTotals).sort((a, b) => catTotals[b] - catTotals[a]).slice(0, 10); const activeMonthIndices = Array.from(new Set(expenses.map(r => r.monthIdx))).sort((a,b) => a - b); const monthCols = activeMonthIndices.map(mIdx => ({ index: mIdx, key: MONTH_NAMES[mIdx], label: MONTH_NAMES[mIdx] }));
@@ -1151,15 +923,15 @@
 
       const executeBulkAction = (updates) => {
         setIsBackgroundSyncing(true); const isDel = bulkModal.action === 'DELETE';
-        setAppData(p => { let n = [...(p.transactions || [])]; if (isDel) n = n.filter(t => !selectedRows.includes(t.row_index)); else n = n.map(t => selectedRows.includes(t.row_index) ? { ...t, ...updates } : t); return { ...p, transactions: n }; });
+        setAppData(p => { let n = [...(p?.transactions || [])]; if (isDel) n = n.filter(t => !selectedRows.includes(t.row_index)); else n = n.map(t => selectedRows.includes(t.row_index) ? { ...t, ...updates } : t); return { ...p, transactions: n }; });
         setBulkModal({ isOpen: false, action: null }); setSelectedRows([]); setIsActionsMenuOpen(false);
-        apiCall('BULK_ACTION', { actionType: isDel ? 'DELETE' : 'UPDATE', rowIndices: selectedRows, updates: updates || {} }).then(res => { setAppData(res); setIsBackgroundSyncing(false); }).catch(e => setIsBackgroundSyncing(false));
+        apiCall('BULK_ACTION', { actionType: isDel ? 'DELETE' : 'UPDATE', rowIndices: selectedRows, updates: updates || {} }).then(res => { if(res) setAppData(res); setIsBackgroundSyncing(false); }).catch(e => setIsBackgroundSyncing(false));
       };
 
       const executeDeleteSingle = () => {
          if (!deleteModalId) return; setIsBackgroundSyncing(true); const id = deleteModalId;
-         setAppData(p => ({ ...p, transactions: (p.transactions||[]).filter(t => t.row_index !== id) })); setSelectedRows(p => p.filter(r => r !== id)); setDeleteModalId(null);
-         apiCall('BULK_ACTION', { actionType: 'DELETE', rowIndices: [id], updates: {} }).then(res => { setAppData(res); setIsBackgroundSyncing(false); }).catch(e => setIsBackgroundSyncing(false));
+         setAppData(p => ({ ...p, transactions: (p?.transactions||[]).filter(t => t.row_index !== id) })); setSelectedRows(p => p.filter(r => r !== id)); setDeleteModalId(null);
+         apiCall('BULK_ACTION', { actionType: 'DELETE', rowIndices: [id], updates: {} }).then(res => { if(res) setAppData(res); setIsBackgroundSyncing(false); }).catch(e => setIsBackgroundSyncing(false));
       };
 
       const selectedTxns = useMemo(() => ledgerFiltered.filter(t => selectedRows.includes(t.row_index)), [selectedRows, ledgerFiltered]);
@@ -1171,7 +943,7 @@
 
       if (!isSetupComplete) return <SetupScreen onSave={(u, k, data) => { GLOBAL_API_URL=u; GLOBAL_API_KEY=k; try{localStorage.setItem('API_URL',u);localStorage.setItem('API_KEY',k); if(data)localStorage.setItem('finTrackerCache',JSON.stringify(data));}catch(e){} if(data)setAppData(data); setIsSetupComplete(true); }} />;
       if (isLoading) return ( <div className="h-screen w-full flex flex-col items-center justify-center bg-brand-bgLight dark:bg-brand-bgDark transition-colors duration-300"><div className="w-10 h-10 border-4 border-slate-200 dark:border-slate-800 border-t-brand-teal rounded-full animate-spin"></div><p className="mt-4 text-[10px] font-bold text-slate-400 uppercase tracking-widest animate-pulse">Initializing...</p></div> );
-      if (appData.appPin && !isAuthenticated) return <LockScreen correctPin={appData.appPin} onUnlock={() => setIsAuthenticated(true)} />;
+      if (appData?.appPin && !isAuthenticated) return <LockScreen correctPin={appData.appPin} onUnlock={() => setIsAuthenticated(true)} />;
 
       return (
         <div className="flex flex-col md:flex-row h-screen overflow-hidden bg-brand-bgLight dark:bg-brand-bgDark transition-colors duration-300 relative">
@@ -1198,10 +970,10 @@
                  </div>
                  <div className="flex xl:hidden items-center gap-1.5 shrink-0">
                     <button onClick={handleManualRefresh} onTouchStart={(e) => handleTouchStart('Refresh', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><RefreshCw c={`w-4 h-4 ${isBackgroundSyncing ? 'animate-spin text-brand-teal' : ''}`}/><span className="nav-tooltip-bottom">Refresh</span></button>
-                    {appData.appPin && <button onClick={() => setIsAuthenticated(false)} onTouchStart={(e) => handleTouchStart('Lock App', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><LockIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Lock App</span></button>}
+                    {appData?.appPin && <button onClick={() => setIsAuthenticated(false)} onTouchStart={(e) => handleTouchStart('Lock App', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><LockIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Lock App</span></button>}
                     <button onClick={() => setIsPrivacyMode(!isPrivacyMode)} onTouchStart={(e) => handleTouchStart('Privacy Mode', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${isPrivacyMode ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`}>{isPrivacyMode ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Privacy</span></button>
                     <button onClick={() => setIsDarkMode(!isDarkMode)} onTouchStart={(e) => handleTouchStart('Toggle Theme', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800">{isDarkMode ? <Sun c="w-4 h-4"/> : <Moon c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Theme</span></button>
-                    <button onClick={() => setActiveTab('settings')} onTouchStart={(e) => handleTouchStart('Settings', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`><SettingsIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Settings</span></button>
+                    <button onClick={() => setActiveTab('settings')} onTouchStart={(e) => handleTouchStart('Settings', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`}><SettingsIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Settings</span></button>
                  </div>
               </div>
 
@@ -1220,7 +992,7 @@
 
               <div className="hidden xl:flex items-center gap-2 shrink-0 ml-auto">
                  <button onClick={handleManualRefresh} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50"><RefreshCw c={`w-4 h-4 ${isBackgroundSyncing ? 'animate-spin text-brand-teal' : ''}`}/><span className="nav-tooltip-bottom">Refresh</span></button>
-                 {appData.appPin && <button onClick={() => setIsAuthenticated(false)} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50"><LockIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Lock App</span></button>}
+                 {appData?.appPin && <button onClick={() => setIsAuthenticated(false)} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50"><LockIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Lock App</span></button>}
                  <button onClick={() => setIsPrivacyMode(!isPrivacyMode)} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${isPrivacyMode ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50'}`}>{isPrivacyMode ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Privacy Mode</span></button>
                  <button onClick={() => setIsDarkMode(!isDarkMode)} className="nav-item focus:outline-none relative p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50">{isDarkMode ? <Sun c="w-4 h-4"/> : <Moon c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Toggle Theme</span></button>
                  <button onClick={() => setActiveTab('settings')} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50'}`}><SettingsIcon c="w-4 h-4"/><span className="nav-tooltip-bottom-right">Settings</span></button>
@@ -1270,7 +1042,7 @@
                      </div>
                      <div className="grid grid-cols-2 sm:flex w-full sm:w-auto gap-3 shrink-0 z-20">
                         <div className="w-full sm:w-40"><SearchableSelect options={['All Accounts', ...safeAccountsList]} value={ledgerAccountFilter === 'All' ? 'All Accounts' : ledgerAccountFilter} onChange={(val) => setLedgerAccountFilter(val === 'All Accounts' ? 'All' : val)} placeholder="Account..." compact={true} /></div>
-                        <div className="w-full sm:w-48"><SearchableSelect disabled={ledgerTypeFilter === 'TRANSFER'} options={ledgerTypeFilter === 'TRANSFER' ? ['TRANSFER'] : ledgerCatOptions} value={ledgerTypeFilter === 'TRANSFER' ? 'TRANSFER' : (ledgerCategoryFilter === 'All' ? 'All Categories' : ledgerCategoryFilter)} onChange={(val) => setLedgerCategoryFilter(val === 'All Categories' || val === 'TRANSFER' ? 'All' : val)} placeholder="Category..." compact={true} excludedList={appData.excludedCats || []} /></div>
+                        <div className="w-full sm:w-48"><SearchableSelect disabled={ledgerTypeFilter === 'TRANSFER'} options={ledgerTypeFilter === 'TRANSFER' ? ['TRANSFER'] : ledgerCatOptions} value={ledgerTypeFilter === 'TRANSFER' ? 'TRANSFER' : (ledgerCategoryFilter === 'All' ? 'All Categories' : ledgerCategoryFilter)} onChange={(val) => setLedgerCategoryFilter(val === 'All Categories' || val === 'TRANSFER' ? 'All' : val)} placeholder="Category..." compact={true} excludedList={appData?.excludedCats || []} /></div>
                      </div>
                   </div>
                   
@@ -1341,7 +1113,7 @@
                               {isExpanded && (
                                  <div className="divide-y divide-slate-100 dark:divide-slate-800/50 bg-white dark:bg-brand-cardDark">
                                    {g.entries.map(t => {
-                                      const isExcluded = (appData.excludedCats || []).includes(t.category);
+                                      const isExcluded = (appData?.excludedCats || []).includes(t.category);
                                       const isIN = t.rawType === 'INCOME'; const isTRF = t.rawType === 'TRANSFER';
                                       const IconComp = isIN ? ArrowDownRight : isTRF ? Repeat : ArrowUpRight;
                                       const colorClass = isIN ? 'text-brand-income bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20' : isTRF ? 'text-slate-500 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700' : 'text-brand-expense bg-rose-50 dark:bg-rose-500/10 border-rose-100 dark:border-rose-500/20';
@@ -1402,7 +1174,7 @@
                 </div>
               )}
 
-              {activeTab === 'settings' && <SettingsView appData={appData} onSave={setAppData} appPin={appData.appPin} autoLockTime={appData.autoLockTime} setIsBackgroundSyncing={setIsBackgroundSyncing} />}
+              {activeTab === 'settings' && <SettingsView appData={appData} onSave={setAppData} appPin={appData?.appPin} autoLockTime={appData?.autoLockTime} setIsBackgroundSyncing={setIsBackgroundSyncing} />}
 
             </div>
           </main>
@@ -1430,8 +1202,8 @@
              </div>
           )}
 
-          <TransactionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={setAppData} settings={appData.settings} editData={editTxn} allAvailableTags={allAvailableTags} excludedCats={appData.excludedCats || []} setIsBackgroundSyncing={setIsBackgroundSyncing} />
-          <BulkActionModal isOpen={bulkModal.isOpen} action={bulkModal.action} count={selectedRows.length} onClose={() => setBulkModal({isOpen: false, action: null})} onConfirm={executeBulkAction} bulkCategoryOptions={bulkCategoryOptions} excludedCats={appData.excludedCats || []} />
+          <TransactionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={setAppData} settings={appData?.settings} editData={editTxn} allAvailableTags={allAvailableTags} excludedCats={appData?.excludedCats || []} setIsBackgroundSyncing={setIsBackgroundSyncing} />
+          <BulkActionModal isOpen={bulkModal.isOpen} action={bulkModal.action} count={selectedRows.length} onClose={() => setBulkModal({isOpen: false, action: null})} onConfirm={executeBulkAction} bulkCategoryOptions={bulkCategoryOptions} excludedCats={appData?.excludedCats || []} />
           <ConfirmDialog isOpen={deleteModalId !== null} onCancel={() => setDeleteModalId(null)} onConfirm={executeDeleteSingle} title="Delete Transaction" message="Are you sure you want to delete this transaction permanently? This cannot be undone." />
         </div>
       );
