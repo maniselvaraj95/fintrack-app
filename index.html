@@ -29,13 +29,8 @@
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
-    
     * { -webkit-tap-highlight-color: transparent !important; }
-    button, a, input, select, textarea, .nav-item {
-      -webkit-touch-callout: none !important;
-      outline: none !important;
-    }
-
+    button, a, input, select, textarea, .nav-item { -webkit-touch-callout: none !important; outline: none !important; }
     body{font-family:'Plus Jakarta Sans',sans-serif;-webkit-font-smoothing:antialiased;transition:background-color .3s,color .3s;}
     .modern-card{background:#ffffff;border-radius:1.25rem;box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);border:1px solid #e2e8f0;transition:all .3s;}
     .dark .modern-card{background:#292524;box-shadow:0 10px 25px -5px rgba(0,0,0,0.3);border:1px solid #3f3f46;}
@@ -44,71 +39,18 @@
     .animate-fade-in{animation:fadeIn .3s forwards;}
     .animate-slide-up{animation:slideUp .4s forwards;}
     .privacy-active .blur-money{user-select:none;pointer-events:none;}
-    
     .pin-input { -webkit-text-security: disc; }
-
-    .custom-check {
-      appearance: none;
-      background-color: #f1f5f9;
-      width: 18px !important;
-      height: 18px !important;
-      min-width: 18px !important;
-      min-height: 18px !important;
-      border-radius: 50%;
-      display: grid;
-      place-content: center;
-      cursor: pointer;
-      border: 1px solid #cbd5e1;
-      transition: all 0.2s ease;
-      flex-shrink: 0;
-      margin: 0;
-    }
+    .custom-check { appearance: none; background-color: #f1f5f9; width: 18px !important; height: 18px !important; min-width: 18px !important; min-height: 18px !important; border-radius: 50%; display: grid; place-content: center; cursor: pointer; border: 1px solid #cbd5e1; transition: all 0.2s ease; flex-shrink: 0; margin: 0; }
     .dark .custom-check{background-color:#44403c;border-color:#57534e;}
-    .custom-check::before {
-      content: "";
-      width: 10px;
-      height: 10px;
-      transform: scale(0);
-      transition: 120ms transform ease-in-out;
-      box-shadow: inset 1em 1em white;
-      background-color: white;
-      clip-path: polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0%,43% 62%);
-    }
+    .custom-check::before { content: ""; width: 10px; height: 10px; transform: scale(0); transition: 120ms transform ease-in-out; box-shadow: inset 1em 1em white; background-color: white; clip-path: polygon(14% 44%,0 65%,50% 100%,100% 16%,80% 0%,43% 62%); }
     .custom-check:checked{background-color:#e06c53;border-color:#e06c53;}
     .dark .custom-check:checked{background-color:#e06c53;border-color:#e06c53;}
     .custom-check:checked::before{transform:scale(1);}
     .dark input[type="date"]::-webkit-calendar-picker-indicator{filter:invert(1);opacity:.8;cursor:pointer;}
-
-    .nav-tooltip, .nav-tooltip-bottom, .nav-tooltip-bottom-right {
-      position: absolute;
-      padding: 6px 12px;
-      background-color: #334155;
-      color: white;
-      font-size: 11px;
-      font-weight: 700;
-      border-radius: 8px;
-      white-space: nowrap;
-      opacity: 0;
-      pointer-events: none;
-      transition: all .2s;
-      z-index: 50;
-      text-transform: uppercase;
-    }
-    .dark .nav-tooltip, .dark .nav-tooltip-bottom, .dark .nav-tooltip-bottom-right {
-      background-color: #1e293b;
-      border: 1px solid #334155;
-    }
-    @media (min-width: 768px) {
-      .nav-tooltip { left: 80px !important; top: 50%; transform: translateY(-50%); }
-      .nav-tooltip-bottom { top: calc(100% + 12px); left: 50%; transform: translateX(-50%); }
-      .nav-tooltip-bottom-right { top: calc(100% + 12px); right: 0; left: auto; transform: none; }
-      .nav-item:hover .nav-tooltip { opacity: 1; left: 80px !important; }
-      .nav-item:hover .nav-tooltip-bottom { opacity: 1; top: calc(100% + 16px); }
-      .nav-item:hover .nav-tooltip-bottom-right { opacity: 1; top: calc(100% + 16px); }
-    }
-    @media (max-width: 767px) {
-      .nav-tooltip, .nav-tooltip-bottom, .nav-tooltip-bottom-right { display: none; }
-    }
+    .nav-tooltip, .nav-tooltip-bottom, .nav-tooltip-bottom-right { position: absolute; padding: 6px 12px; background-color: #334155; color: white; font-size: 11px; font-weight: 700; border-radius: 8px; white-space: nowrap; opacity: 0; pointer-events: none; transition: all .2s; z-index: 50; text-transform: uppercase; }
+    .dark .nav-tooltip, .dark .nav-tooltip-bottom, .dark .nav-tooltip-bottom-right { background-color: #1e293b; border: 1px solid #334155; }
+    @media (min-width: 768px) { .nav-tooltip { left: 80px !important; top: 50%; transform: translateY(-50%); } .nav-tooltip-bottom { top: calc(100% + 12px); left: 50%; transform: translateX(-50%); } .nav-tooltip-bottom-right { top: calc(100% + 12px); right: 0; left: auto; transform: none; } .nav-item:hover .nav-tooltip { opacity: 1; left: 80px !important; } .nav-item:hover .nav-tooltip-bottom { opacity: 1; top: calc(100% + 16px); } .nav-item:hover .nav-tooltip-bottom-right { opacity: 1; top: calc(100% + 16px); } }
+    @media (max-width: 767px) { .nav-tooltip, .nav-tooltip-bottom, .nav-tooltip-bottom-right { display: none; } }
   </style>
 </head>
 <body class="bg-brand-bgLight dark:bg-brand-bgDark text-slate-900 dark:text-slate-100 transition-colors duration-300">
@@ -118,26 +60,17 @@
   <script type="text/babel">
     const { useState, useMemo, useEffect, useRef } = React;
 
-    let GLOBAL_API_URL = "";
-    let GLOBAL_API_KEY = "";
-    try {
-        GLOBAL_API_URL = localStorage.getItem('API_URL') || "";
-        GLOBAL_API_KEY = localStorage.getItem('API_KEY') || "";
-    } catch(e) {}
+    let GLOBAL_API_URL = ""; let GLOBAL_API_KEY = "";
+    try { GLOBAL_API_URL = localStorage.getItem('API_URL') || ""; GLOBAL_API_KEY = localStorage.getItem('API_KEY') || ""; } catch(e) {}
 
     const apiCall = async (action, data = {}) => {
         if (!GLOBAL_API_URL || !GLOBAL_API_KEY) throw new Error("Missing Credentials.");
-        const response = await fetch(GLOBAL_API_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify({ action, apiKey: GLOBAL_API_KEY, ...data })
-        });
+        const response = await fetch(GLOBAL_API_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action, apiKey: GLOBAL_API_KEY, ...data }) });
         const result = await response.json();
         if (result.status === 'error') throw new Error(result.message);
         return result.data;
     };
 
-    /* PERFECTLY RESTORED STANDARD ICONS */
     const Icon = ({ children, c }) => <svg className={c} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">{children}</svg>;
     const IndianRupee = ({c}) => <Icon c={c}><path d="M6 3h12M6 8h12m-12 5 8.5 8M6 13h3M9 13c6.667 0 6.667-10 0-10"/></Icon>;
     const RefreshCw = ({c}) => <Icon c={c}><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></Icon>;
@@ -157,10 +90,10 @@
     const Wallet = ({c}) => <Icon c={c}><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4M3 5v14a2 2 0 0 0 2 2h16v-5M18 12a2 2 0 0 0 0 4h4v-4Z"/></Icon>;
     const EditPencil = ({c}) => <Icon c={c}><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></Icon>;
     const Trash2 = ({c}) => <Icon c={c}><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></Icon>;
-    const SettingsIcon = ({c}) => <Icon c={c}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></Icon>;
+    const SettingsIcon = ({c}) => <Icon c={c}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></Icon>;
     const TagIcon = ({c}) => <Icon c={c}><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82zM7 7h.01"/></Icon>;
     const LockIcon = ({c}) => <Icon c={c}><rect x="5" y="11" width="14" height="10" rx="2" ry="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></Icon>;
-    const DeleteIcon = ({c}) => <Icon c={c}><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zM18 9l-6 6M12 9l6 6"/></Icon>;
+    const BackspaceIcon = ({c}) => <Icon c={c}><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path><line x1="18" y1="9" x2="12" y2="15"></line><line x1="12" y1="9" x2="18" y2="15"></line></Icon>;
     const Sun = ({c}) => <Icon c={c}><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></Icon>;
     const Moon = ({c}) => <Icon c={c}><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></Icon>;
     const Eye = ({c}) => <Icon c={c}><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></Icon>;
@@ -285,8 +218,7 @@
                     </div>
                 )}
             </div>
-        );
-      function SetupScreen({ onSave }) {
+        );function SetupScreen({ onSave }) {
         const [u, setU] = useState(''); const [k, setK] = useState(''); const [loading, setLoading] = useState(false); const [errMsg, setErrMsg] = useState('');
         const handle = async (e) => {
             e.preventDefault(); if (!u.trim() || !k.trim()) return;
@@ -697,13 +629,13 @@
                                </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
-                               {(categoryTagMatrix.cats||[]).map(([catName, catData]) => (
-                                  <tr key={catName} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                               {(categoryTagMatrix.cats||[]).map(([catName, catData], rIdx) => (
+                                  <tr key={`row_${rIdx}`} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
                                      <td className="py-3 px-5 text-xs font-bold truncate max-w-[140px] sm:max-w-[200px]">{catName}</td>
-                                     {(categoryTagMatrix.tags||[]).map(t => {
+                                     {(categoryTagMatrix.tags||[]).map((t, cIdx) => {
                                         const val = catData.tags[t] || 0;
                                         return (
-                                           <td key={t} className="p-1.5 text-center">
+                                           <td key={`cell_${cIdx}`} className="p-1.5 text-center">
                                               {val > 0 ? <div className="bg-brand-teal/10 text-brand-teal text-[11px] font-black py-2 px-3 rounded-xl blur-money">{formatCompact(val, isPrivacy)}</div> : <span className="text-slate-300 dark:text-slate-700">-</span>}
                                            </td>
                                         )
@@ -717,8 +649,7 @@
                 )}
             </div>
         );
-    }
-      function TransactionModal({ isOpen, onClose, onSave, settings, editData, allAvailableTags, excludedCats = [], setIsBackgroundSyncing }) {
+    }function TransactionModal({ isOpen, onClose, onSave, settings, editData, allAvailableTags, excludedCats = [], setIsBackgroundSyncing }) {
       const [type, setType] = useState('EXPENSE');
       const [date, setDate] = useState('');
       const [amount, setAmount] = useState('');
@@ -870,7 +801,7 @@
                <div className="border-t border-slate-100 dark:border-slate-800 pt-6 mt-8">
                    <h3 className="text-xl font-extrabold mb-4">Security</h3>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-                       <div className="bg-slate-50 dark:bg-brand-bgDark rounded-3xl p-5 border border-slate-100 dark:border-slate-800"><label className="block text-[11px] font-bold mb-2">App Access PIN</label><div className="flex gap-3"><input type="text" inputMode="numeric" pattern="[0-9]*" maxLength="8" placeholder="Leave blank to disable" value={pin} onChange={(e)=>setPin(e.target.value.replace(/[^0-9]/g,''))} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className={`flex-1 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold tracking-widest outline-none ${!showPin && pin ? 'pin-input' : ''}`}/><button onClick={()=>setShowPin(!showPin)} className="p-3 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full aspect-square flex items-center justify-center">{showPin?<EyeOff c="w-4 h-4"/>:<Eye c="w-4 h-4"/>}</button></div></div>
+                       <div className="bg-slate-50 dark:bg-brand-bgDark rounded-3xl p-5 border border-slate-100 dark:border-slate-800"><label className="block text-[11px] font-bold mb-2">App Access PIN</label><div className="flex gap-3"><input type="text" inputMode="numeric" pattern="[0-9]*" maxLength="8" placeholder="Leave blank to disable" value={pin} onChange={(e)=>setPin(e.target.value.replace(/[^0-9]/g,''))} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className={`flex-1 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold tracking-widest outline-none ${!showPin && pin ? 'pin-input' : ''}`}/><button onClick={()=>setShowPin(!showPin)} className="p-3 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full aspect-square flex items-center justify-center">{showPin ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/>}</button></div></div>
                        <div className="bg-slate-50 dark:bg-brand-bgDark rounded-3xl p-5 border border-slate-100 dark:border-slate-800"><label className="block text-[11px] font-bold mb-2">Auto-Lock Timer</label><select value={lockTime} onChange={(e)=>setLockTime(e.target.value)} className="w-full bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-3 text-sm font-bold outline-none"><option value="0">Never</option><option value="1">1 minute</option><option value="5">5 minutes</option><option value="15">15 minutes</option><option value="30">30 minutes</option></select></div>
                    </div>
                </div>
@@ -1188,7 +1119,7 @@
                     <button onClick={handleManualRefresh} onTouchStart={(e) => handleTouchStart('Refresh', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><RefreshCw c={`w-4 h-4 ${isBackgroundSyncing ? 'animate-spin text-brand-teal' : ''}`}/><span className="nav-tooltip-bottom">Refresh</span></button>
                     {appData.appPin && <button onClick={() => setIsAuthenticated(false)} onTouchStart={(e) => handleTouchStart('Lock App', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><LockIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Lock App</span></button>}
                     <button onClick={() => setIsPrivacyMode(!isPrivacyMode)} onTouchStart={(e) => handleTouchStart('Privacy Mode', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${isPrivacyMode ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`}>{isPrivacyMode ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Privacy</span></button>
-                    <button onClick={() => setIsDarkMode(!isDarkMode)} onTouchStart={(e) => handleTouchStart('Toggle Theme', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><Sun c="w-4 h-4"/><span className="nav-tooltip-bottom">Theme</span></button>
+                    <button onClick={() => setIsDarkMode(!isDarkMode)} onTouchStart={(e) => handleTouchStart('Toggle Theme', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800">{isDarkMode ? <Sun c="w-4 h-4"/> : <Moon c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Theme</span></button>
                     <button onClick={() => setActiveTab('settings')} onTouchStart={(e) => handleTouchStart('Settings', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`}><SettingsIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Settings</span></button>
                  </div>
               </div>
@@ -1295,6 +1226,7 @@
                   )}
                 </div>
               )}
+
               {activeTab === 'settings' && <SettingsView appData={appData} onSave={setAppData} appPin={appData.appPin} autoLockTime={appData.autoLockTime} setIsBackgroundSyncing={setIsBackgroundSyncing} />}
 
             </div>
