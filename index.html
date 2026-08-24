@@ -218,7 +218,9 @@
                     </div>
                 )}
             </div>
-        );function SetupScreen({ onSave }) {
+        );
+    }
+function SetupScreen({ onSave }) {
         const [u, setU] = useState(''); const [k, setK] = useState(''); const [loading, setLoading] = useState(false); const [errMsg, setErrMsg] = useState('');
         const handle = async (e) => {
             e.preventDefault(); if (!u.trim() || !k.trim()) return;
@@ -649,7 +651,8 @@
                 )}
             </div>
         );
-    }function TransactionModal({ isOpen, onClose, onSave, settings, editData, allAvailableTags, excludedCats = [], setIsBackgroundSyncing }) {
+    }
+    function TransactionModal({ isOpen, onClose, onSave, settings, editData, allAvailableTags, excludedCats = [], setIsBackgroundSyncing }) {
       const [type, setType] = useState('EXPENSE');
       const [date, setDate] = useState('');
       const [amount, setAmount] = useState('');
@@ -1262,4 +1265,3 @@
   </script>
 </body>
 </html>
-    }
