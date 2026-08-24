@@ -835,7 +835,8 @@
          </div>
       );
     }
-      function BulkActionModal({ isOpen, action, count, onClose, onConfirm, bulkCategoryOptions, excludedCats }) {
+
+    function BulkActionModal({ isOpen, action, count, onClose, onConfirm, bulkCategoryOptions, excludedCats }) {
       const [val, setVal] = useState('');
       useEffect(() => { if (!isOpen) setVal(''); }, [isOpen]);
       if (!isOpen) return null;
@@ -1209,8 +1210,7 @@
                     </div>
                   )}
                 </div>
-              )}
-    }
+              )}}
               {activeTab === 'settings' && <SettingsView appData={appData} onSave={setAppData} appPin={appData.appPin} autoLockTime={appData.autoLockTime} setIsBackgroundSyncing={setIsBackgroundSyncing} />}
 
             </div>
