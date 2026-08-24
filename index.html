@@ -1102,7 +1102,37 @@
 
       const totalBalance = Object.values(accountBalances).reduce((s, a) => s + a.current, 0);
       const chartData = useMemo(() => monthlyAggsForAllTime.filter(r => filterByPeriod(new Date(r.year, r.monthIdx, 1), r.year, r.monthIdx)), [monthlyAggsForAllTime, period, latestInfo, customFrom, customTo]);
+const topMerchants = useMemo(() => {
+        const m = {};
+        analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { const d = String(r.description || 'Unknown'); if (!m[d]) m[d] = { name: d, cat: r.category, total: 0 }; m[d].total += r.amount; });
+        return Object.values(m).sort((a,b) => b.total - a.total).slice(0, 10);
+      }, [analyticsFiltered]);
 
+      const categorySplitData = useMemo(() => {
+        const map = {};
+        analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { const cat = String(r.category || 'Uncategorized'); if (!map[cat]) map[cat] = 0; map[cat] += r.amount; });
+        const colors = ['#e06c53', '#cb5a42', '#1d8b4e', '#f59e0b', '#2563eb', '#ec4899', '#8b5cf6', '#14b8a6'];
+        return Object.entries(map).map(([name, value], idx) => ({ name, value, color: colors[idx % colors.length] })).sort((a, b) => b.value - a.value);
+      }, [analyticsFiltered]);
+
+      const accountSplitData = useMemo(() => {
+        const map = {};
+        analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { const acc = String(r.account || 'Cash/Other'); if (!map[acc]) map[acc] = 0; map[acc] += r.amount; });
+        return Object.entries(map).map(([acc, total]) => ({ acc, total })).sort((a, b) => b.total - a.total);
+      }, [analyticsFiltered]);
+
+      const heatmapData = useMemo(() => {
+        let expenses = analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment'));
+        if (analyticsCategory !== 'All Categories') expenses = expenses.filter(r => String(r.category || 'Uncategorized') === analyticsCategory);
+        if (!expenses.length) return { topCategories: [], monthCols: [], matrix: {}, maxVal: 0 };
+        const catTotals = {}; const catMonthMatrix = {};
+        expenses.forEach(row => { const cat = String(row.category || 'Uncategorized'); if (!catTotals[cat]) { catTotals[cat] = 0; catMonthMatrix[cat] = {}; } catTotals[cat] += row.amount; const mKey = MONTH_NAMES[row.monthIdx]; if (!catMonthMatrix[cat][mKey]) catMonthMatrix[cat][mKey] = 0; catMonthMatrix[cat][mKey] += row.amount; });
+        const topCategories = Object.keys(catTotals).sort((a, b) => catTotals[b] - catTotals[a]).slice(0, 10);
+        const activeMonthIndices = Array.from(new Set(expenses.map(r => r.monthIdx))).sort((a,b) => a - b);
+        const monthCols = activeMonthIndices.map(mIdx => ({ index: mIdx, key: MONTH_NAMES[mIdx], label: MONTH_NAMES[mIdx] }));
+        let maxVal = 0; topCategories.forEach(cat => { monthCols.forEach(m => { const val = (catMonthMatrix[cat] && catMonthMatrix[cat][m.key]) || 0; if (val > maxVal) maxVal = val; }); });
+        return { topCategories, monthCols, matrix: catMonthMatrix, maxVal };
+      }, [analyticsFiltered, analyticsCategory]);
       const handleOpenNewTxn = () => { setEditTxn(null); setIsModalOpen(true); };
       const handleOpenEditTxn = (txn) => { setEditTxn(txn); setIsModalOpen(true); };
       const handleSelectRow = (rI) => setSelectedRows(p => p.includes(rI) ? p.filter(r=>r!==rI) : [...p, rI]);
