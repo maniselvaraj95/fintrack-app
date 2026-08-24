@@ -130,9 +130,7 @@
       const [isOpen, setIsOpen] = useState(false);
       const [search, setSearch] = useState('');
       const [hlIdx, setHlIdx] = useState(-1);
-      const wrapperRef = useRef(null);
-      const inputRef = useRef(null);
-      const listRef = useRef(null);
+      const wrapperRef = useRef(null); const inputRef = useRef(null); const listRef = useRef(null);
 
       useEffect(() => { 
         function h(e) { if (wrapperRef.current && !wrapperRef.current.contains(e.target)) { setIsOpen(false); setSearch(''); if (inputRef.current) inputRef.current.blur(); } } 
@@ -186,44 +184,27 @@
     }
 
     function TagAutocomplete({ value, onChange, availableTags }) {
-        const [isOpen, setIsOpen] = useState(false);
-        const [hlIdx, setHlIdx] = useState(-1);
-        const listRef = useRef(null);
+        const [isOpen, setIsOpen] = useState(false); const [hlIdx, setHlIdx] = useState(-1); const listRef = useRef(null);
         
-        const words = String(value || '').split(',');
-        const currentWord = words[words.length - 1].trim();
-        const search = currentWord.startsWith('#') ? currentWord.slice(1) : currentWord;
+        const words = String(value || '').split(','); const currentWord = words[words.length - 1].trim(); const search = currentWord.startsWith('#') ? currentWord.slice(1) : currentWord;
         const filtered = search.length > 0 ? (availableTags || []).filter(t => t.toLowerCase().includes(search.toLowerCase()) && t !== `#${search}`) : [];
 
-        useEffect(() => {
-            if (filtered.length > 0) setIsOpen(true); else setIsOpen(false);
-            setHlIdx(-1);
-        }, [currentWord, availableTags]);
-
-        useEffect(() => {
-            if (isOpen && hlIdx >= 0 && listRef.current) {
-                const el = listRef.current.children[hlIdx];
-                if (el) el.scrollIntoView({ block: 'nearest' });
-            }
-        }, [hlIdx, isOpen]);
+        useEffect(() => { if (filtered.length > 0) setIsOpen(true); else setIsOpen(false); setHlIdx(-1); }, [currentWord, availableTags]);
+        useEffect(() => { if (isOpen && hlIdx >= 0 && listRef.current) { const el = listRef.current.children[hlIdx]; if (el) el.scrollIntoView({ block: 'nearest' }); } }, [hlIdx, isOpen]);
 
         const handleKeyDown = (e) => {
             if (e.key === 'Enter') e.preventDefault(); 
             if (!isOpen) return;
             if (e.key === 'ArrowDown') { e.preventDefault(); setHlIdx(p => Math.min(p + 1, filtered.length - 1)); }
             else if (e.key === 'ArrowUp') { e.preventDefault(); setHlIdx(p => Math.max(p - 1, 0)); }
-            else if (e.key === 'Enter') {
-                if (hlIdx >= 0 && hlIdx < filtered.length) selectTag(filtered[hlIdx]);
-            }
+            else if (e.key === 'Enter') { if (hlIdx >= 0 && hlIdx < filtered.length) selectTag(filtered[hlIdx]); }
             else if (e.key === 'Escape') { setIsOpen(false); }
         };
 
         const selectTag = (tag) => {
-            const cleanTag = tag.replace(/^#/, '');
-            const newWords = [...words];
+            const cleanTag = tag.replace(/^#/, ''); const newWords = [...words];
             newWords[newWords.length - 1] = (newWords.length===1 ? '' : ' ') + cleanTag;
-            onChange(newWords.join(',') + ', ');
-            setIsOpen(false);
+            onChange(newWords.join(',') + ', '); setIsOpen(false);
         };
 
         const autoStr = useMemo(() => "nope_" + Math.random().toString(36).substring(7), []);
@@ -233,9 +214,7 @@
                 <input type="text" placeholder="#paycheck" enterKeyHint="next" autoComplete={autoStr} autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" value={value} onChange={e=>onChange(e.target.value)} onKeyDown={handleKeyDown} onFocus={(e)=>{setTimeout(() => {e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });}, 300);}} className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none dark:text-white" />
                 {isOpen && (
                     <div ref={listRef} className="absolute z-[200] w-full top-full mt-2 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl max-h-40 overflow-y-auto hide-scrollbar">
-                        {filtered.map((t, i) => (
-                            <div key={t} onClick={()=>selectTag(t)} className={`px-4 py-2.5 border-b border-slate-50 dark:border-slate-800 cursor-pointer text-sm font-bold transition-colors last:border-0 ${i === hlIdx ? 'bg-slate-50 dark:bg-slate-800 text-brand-teal' : 'text-slate-700 dark:text-slate-300'}`}>{t}</div>
-                        ))}
+                        {filtered.map((t, i) => ( <div key={t} onClick={()=>selectTag(t)} className={`px-4 py-2.5 border-b border-slate-50 dark:border-slate-800 cursor-pointer text-sm font-bold transition-colors last:border-0 ${i === hlIdx ? 'bg-slate-50 dark:bg-slate-800 text-brand-teal' : 'text-slate-700 dark:text-slate-300'}`}>{t}</div> ))}
                     </div>
                 )}
             </div>
@@ -243,13 +222,9 @@
     }
 
     function SetupScreen({ onSave }) {
-        const [u, setU] = useState('');
-        const [k, setK] = useState('');
-        const [loading, setLoading] = useState(false);
-        const [errMsg, setErrMsg] = useState('');
+        const [u, setU] = useState(''); const [k, setK] = useState(''); const [loading, setLoading] = useState(false); const [errMsg, setErrMsg] = useState('');
         const handle = async (e) => {
-            e.preventDefault();
-            if (!u.trim() || !k.trim()) return;
+            e.preventDefault(); if (!u.trim() || !k.trim()) return;
             setLoading(true); setErrMsg('');
             try {
                 const res = await fetch(u.trim(), { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'GET_DATA', apiKey: k.trim() }) });
@@ -276,9 +251,7 @@
     }
 
     function LockScreen({ correctPin, onUnlock }) {
-      const [input, setInput] = useState('');
-      const [error, setError] = useState(false);
-      const pinStr = String(correctPin || '');
+      const [input, setInput] = useState(''); const [error, setError] = useState(false); const pinStr = String(correctPin || '');
       const handlePress = (n) => { 
           setInput(prev => { 
               if (error || prev.length >= pinStr.length) return prev; 
@@ -300,21 +273,15 @@
     }
 
     function SavingsBarChart({ data = [], height = 250, isDark, isPrivacy }) {
-      const isScrollable = data.length > 12;
-      const width = isScrollable ? Math.max(600, data.length * 52) : 600;
-      const pad = { t: 20, r: 15, b: 25, l: 45 };
-      const gW = width - pad.l - pad.r;
-      const gH = height - pad.t - pad.b;
+      const isScrollable = data.length > 12; const width = isScrollable ? Math.max(600, data.length * 52) : 600;
+      const pad = { t: 20, r: 15, b: 25, l: 45 }; const gW = width - pad.l - pad.r; const gH = height - pad.t - pad.b;
       const plotData = data.map(d => ({ ...d, net: d.in - d.out }));
-      let min = 0, max = 0;
-      plotData.forEach(d => { if(d.net > max) max = d.net; if(d.net < min) min = d.net; });
-      if(max === 0 && min === 0) max = 1000;
-      max = max > 0 ? max * 1.1 : max; min = min < 0 ? min * 1.1 : min;
+      let min = 0, max = 0; plotData.forEach(d => { if(d.net > max) max = d.net; if(d.net < min) min = d.net; });
+      if(max === 0 && min === 0) max = 1000; max = max > 0 ? max * 1.1 : max; min = min < 0 ? min * 1.1 : min;
       const range = max - min;
       const getX = (i) => pad.l + (i * (gW / Math.max(plotData.length, 1))) + (gW / Math.max(plotData.length, 1))/2;
       const getY = (v) => pad.t + gH - ((v - min) / range) * gH;
-      const zeroY = getY(0);
-      const barW = Math.min(24, (gW / Math.max(plotData.length, 1)) * 0.6);
+      const zeroY = getY(0); const barW = Math.min(24, (gW / Math.max(plotData.length, 1)) * 0.6);
 
       return (
         <div className="w-full overflow-x-auto hide-scrollbar">
@@ -342,8 +309,7 @@
 
     function AreaChart({ data = [], height = 250, isDark, isPrivacy }) {
       const [hoverIndex, setHoverIndex] = useState(null);
-      const isScrollable = data.length > 12;
-      const width = isScrollable ? Math.max(600, data.length * 52) : 600;
+      const isScrollable = data.length > 12; const width = isScrollable ? Math.max(600, data.length * 52) : 600;
       const pad = { t: 15, r: 15, b: 25, l: 45 }; const gW = width - pad.l - pad.r; const gH = height - pad.t - pad.b;
       let min = 0, max = 0; 
       data.forEach(d => { if(d.in>max)max=d.in; if(d.out>max)max=d.out; if(d.avail>max)max=d.avail; if(d.inv>max)max=d.inv; if(d.avail<min)min=d.avail; if(d.inv<min)min=d.inv; }); 
@@ -563,15 +529,7 @@
           setTags(editData.tags||'');
           setNotes(editData.notes||'');
         } else {
-          setType('EXPENSE');
-          setDate(new Date().toISOString().split('T')[0]);
-          setAmount('');
-          setDescription('');
-          setCategory('');
-          setAccount('');
-          setTransferTo('');
-          setTags('');
-          setNotes('');
+          setType('EXPENSE'); setDate(new Date().toISOString().split('T')[0]); setAmount(''); setDescription(''); setCategory(''); setAccount(''); setTransferTo(''); setTags(''); setNotes('');
         }
         setErrorMsg('');
       }, [editData, isOpen, settings]);
@@ -599,16 +557,8 @@
             return { ...prev, transactions: newTxns };
         });
         
-        setIsBackgroundSyncing(true);
-        onClose();
-        apiCall('SAVE_TRANSACTION', { data: payload }).then(res => {
-            onSave(res);
-            setIsBackgroundSyncing(false);
-        }).catch(e => {
-            console.error(e);
-            setIsBackgroundSyncing(false);
-            alert("Save failed: " + e.message);
-        });
+        setIsBackgroundSyncing(true); onClose();
+        apiCall('SAVE_TRANSACTION', { data: payload }).then(res => { onSave(res); setIsBackgroundSyncing(false); }).catch(e => { console.error(e); setIsBackgroundSyncing(false); alert("Save failed: " + e.message); });
       };
 
       const catOptions = type === 'INCOME' ? safeIncomeCats : safeExpenseCats;
@@ -660,7 +610,6 @@
       
       const [exCats, setExCats] = useState(appData.excludedCats||[]);
       const [bals, setBals] = useState(appData.balances||[]);
-      
       const [incCats, setIncCats] = useState([]);
       const [expCats, setExpCats] = useState([]);
       
@@ -671,10 +620,7 @@
       const [saveError, setSaveError] = useState('');
 
       const [snapshotDate, setSnapshotDate] = useState(() => {
-         if (appData.balances && appData.balances.length > 0) {
-             const latest = [...appData.balances].sort((a,b) => parseDateLocal(b.date) - parseDateLocal(a.date))[0];
-             if (latest && latest.date) return latest.date;
-         }
+         if (appData.balances && appData.balances.length > 0) { const latest = [...appData.balances].sort((a,b) => parseDateLocal(b.date) - parseDateLocal(a.date))[0]; if (latest && latest.date) return latest.date; }
          return new Date().toISOString().split('T')[0];
       });
 
@@ -686,35 +632,18 @@
       }, [appData]);
 
       const moveCat = (idx, dir, type) => {
-          const list = type === 'INC' ? [...incCats] : [...expCats];
-          const setter = type === 'INC' ? setIncCats : setExpCats;
-          if (dir === 'UP' && idx > 0) {
-              [list[idx-1], list[idx]] = [list[idx], list[idx-1]]; setter(list);
-          } else if (dir === 'DOWN' && idx < list.length - 1) {
-              [list[idx+1], list[idx]] = [list[idx], list[idx+1]]; setter(list);
-          }
+          const list = type === 'INC' ? [...incCats] : [...expCats]; const setter = type === 'INC' ? setIncCats : setExpCats;
+          if (dir === 'UP' && idx > 0) { [list[idx-1], list[idx]] = [list[idx], list[idx-1]]; setter(list); } 
+          else if (dir === 'DOWN' && idx < list.length - 1) { [list[idx+1], list[idx]] = [list[idx], list[idx+1]]; setter(list); }
       };
 
       const handleSave = () => {
-         if (pin.length > 0 && (pin.length < 4 || pin.length > 8)) {
-             setSaveError("PIN must be between 4 and 8 digits."); return;
-         }
+         if (pin.length > 0 && (pin.length < 4 || pin.length > 8)) { setSaveError("PIN must be between 4 and 8 digits."); return; }
          setSaveError(''); setSaving(true); setIsBackgroundSyncing(true);
          
-         const renames = [];
-         const finalIncCats = [];
-         incCats.forEach(c => {
-             const cleanVal = normalizeCategory(c.val);
-             if (cleanVal !== '') finalIncCats.push(cleanVal);
-             if (c.orig && c.orig !== cleanVal && cleanVal !== '') renames.push({ old: c.orig, new: cleanVal });
-         });
-
-         const finalExpCats = [];
-         expCats.forEach(c => {
-             const cleanVal = normalizeCategory(c.val);
-             if (cleanVal !== '') finalExpCats.push(cleanVal);
-             if (c.orig && c.orig !== cleanVal && cleanVal !== '') renames.push({ old: c.orig, new: cleanVal });
-         });
+         const renames = []; const finalIncCats = []; const finalExpCats = [];
+         incCats.forEach(c => { const cleanVal = normalizeCategory(c.val); if (cleanVal !== '') finalIncCats.push(cleanVal); if (c.orig && c.orig !== cleanVal && cleanVal !== '') renames.push({ old: c.orig, new: cleanVal }); });
+         expCats.forEach(c => { const cleanVal = normalizeCategory(c.val); if (cleanVal !== '') finalExpCats.push(cleanVal); if (c.orig && c.orig !== cleanVal && cleanVal !== '') renames.push({ old: c.orig, new: cleanVal }); });
          
          const cleanBals = bals.map(b => ({...b, balance: b.balance === '' ? 0 : parseFloat(b.balance)}));
          const payload = { excludedCats: exCats, balances: cleanBals, incomeCats: finalIncCats, expenseCats: finalExpCats, categoryRenames: renames, appPin: pin, autoLockTime: lockTime };
@@ -725,12 +654,7 @@
              return { ...prev, transactions: updatedTxns, settings: { ...prev.settings, incomeCats: payload.incomeCats, expenseCats: payload.expenseCats }, balances: payload.balances, excludedCats: payload.excludedCats, appPin: payload.appPin, autoLockTime: payload.autoLockTime };
          });
 
-         apiCall('SAVE_SETTINGS', { payload }).then(() => {
-             setSaving(false); setIsBackgroundSyncing(false);
-         }).catch(e => {
-             console.error(e); setSaving(false); setIsBackgroundSyncing(false);
-             alert("Settings save failed. Please check your connection.");
-         });
+         apiCall('SAVE_SETTINGS', { payload }).then(() => { setSaving(false); setIsBackgroundSyncing(false); }).catch(e => { console.error(e); setSaving(false); setIsBackgroundSyncing(false); alert("Settings save failed. Please check your connection."); });
       };
 
       return (
@@ -745,13 +669,7 @@
                    return (
                      <div key={acc} className="p-5 bg-slate-50 dark:bg-brand-bgDark rounded-3xl border border-slate-100 dark:border-slate-800"><h4 className="font-bold text-sm mb-3 truncate">{acc}</h4><input type="number" step="0.01" value={ex.balance} onChange={e => {
                          const val = parseFloat(e.target.value); const isNaNVal = isNaN(val);
-                         setBals(prev => {
-                             const existingIndex = prev.findIndex(b => b.account === acc && b.date === snapshotDate);
-                             let newBals = [...prev];
-                             if (existingIndex >= 0) newBals[existingIndex] = { ...newBals[existingIndex], balance: isNaNVal ? '' : val };
-                             else newBals.push({ account: acc, date: snapshotDate, balance: isNaNVal ? '' : val });
-                             return newBals;
-                         });
+                         setBals(prev => { const existingIndex = prev.findIndex(b => b.account === acc && b.date === snapshotDate); let newBals = [...prev]; if (existingIndex >= 0) newBals[existingIndex] = { ...newBals[existingIndex], balance: isNaNVal ? '' : val }; else newBals.push({ account: acc, date: snapshotDate, balance: isNaNVal ? '' : val }); return newBals; });
                      }} className="w-full bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none" /></div>
                    ) 
                })}</div>
@@ -774,15 +692,9 @@
                                  const isEx = exCats.includes(item.val); 
                                  return (
                                      <div key={item.id} className="flex justify-between items-center p-1 bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-700">
-                                         <div className="flex flex-col mx-1 shrink-0">
-                                             <button type="button" onClick={()=>moveCat(i, 'UP', 'INC')} disabled={i===0} className={`p-0.5 rounded ${i===0?'text-slate-200 dark:text-slate-800':'text-slate-400 hover:text-brand-teal'}`}><ChevronUp c="w-3 h-3"/></button>
-                                             <button type="button" onClick={()=>moveCat(i, 'DOWN', 'INC')} disabled={i===incCats.length-1} className={`p-0.5 rounded ${i===incCats.length-1?'text-slate-200 dark:text-slate-800':'text-slate-400 hover:text-brand-teal'}`}><ChevronDown c="w-3 h-3"/></button>
-                                         </div>
+                                         <div className="flex flex-col mx-1 shrink-0"><button type="button" onClick={()=>moveCat(i, 'UP', 'INC')} disabled={i===0} className={`p-0.5 rounded ${i===0?'text-slate-200 dark:text-slate-800':'text-slate-400 hover:text-brand-teal'}`}><ChevronUp c="w-3 h-3"/></button><button type="button" onClick={()=>moveCat(i, 'DOWN', 'INC')} disabled={i===incCats.length-1} className={`p-0.5 rounded ${i===incCats.length-1?'text-slate-200 dark:text-slate-800':'text-slate-400 hover:text-brand-teal'}`}><ChevronDown c="w-3 h-3"/></button></div>
                                          <input value={item.val} onChange={(e)=>{const n=[...incCats];n[i]={...n[i], val:e.target.value};setIncCats(n);}} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className={`flex-1 min-w-0 bg-transparent outline-none text-sm font-bold px-2 ${isEx?'line-through opacity-50':''}`} />
-                                         <div className="flex gap-2 pr-2 shrink-0 items-center">
-                                             <div onClick={()=>setExCats(isEx?exCats.filter(x=>x!==item.val):[...exCats,item.val])} className={`w-9 h-5 flex items-center rounded-full p-1 cursor-pointer transition-colors ${!isEx?'bg-brand-teal':'bg-slate-300 dark:bg-slate-700'}`}><div className={`bg-white w-3 h-3 rounded-full transition-transform ${!isEx?'translate-x-4':''}`}></div></div>
-                                             <button type="button" onClick={()=>setIncCats(incCats.filter((_,x)=>x!==i))} className="text-slate-300 hover:text-brand-expense p-1"><Trash2 c="w-4 h-4"/></button>
-                                         </div>
+                                         <div className="flex gap-2 pr-2 shrink-0 items-center"><div onClick={()=>setExCats(isEx?exCats.filter(x=>x!==item.val):[...exCats,item.val])} className={`w-9 h-5 flex items-center rounded-full p-1 cursor-pointer transition-colors ${!isEx?'bg-brand-teal':'bg-slate-300 dark:bg-slate-700'}`}><div className={`bg-white w-3 h-3 rounded-full transition-transform ${!isEx?'translate-x-4':''}`}></div></div><button type="button" onClick={()=>setIncCats(incCats.filter((_,x)=>x!==i))} className="text-slate-300 hover:text-brand-expense p-1"><Trash2 c="w-4 h-4"/></button></div>
                                      </div>
                                  ) 
                              })}
@@ -796,15 +708,9 @@
                                  const isEx = exCats.includes(item.val); 
                                  return (
                                      <div key={item.id} className="flex justify-between items-center p-1 bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-700">
-                                         <div className="flex flex-col mx-1 shrink-0">
-                                             <button type="button" onClick={()=>moveCat(i, 'UP', 'EXP')} disabled={i===0} className={`p-0.5 rounded ${i===0?'text-slate-200 dark:text-slate-800':'text-slate-400 hover:text-brand-teal'}`}><ChevronUp c="w-3 h-3"/></button>
-                                             <button type="button" onClick={()=>moveCat(i, 'DOWN', 'EXP')} disabled={i===expCats.length-1} className={`p-0.5 rounded ${i===expCats.length-1?'text-slate-200 dark:text-slate-800':'text-slate-400 hover:text-brand-teal'}`}><ChevronDown c="w-3 h-3"/></button>
-                                         </div>
+                                         <div className="flex flex-col mx-1 shrink-0"><button type="button" onClick={()=>moveCat(i, 'UP', 'EXP')} disabled={i===0} className={`p-0.5 rounded ${i===0?'text-slate-200 dark:text-slate-800':'text-slate-400 hover:text-brand-teal'}`}><ChevronUp c="w-3 h-3"/></button><button type="button" onClick={()=>moveCat(i, 'DOWN', 'EXP')} disabled={i===expCats.length-1} className={`p-0.5 rounded ${i===expCats.length-1?'text-slate-200 dark:text-slate-800':'text-slate-400 hover:text-brand-teal'}`}><ChevronDown c="w-3 h-3"/></button></div>
                                          <input value={item.val} onChange={(e)=>{const n=[...expCats];n[i]={...n[i], val:e.target.value};setExpCats(n);}} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className={`flex-1 min-w-0 bg-transparent outline-none text-sm font-bold px-2 ${isEx?'line-through opacity-50':''}`} />
-                                         <div className="flex gap-2 pr-2 shrink-0 items-center">
-                                             <div onClick={()=>setExCats(isEx?exCats.filter(x=>x!==item.val):[...exCats,item.val])} className={`w-9 h-5 flex items-center rounded-full p-1 cursor-pointer transition-colors ${!isEx?'bg-brand-teal':'bg-slate-300 dark:bg-slate-700'}`}><div className={`bg-white w-3 h-3 rounded-full transition-transform ${!isEx?'translate-x-4':''}`}></div></div>
-                                             <button type="button" onClick={()=>setExpCats(expCats.filter((_,x)=>x!==i))} className="text-slate-300 hover:text-brand-expense p-1"><Trash2 c="w-4 h-4"/></button>
-                                         </div>
+                                         <div className="flex gap-2 pr-2 shrink-0 items-center"><div onClick={()=>setExCats(isEx?exCats.filter(x=>x!==item.val):[...exCats,item.val])} className={`w-9 h-5 flex items-center rounded-full p-1 cursor-pointer transition-colors ${!isEx?'bg-brand-teal':'bg-slate-300 dark:bg-slate-700'}`}><div className={`bg-white w-3 h-3 rounded-full transition-transform ${!isEx?'translate-x-4':''}`}></div></div><button type="button" onClick={()=>setExpCats(expCats.filter((_,x)=>x!==i))} className="text-slate-300 hover:text-brand-expense p-1"><Trash2 c="w-4 h-4"/></button></div>
                                      </div>
                                  ) 
                              })}
@@ -908,38 +814,19 @@
 
       useEffect(() => {
         let aT;
-        const rT = () => {
-          if (aT) clearTimeout(aT);
-          if (appData.autoLockTime && appData.autoLockTime !== '0' && isAuthenticated) {
-            aT = setTimeout(() => { setIsAuthenticated(false); }, parseInt(appData.autoLockTime) * 60000);
-          }
-        };
+        const rT = () => { if (aT) clearTimeout(aT); if (appData.autoLockTime && appData.autoLockTime !== '0' && isAuthenticated) { aT = setTimeout(() => { setIsAuthenticated(false); }, parseInt(appData.autoLockTime) * 60000); } };
         const hA = () => rT();
         ['mousemove','keydown','touchstart','scroll','click'].forEach(e => window.addEventListener(e, hA));
-        rT();
-        return () => { ['mousemove','keydown','touchstart','scroll','click'].forEach(e => window.removeEventListener(e, hA)); if (aT) clearTimeout(aT); };
+        rT(); return () => { ['mousemove','keydown','touchstart','scroll','click'].forEach(e => window.removeEventListener(e, hA)); if (aT) clearTimeout(aT); };
       }, [appData.autoLockTime, isAuthenticated]);
       
       useEffect(() => { 
           if (!isSetupComplete) return;
-          try {
-            const c = localStorage.getItem('finTrackerCache');
-            if (c) { setAppData(JSON.parse(c)); setIsLoading(false); setIsBackgroundSyncing(true); }
-          } catch(e) {} 
-          apiCall('GET_DATA').then(res => {
-            setAppData(res);
-            try { localStorage.setItem('finTrackerCache', JSON.stringify(res)); } catch(e) {}
-            setIsLoading(false); setIsBackgroundSyncing(false);
-          }).catch(e => {
-            console.error(e); setIsLoading(false); setIsBackgroundSyncing(false);
-          }); 
+          try { const c = localStorage.getItem('finTrackerCache'); if (c) { setAppData(JSON.parse(c)); setIsLoading(false); setIsBackgroundSyncing(true); } } catch(e) {} 
+          apiCall('GET_DATA').then(res => { setAppData(res); try { localStorage.setItem('finTrackerCache', JSON.stringify(res)); } catch(e) {} setIsLoading(false); setIsBackgroundSyncing(false); }).catch(e => { console.error(e); setIsLoading(false); setIsBackgroundSyncing(false); }); 
       }, [isSetupComplete]);
 
-      useEffect(() => {
-        if (appData.transactions && appData.transactions.length > 0) {
-          try { localStorage.setItem('finTrackerCache', JSON.stringify(appData)); } catch(e) {}
-        }
-      }, [appData]);
+      useEffect(() => { if (appData.transactions && appData.transactions.length > 0) { try { localStorage.setItem('finTrackerCache', JSON.stringify(appData)); } catch(e) {} } }, [appData]);
 
       useEffect(() => {
         const m = document.getElementById("theme-color-meta");
@@ -952,19 +839,12 @@
         else { document.body.classList.remove('privacy-active'); try { localStorage.setItem('privacyMode','false'); } catch(e) {} }
       }, [isPrivacyMode]);
 
-      const handleManualRefresh = () => {
-        setIsBackgroundSyncing(true);
-        apiCall('GET_DATA').then(res => {
-          setAppData(res); try { localStorage.setItem('finTrackerCache', JSON.stringify(res)); } catch(e) {} setIsBackgroundSyncing(false);
-        }).catch(e => { setTimeout(() => setIsBackgroundSyncing(false), 800); });
-      };
-
+      const handleManualRefresh = () => { setIsBackgroundSyncing(true); apiCall('GET_DATA').then(res => { setAppData(res); try { localStorage.setItem('finTrackerCache', JSON.stringify(res)); } catch(e) {} setIsBackgroundSyncing(false); }).catch(e => { setTimeout(() => setIsBackgroundSyncing(false), 800); }); };
       const handleSort = (k) => setSortConfig(p => ({ key: k, direction: p.key===k && p.direction==='desc' ? 'asc' : 'desc' }));
       const SortIcon = ({ colKey }) => sortConfig.key !== colKey ? <div className="w-3 h-3 opacity-0"></div> : (sortConfig.direction === 'asc' ? <ChevronUp c="w-3 h-3 text-brand-teal" /> : <ChevronDown c="w-3 h-3 text-brand-teal" />);
 
       const parsedData = useMemo(() => (appData.transactions || []).map((r, i) => { 
-          const d = new Date(r.date); 
-          return { ...r, id: i, amount: parseAmt(r.amount), monthIdx: isNaN(d.getMonth()) ? -1 : d.getMonth(), year: isNaN(d.getFullYear()) ? -1 : d.getFullYear(), rawType: String(r.type||'').toUpperCase(), category: normalizeCategory(r.category) }; 
+          const d = new Date(r.date); return { ...r, id: i, amount: parseAmt(r.amount), monthIdx: isNaN(d.getMonth()) ? -1 : d.getMonth(), year: isNaN(d.getFullYear()) ? -1 : d.getFullYear(), rawType: String(r.type||'').toUpperCase(), category: normalizeCategory(r.category) }; 
       }).filter(r => r.amount > 0 && r.year !== -1).sort((a,b) => new Date(b.date) - new Date(a.date)), [appData.transactions]);
 
       const activeData = useMemo(() => { const ex = appData.excludedCats || []; return parsedData.filter(t => !ex.includes(t.category)); }, [parsedData, appData.excludedCats]);
@@ -975,7 +855,6 @@
          if (ledgerTypeFilter === 'EXPENSE') defined = appData?.settings?.expenseCats || [];
          else if (ledgerTypeFilter === 'INCOME') defined = appData?.settings?.incomeCats || [];
          else defined = Array.from(new Set([...(appData?.settings?.incomeCats||[]), ...(appData?.settings?.expenseCats||[])]));
-         
          const historical = Array.from(new Set(parsedData.filter(d => d.rawType !== 'TRANSFER').map(d => d.category))).filter(Boolean);
          const extras = historical.filter(c => !defined.includes(c) && c !== 'TRANSFER').sort();
          return ['All Categories', ...defined, ...extras];
@@ -988,12 +867,9 @@
           activeData.forEach(r => {
             const k = `${r.year}-${String(r.monthIdx).padStart(2,'0')}`;
             if (!aggs[k]) aggs[k] = { year: r.year, monthIdx: r.monthIdx, label: MONTH_NAMES[r.monthIdx], in: 0, out: 0, inv: 0 };
-            if (r.rawType === 'INCOME') aggs[k].in += r.amount;
-            else if (r.category && String(r.category).toLowerCase() === 'investment') aggs[k].inv += r.amount;
-            else if (r.rawType === 'EXPENSE') aggs[k].out += r.amount;
+            if (r.rawType === 'INCOME') aggs[k].in += r.amount; else if (r.category && String(r.category).toLowerCase() === 'investment') aggs[k].inv += r.amount; else if (r.rawType === 'EXPENSE') aggs[k].out += r.amount;
           });
-          let run = 0;
-          return Object.keys(aggs).sort().map(k => { const m = aggs[k]; const avail = run + m.in; run += (m.in - m.out - m.inv); return { ...m, avail, key: k }; });
+          let run = 0; return Object.keys(aggs).sort().map(k => { const m = aggs[k]; const avail = run + m.in; run += (m.in - m.out - m.inv); return { ...m, avail, key: k }; });
       }, [activeData]);
 
       const filterByPeriod = (dStr, y, mIdx) => {
@@ -1018,18 +894,12 @@
         if (ledgerTagFilter) f = f.filter(r => extractTags(r.tags).includes(ledgerTagFilter));
         if (searchQ) {
           const q = searchQ.toLowerCase().trim(); const isNum = !isNaN(q) && q !== '';
-          f = f.filter(r => {
-             const matchText = `${String(r.description||'')} ${String(r.category||'')} ${String(r.tags||'')} ${String(r.notes||'')} ${String(r.account||'')} ${String(r.transfer_to||'')}`.toLowerCase().includes(q);
-             const matchNum = isNum ? String(r.amount).includes(q) || Number(r.amount) === Number(q) : false;
-             return matchText || matchNum;
-          });
+          f = f.filter(r => { const matchText = `${String(r.description||'')} ${String(r.category||'')} ${String(r.tags||'')} ${String(r.notes||'')} ${String(r.account||'')} ${String(r.transfer_to||'')}`.toLowerCase().includes(q); const matchNum = isNum ? String(r.amount).includes(q) || Number(r.amount) === Number(q) : false; return matchText || matchNum; });
         }
         return f;
       }, [parsedData, searchQ, ledgerCategoryFilter, ledgerTagFilter, ledgerTypeFilter, ledgerAccountFilter, period, latestInfo, customFrom, customTo]);
 
-      const selectedSum = useMemo(() => ledgerFiltered.filter(t => selectedRows.includes(t.row_index)).reduce((s, t) => {
-        if (t.rawType === 'TRANSFER') return s; return s + (t.rawType === 'INCOME' ? t.amount : -t.amount);
-      }, 0), [selectedRows, ledgerFiltered]);
+      const selectedSum = useMemo(() => ledgerFiltered.filter(t => selectedRows.includes(t.row_index)).reduce((s, t) => { if (t.rawType === 'TRANSFER') return s; return s + (t.rawType === 'INCOME' ? t.amount : -t.amount); }, 0), [selectedRows, ledgerFiltered]);
 
       const groupedLedger = useMemo(() => {
           const grps = {}; const cy = new Date().getFullYear()*100 + new Date().getMonth();
@@ -1043,8 +913,7 @@
           arr.forEach(g => g.entries.sort((a,b) => {
             let vA = a[sortConfig.key]; let vB = b[sortConfig.key];
             if (sortConfig.key==='amount') { vA = parseFloat(vA)||0; vB = parseFloat(vB)||0; } else if (sortConfig.key==='date') { vA = new Date(vA).getTime(); vB = new Date(vB).getTime(); } else { vA = String(vA||'').toLowerCase(); vB = String(vB||'').toLowerCase(); }
-            if (vA < vB) return sortConfig.direction==='asc' ? -1 : 1;
-            if (vA > vB) return sortConfig.direction==='asc' ? 1 : -1; return 0;
+            if (vA < vB) return sortConfig.direction==='asc' ? -1 : 1; if (vA > vB) return sortConfig.direction==='asc' ? 1 : -1; return 0;
           }));
           return arr;
       }, [ledgerFiltered, sortConfig]);
@@ -1052,12 +921,8 @@
       useEffect(() => { if (groupedLedger.length > 0 && Object.keys(expandedGroups).length === 0) setExpandedGroups({ [groupedLedger[0].label]: true }); }, [groupedLedger]);
 
       const toggleGroup = (label) => { setExpandedGroups(prev => ({ ...prev, [label]: !prev[label] })); };
-
       const isAllCollapsed = groupedLedger.length > 0 && groupedLedger.every(g => !expandedGroups[g.label]);
-      const toggleExpandCollapseAll = () => {
-        if (isAllCollapsed || Object.values(expandedGroups).filter(v=>v).length === 0) { const allExpanded = {}; groupedLedger.forEach(g => allExpanded[g.label] = true); setExpandedGroups(allExpanded); } 
-        else { setExpandedGroups({}); }
-      };
+      const toggleExpandCollapseAll = () => { if (isAllCollapsed || Object.values(expandedGroups).filter(v=>v).length === 0) { const allExpanded = {}; groupedLedger.forEach(g => allExpanded[g.label] = true); setExpandedGroups(allExpanded); } else { setExpandedGroups({}); } };
 
       const mIN = analyticsFiltered.filter(r => r.rawType === 'INCOME').reduce((a,b) => a + b.amount, 0);
       const mINV = analyticsFiltered.filter(r => r.category && String(r.category).toLowerCase() === 'investment').reduce((a,b) => a + b.amount, 0);
@@ -1066,38 +931,16 @@
 
       const accountBalances = useMemo(() => {
         const balsObj = {}; const safeAccounts = appData?.settings?.accounts||[];
-        safeAccounts.forEach(a => {
-            const snaps = (appData.balances || []).filter(b => b.account === a); snaps.sort((x, y) => parseDateLocal(y.date) - parseDateLocal(x.date));
-            const latest = snaps[0]; balsObj[a] = { current: latest && latest.balance !== '' ? parseFloat(latest.balance) : 0, startDate: latest ? parseDateLocal(latest.date) : new Date('1970-01-01') };
-        });
-        activeData.forEach(t => {
-            const d = parseDateLocal(t.date);
-            if (balsObj[t.account] && d >= balsObj[t.account].startDate) { if (t.rawType === 'INCOME') balsObj[t.account].current += t.amount; else if (t.rawType === 'EXPENSE' || t.rawType === 'TRANSFER') balsObj[t.account].current -= t.amount; }
-            if (t.rawType === 'TRANSFER' && balsObj[t.transfer_to] && d >= balsObj[t.transfer_to].startDate) balsObj[t.transfer_to].current += t.amount;
-        });
+        safeAccounts.forEach(a => { const snaps = (appData.balances || []).filter(b => b.account === a); snaps.sort((x, y) => parseDateLocal(y.date) - parseDateLocal(x.date)); const latest = snaps[0]; balsObj[a] = { current: latest && latest.balance !== '' ? parseFloat(latest.balance) : 0, startDate: latest ? parseDateLocal(latest.date) : new Date('1970-01-01') }; });
+        activeData.forEach(t => { const d = parseDateLocal(t.date); if (balsObj[t.account] && d >= balsObj[t.account].startDate) { if (t.rawType === 'INCOME') balsObj[t.account].current += t.amount; else if (t.rawType === 'EXPENSE' || t.rawType === 'TRANSFER') balsObj[t.account].current -= t.amount; } if (t.rawType === 'TRANSFER' && balsObj[t.transfer_to] && d >= balsObj[t.transfer_to].startDate) balsObj[t.transfer_to].current += t.amount; });
         return balsObj;
       }, [activeData, appData.balances, appData.settings]);
 
       const totalBalance = Object.values(accountBalances).reduce((s, a) => s + a.current, 0);
       const chartData = useMemo(() => monthlyAggsForAllTime.filter(r => filterByPeriod(new Date(r.year, r.monthIdx, 1), r.year, r.monthIdx)), [monthlyAggsForAllTime, period, latestInfo, customFrom, customTo]);
-      const topMerchants = useMemo(() => {
-        const m = {};
-        analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { const d = String(r.description || 'Unknown'); if (!m[d]) m[d] = { name: d, cat: r.category, total: 0 }; m[d].total += r.amount; });
-        return Object.values(m).sort((a,b) => b.total - a.total).slice(0, 10);
-      }, [analyticsFiltered]);
-
-      const categorySplitData = useMemo(() => {
-        const map = {};
-        analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { const cat = String(r.category || 'Uncategorized'); if (!map[cat]) map[cat] = 0; map[cat] += r.amount; });
-        const colors = ['#e06c53', '#cb5a42', '#1d8b4e', '#f59e0b', '#2563eb', '#ec4899', '#8b5cf6', '#14b8a6'];
-        return Object.entries(map).map(([name, value], idx) => ({ name, value, color: colors[idx % colors.length] })).sort((a, b) => b.value - a.value);
-      }, [analyticsFiltered]);
-
-      const accountSplitData = useMemo(() => {
-        const map = {};
-        analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { const acc = String(r.account || 'Cash/Other'); if (!map[acc]) map[acc] = 0; map[acc] += r.amount; });
-        return Object.entries(map).map(([acc, total]) => ({ acc, total })).sort((a, b) => b.total - a.total);
-      }, [analyticsFiltered]);
+      const topMerchants = useMemo(() => { const m = {}; analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { const d = String(r.description || 'Unknown'); if (!m[d]) m[d] = { name: d, cat: r.category, total: 0 }; m[d].total += r.amount; }); return Object.values(m).sort((a,b) => b.total - a.total).slice(0, 10); }, [analyticsFiltered]);
+      const categorySplitData = useMemo(() => { const map = {}; analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { const cat = String(r.category || 'Uncategorized'); if (!map[cat]) map[cat] = 0; map[cat] += r.amount; }); const colors = ['#e06c53', '#cb5a42', '#1d8b4e', '#f59e0b', '#2563eb', '#ec4899', '#8b5cf6', '#14b8a6']; return Object.entries(map).map(([name, value], idx) => ({ name, value, color: colors[idx % colors.length] })).sort((a, b) => b.value - a.value); }, [analyticsFiltered]);
+      const accountSplitData = useMemo(() => { const map = {}; analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { const acc = String(r.account || 'Cash/Other'); if (!map[acc]) map[acc] = 0; map[acc] += r.amount; }); return Object.entries(map).map(([acc, total]) => ({ acc, total })).sort((a, b) => b.total - a.total); }, [analyticsFiltered]);
 
       const heatmapData = useMemo(() => {
         let expenses = analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment'));
@@ -1118,28 +961,19 @@
       const handleSelectAll = (e) => setSelectedRows(e.target.checked ? ledgerFiltered.map(t=>t.row_index) : []);
 
       const executeBulkAction = (updates) => {
-        setIsBackgroundSyncing(true);
-        const isDel = bulkModal.action === 'DELETE';
-        setAppData(p => {
-          let n = [...(p.transactions || [])];
-          if (isDel) n = n.filter(t => !selectedRows.includes(t.row_index));
-          else n = n.map(t => selectedRows.includes(t.row_index) ? { ...t, ...updates } : t);
-          return { ...p, transactions: n };
-        });
+        setIsBackgroundSyncing(true); const isDel = bulkModal.action === 'DELETE';
+        setAppData(p => { let n = [...(p.transactions || [])]; if (isDel) n = n.filter(t => !selectedRows.includes(t.row_index)); else n = n.map(t => selectedRows.includes(t.row_index) ? { ...t, ...updates } : t); return { ...p, transactions: n }; });
         setBulkModal({ isOpen: false, action: null }); setSelectedRows([]); setIsActionsMenuOpen(false);
-        apiCall('BULK_ACTION', { actionType: isDel ? 'DELETE' : 'UPDATE', rowIndices: selectedRows, updates: updates || {} })
-          .then(res => { setAppData(res); setIsBackgroundSyncing(false); }).catch(e => setIsBackgroundSyncing(false));
+        apiCall('BULK_ACTION', { actionType: isDel ? 'DELETE' : 'UPDATE', rowIndices: selectedRows, updates: updates || {} }).then(res => { setAppData(res); setIsBackgroundSyncing(false); }).catch(e => setIsBackgroundSyncing(false));
       };
 
       const executeDeleteSingle = () => {
          if (!deleteModalId) return; setIsBackgroundSyncing(true); const id = deleteModalId;
          setAppData(p => ({ ...p, transactions: (p.transactions || []).filter(t => t.row_index !== id) }));
          setSelectedRows(p => p.filter(r => r !== id)); setDeleteModalId(null);
-         apiCall('BULK_ACTION', { actionType: 'DELETE', rowIndices: [id], updates: {} })
-          .then(res => { setAppData(res); setIsBackgroundSyncing(false); }).catch(e => setIsBackgroundSyncing(false));
+         apiCall('BULK_ACTION', { actionType: 'DELETE', rowIndices: [id], updates: {} }).then(res => { setAppData(res); setIsBackgroundSyncing(false); }).catch(e => setIsBackgroundSyncing(false));
       };
 
-      // Smart Contextual Bulk Edit Engine
       const selectedTxns = useMemo(() => ledgerFiltered.filter(t => selectedRows.includes(t.row_index)), [selectedRows, ledgerFiltered]);
       const selectedTypes = useMemo(() => new Set(selectedTxns.map(t => t.rawType)), [selectedTxns]);
       const canRecategorize = !selectedTypes.has('TRANSFER') && selectedTypes.size === 1;
@@ -1152,9 +986,7 @@
 
       return (
         <div className="flex flex-col md:flex-row h-screen overflow-hidden bg-brand-bgLight dark:bg-brand-bgDark transition-colors duration-300 relative">
-          {mobileTooltip.visible && (
-            <div className="fixed z-[150] px-2 py-1 bg-slate-800 dark:bg-slate-700 text-white text-[10px] font-bold tracking-wider uppercase rounded-md shadow-lg pointer-events-none -translate-x-1/2 transition-opacity duration-200" style={{ left: `${mobileTooltip.x}px`, top: `${mobileTooltip.y}px` }}>{mobileTooltip.text}</div>
-          )}
+          {mobileTooltip.visible && ( <div className="fixed z-[150] px-2 py-1 bg-slate-800 dark:bg-slate-700 text-white text-[10px] font-bold tracking-wider uppercase rounded-md shadow-lg pointer-events-none -translate-x-1/2 transition-opacity duration-200" style={{ left: `${mobileTooltip.x}px`, top: `${mobileTooltip.y}px` }}>{mobileTooltip.text}</div> )}
 
           <nav className="shrink-0 w-full md:w-[76px] md:h-full bg-white dark:bg-brand-cardDark md:bg-white md:dark:bg-brand-sidebar z-40 flex flex-row md:flex-col items-center shadow-[0_-10px_40px_rgba(0,0,0,0.03)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.4)] md:shadow-none transition-colors border-t border-slate-200 dark:border-slate-800 md:border-t-0 md:border-r py-2 md:py-6 pb-safe justify-around md:justify-start gap-0 md:gap-4 overflow-visible fixed md:relative bottom-0 left-0">
             <div className="hidden md:flex mb-8 w-full justify-center"><div className="w-10 h-10 bg-brand-teal rounded-xl flex items-center justify-center text-white font-black text-xl shadow-sm"><IndianRupee c="w-5 h-5"/></div></div>
@@ -1168,16 +1000,13 @@
           <main className="flex-1 h-full overflow-y-auto hide-scrollbar relative pb-24 md:pb-0">
             <header className="sticky top-0 z-30 bg-brand-bgLight/90 dark:bg-brand-bgDark/90 backdrop-blur-md px-4 py-3 sm:px-8 sm:py-5 flex flex-col xl:flex-row xl:items-center justify-between border-b border-slate-200/50 dark:border-slate-800/50 gap-3 xl:gap-6">
               <div className="flex items-center justify-between w-full xl:w-auto">
-                 <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-brand-teal text-white flex items-center justify-center shrink-0 md:hidden"><IndianRupee c="w-4 h-4"/></div>
-                    <h2 className="text-xl font-black text-slate-800 dark:text-white capitalize tracking-tight truncate">{activeTab === 'overview' ? 'Dashboard' : activeTab === 'ledger' ? 'Transactions' : activeTab === 'analytics' ? 'Analytics' : activeTab === 'insights' ? 'Insights' : 'Settings'}</h2>
-                 </div>
+                 <div className="flex items-center gap-3"><div className="w-8 h-8 rounded-lg bg-brand-teal text-white flex items-center justify-center shrink-0 md:hidden"><IndianRupee c="w-4 h-4"/></div><h2 className="text-xl font-black text-slate-800 dark:text-white capitalize tracking-tight truncate">{activeTab === 'overview' ? 'Dashboard' : activeTab === 'ledger' ? 'Transactions' : activeTab === 'analytics' ? 'Analytics' : activeTab === 'insights' ? 'Insights' : 'Settings'}</h2></div>
                  <div className="flex xl:hidden items-center gap-1.5 shrink-0">
                     <button onClick={handleManualRefresh} onTouchStart={(e) => handleTouchStart('Refresh', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><RefreshCw c={`w-4 h-4 ${isBackgroundSyncing ? 'animate-spin text-brand-teal' : ''}`}/><span className="nav-tooltip-bottom">Refresh</span></button>
                     {appData.appPin && <button onClick={() => setIsAuthenticated(false)} onTouchStart={(e) => handleTouchStart('Lock App', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><LockIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Lock App</span></button>}
                     <button onClick={() => setIsPrivacyMode(!isPrivacyMode)} onTouchStart={(e) => handleTouchStart('Privacy Mode', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${isPrivacyMode ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`}>{isPrivacyMode ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Privacy</span></button>
                     <button onClick={() => setIsDarkMode(!isDarkMode)} onTouchStart={(e) => handleTouchStart('Toggle Theme', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800">{isDarkMode ? <Sun c="w-4 h-4"/> : <Moon c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Theme</span></button>
-                    <button onClick={() => setActiveTab('settings')} onTouchStart={(e) => handleTouchStart('Settings', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`><SettingsIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Settings</span></button>
+                    <button onClick={() => setActiveTab('settings')} onTouchStart={(e) => handleTouchStart('Settings', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`}><SettingsIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Settings</span></button>
                  </div>
               </div>
 
@@ -1205,7 +1034,6 @@
             </header>
 
             <div className="p-4 sm:p-8 max-w-7xl mx-auto space-y-4 sm:space-y-6">
-              
               {activeTab === 'overview' && (
                 <div className="animate-fade-in space-y-4 sm:space-y-6">
                   <div className="flex items-center justify-between cursor-pointer group" onClick={() => setBalancesExpanded(!balancesExpanded)}><div><h3 className="text-xl font-extrabold tracking-wide mb-1">Financial overview</h3><p className="text-xs font-medium text-slate-500">Income, expenses and transfers based on your saved transactions.</p></div><ChevronDown c={`w-5 h-5 text-slate-400 transition-transform ${balancesExpanded ? 'rotate-180' : ''}`} /></div>
@@ -1238,60 +1066,18 @@
               {activeTab === 'ledger' && (
                 <div className="animate-fade-in space-y-4">
                   <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-1">{['ALL', 'EXPENSE', 'INCOME', 'TRANSFER'].map(tab => (<button key={tab} onClick={() => { setLedgerTypeFilter(tab); setLedgerCategoryFilter('All'); }} className={`px-5 py-2 rounded-full text-xs font-bold uppercase tracking-widest whitespace-nowrap transition-colors border shadow-sm ${ledgerTypeFilter === tab ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-white dark:bg-brand-cardDark text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>{tab}</button>))}</div>
-                  
                   <div className="modern-card p-3 flex flex-col sm:flex-row items-center justify-between gap-3 border border-slate-200 dark:border-slate-800">
-                     <div className="relative w-full flex items-center bg-brand-bgLight dark:bg-brand-bgDark rounded-full px-3 flex-1 border border-slate-100 dark:border-slate-800">
-                        <SearchIcon c="w-5 h-5 text-slate-400 shrink-0" />
-                        <input type="text" placeholder="Search transactions..." value={searchQ} onChange={e => setSearchQ(e.target.value)} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className="w-full bg-transparent border-none outline-none py-3 pl-3 text-sm font-bold text-slate-800 dark:text-white placeholder-slate-400" />
-                     </div>
-                     <div className="grid grid-cols-2 sm:flex w-full sm:w-auto gap-3 shrink-0 z-20">
-                        <div className="w-full sm:w-40"><SearchableSelect options={['All Accounts', ...safeAccountsList]} value={ledgerAccountFilter === 'All' ? 'All Accounts' : ledgerAccountFilter} onChange={(val) => setLedgerAccountFilter(val === 'All Accounts' ? 'All' : val)} placeholder="Account..." compact={true} /></div>
-                        <div className="w-full sm:w-48"><SearchableSelect disabled={ledgerTypeFilter === 'TRANSFER'} options={ledgerTypeFilter === 'TRANSFER' ? ['TRANSFER'] : ledgerCatOptions} value={ledgerTypeFilter === 'TRANSFER' ? 'TRANSFER' : (ledgerCategoryFilter === 'All' ? 'All Categories' : ledgerCategoryFilter)} onChange={(val) => setLedgerCategoryFilter(val === 'All Categories' || val === 'TRANSFER' ? 'All' : val)} placeholder="Category..." compact={true} excludedList={appData.excludedCats || []} /></div>
-                     </div>
+                     <div className="relative w-full flex items-center bg-brand-bgLight dark:bg-brand-bgDark rounded-full px-3 flex-1 border border-slate-100 dark:border-slate-800"><SearchIcon c="w-5 h-5 text-slate-400 shrink-0" /><input type="text" placeholder="Search transactions..." value={searchQ} onChange={e => setSearchQ(e.target.value)} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className="w-full bg-transparent border-none outline-none py-3 pl-3 text-sm font-bold text-slate-800 dark:text-white placeholder-slate-400" /></div>
+                     <div className="grid grid-cols-2 sm:flex w-full sm:w-auto gap-3 shrink-0 z-20"><div className="w-full sm:w-40"><SearchableSelect options={['All Accounts', ...safeAccountsList]} value={ledgerAccountFilter === 'All' ? 'All Accounts' : ledgerAccountFilter} onChange={(val) => setLedgerAccountFilter(val === 'All Accounts' ? 'All' : val)} placeholder="Account..." compact={true} /></div><div className="w-full sm:w-48"><SearchableSelect disabled={ledgerTypeFilter === 'TRANSFER'} options={ledgerTypeFilter === 'TRANSFER' ? ['TRANSFER'] : ledgerCatOptions} value={ledgerTypeFilter === 'TRANSFER' ? 'TRANSFER' : (ledgerCategoryFilter === 'All' ? 'All Categories' : ledgerCategoryFilter)} onChange={(val) => setLedgerCategoryFilter(val === 'All Categories' || val === 'TRANSFER' ? 'All' : val)} placeholder="Category..." compact={true} excludedList={appData.excludedCats || []} /></div></div>
                   </div>
-                  
-                  <div className="mt-2">
-                     <div className="flex items-center justify-between cursor-pointer group px-2 py-1" onClick={() => setTagsExpanded(!tagsExpanded)}>
-                        <span className="text-[11px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2">
-                           <TagIcon c="w-3.5 h-3.5" /> Tags Filter
-                           {ledgerTagFilter && <span className="bg-brand-teal/10 text-brand-teal border border-brand-teal/20 px-2 py-0.5 rounded-md normal-case tracking-normal shadow-sm">{ledgerTagFilter}</span>}
-                        </span>
-                        <ChevronDown c={`w-4 h-4 text-slate-400 transition-transform ${tagsExpanded ? 'rotate-180' : ''}`} />
-                     </div>
-                     {tagsExpanded && (
-                        <div className="animate-fade-in flex flex-wrap items-center gap-2 pt-3 pb-1 px-1">
-                           <button onClick={() => setLedgerTagFilter(null)} className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors border shadow-sm ${!ledgerTagFilter ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-white dark:bg-brand-cardDark text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>All Tags</button>
-                           {allAvailableTags.map(tag => (
-                              <button key={tag} onClick={() => setLedgerTagFilter(tag === ledgerTagFilter ? null : tag)} className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors border shadow-sm ${tag === ledgerTagFilter ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-white dark:bg-brand-cardDark text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>{tag}</button>
-                           ))}
-                        </div>
-                     )}
-                  </div>
+                  <div className="mt-2"><div className="flex items-center justify-between cursor-pointer group px-2 py-1" onClick={() => setTagsExpanded(!tagsExpanded)}><span className="text-[11px] font-bold text-slate-500 uppercase tracking-widest flex items-center gap-2"><TagIcon c="w-3.5 h-3.5" /> Tags Filter{ledgerTagFilter && <span className="bg-brand-teal/10 text-brand-teal border border-brand-teal/20 px-2 py-0.5 rounded-md normal-case tracking-normal shadow-sm">{ledgerTagFilter}</span>}</span><ChevronDown c={`w-4 h-4 text-slate-400 transition-transform ${tagsExpanded ? 'rotate-180' : ''}`} /></div>{tagsExpanded && (<div className="animate-fade-in flex flex-wrap items-center gap-2 pt-3 pb-1 px-1"><button onClick={() => setLedgerTagFilter(null)} className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors border shadow-sm ${!ledgerTagFilter ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-white dark:bg-brand-cardDark text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>All Tags</button>{allAvailableTags.map(tag => (<button key={tag} onClick={() => setLedgerTagFilter(tag === ledgerTagFilter ? null : tag)} className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors border shadow-sm ${tag === ledgerTagFilter ? 'bg-brand-teal/10 text-brand-teal border-brand-teal/30' : 'bg-white dark:bg-brand-cardDark text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>{tag}</button>))}</div>)}</div>
                   
                   {groupedLedger.length > 0 && (
-                    <div className="hidden lg:grid grid-cols-[2.5rem_6rem_12rem_8rem_1fr_10rem_5rem] gap-4 px-6 py-3 mt-6 items-center text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest border-b border-slate-200 dark:border-slate-800">
-                      <div className="flex items-center justify-center nav-item relative group"><input type="checkbox" checked={selectedRows.length > 0 && selectedRows.length === ledgerFiltered.length} onChange={handleSelectAll} className="custom-check" /><span className="nav-tooltip-bottom">Select All</span></div>
-                      <div className="shrink-0 cursor-pointer hover:text-brand-teal flex items-center gap-1 select-none" onClick={() => handleSort('date')}>Date <SortIcon colKey="date"/></div>
-                      <div className="shrink-0 cursor-pointer hover:text-brand-teal flex items-center gap-1 select-none" onClick={() => handleSort('category')}>Category <SortIcon colKey="category"/></div>
-                      <div className="shrink-0 cursor-pointer hover:text-brand-teal flex items-center justify-end gap-1 select-none" onClick={() => handleSort('amount')}><SortIcon colKey="amount"/> Amount</div>
-                      <div className="min-w-0 px-4 cursor-pointer hover:text-brand-teal flex items-center gap-1 select-none" onClick={() => handleSort('description')}>Description <SortIcon colKey="description"/></div>
-                      <div className="shrink-0 cursor-pointer hover:text-brand-teal flex items-center gap-1 select-none" onClick={() => handleSort('account')}>Account <SortIcon colKey="account"/></div>
-                      <div className="flex items-center justify-end nav-item relative group"><button onClick={toggleExpandCollapseAll} className="p-1.5 text-slate-400 hover:text-brand-teal transition-colors"><ChevronsUpDown c="w-4 h-4"/></button><span className="nav-tooltip-bottom">{isAllCollapsed || Object.values(expandedGroups).filter(v=>v).length === 0 ? 'Expand All' : 'Collapse All'}</span></div>
-                    </div>
+                    <div className="hidden lg:grid grid-cols-[2.5rem_6rem_12rem_8rem_1fr_10rem_5rem] gap-4 px-6 py-3 mt-6 items-center text-[10px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-widest border-b border-slate-200 dark:border-slate-800"><div className="flex items-center justify-center nav-item relative group"><input type="checkbox" checked={selectedRows.length > 0 && selectedRows.length === ledgerFiltered.length} onChange={handleSelectAll} className="custom-check" /><span className="nav-tooltip-bottom">Select All</span></div><div className="shrink-0 cursor-pointer hover:text-brand-teal flex items-center gap-1 select-none" onClick={() => handleSort('date')}>Date <SortIcon colKey="date"/></div><div className="shrink-0 cursor-pointer hover:text-brand-teal flex items-center gap-1 select-none" onClick={() => handleSort('category')}>Category <SortIcon colKey="category"/></div><div className="shrink-0 cursor-pointer hover:text-brand-teal flex items-center justify-end gap-1 select-none" onClick={() => handleSort('amount')}><SortIcon colKey="amount"/> Amount</div><div className="min-w-0 px-4 cursor-pointer hover:text-brand-teal flex items-center gap-1 select-none" onClick={() => handleSort('description')}>Description <SortIcon colKey="description"/></div><div className="shrink-0 cursor-pointer hover:text-brand-teal flex items-center gap-1 select-none" onClick={() => handleSort('account')}>Account <SortIcon colKey="account"/></div><div className="flex items-center justify-end nav-item relative group"><button onClick={toggleExpandCollapseAll} className="p-1.5 text-slate-400 hover:text-brand-teal transition-colors"><ChevronsUpDown c="w-4 h-4"/></button><span className="nav-tooltip-bottom">{isAllCollapsed || Object.values(expandedGroups).filter(v=>v).length === 0 ? 'Expand All' : 'Collapse All'}</span></div></div>
                   )}
 
                   {groupedLedger.length > 0 && (
-                    <div className="lg:hidden flex items-center px-4 py-2.5 mt-4 border-b border-slate-200 dark:border-slate-800 gap-2">
-                       <div className="flex items-center justify-center shrink-0"><input type="checkbox" checked={selectedRows.length > 0 && selectedRows.length === ledgerFiltered.length} onChange={handleSelectAll} className="custom-check" /></div>
-                       <div className="flex-1 flex items-center justify-between text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wide px-1">
-                          <div className="shrink-0 cursor-pointer flex items-center gap-0.5 hover:text-brand-teal select-none" onClick={() => handleSort('date')}>Date <SortIcon colKey="date"/></div>
-                          <div className="shrink-0 cursor-pointer flex items-center gap-0.5 hover:text-brand-teal select-none" onClick={() => handleSort('category')}>Cat <SortIcon colKey="category"/></div>
-                          <div className="shrink-0 cursor-pointer flex items-center gap-0.5 hover:text-brand-teal select-none" onClick={() => handleSort('amount')}>Amt <SortIcon colKey="amount"/></div>
-                          <div className="shrink-0 cursor-pointer flex items-center gap-0.5 hover:text-brand-teal select-none" onClick={() => handleSort('description')}>Desc <SortIcon colKey="description"/></div>
-                          <div className="shrink-0 cursor-pointer flex items-center gap-0.5 hover:text-brand-teal select-none" onClick={() => handleSort('account')}>Acc <SortIcon colKey="account"/></div>
-                       </div>
-                       <button onClick={toggleExpandCollapseAll} className="p-1.5 text-slate-400 hover:text-brand-teal transition-colors shrink-0 bg-slate-50 dark:bg-slate-800 rounded-lg"><ChevronsUpDown c="w-4 h-4"/></button>
-                    </div>
+                    <div className="lg:hidden flex items-center px-4 py-2.5 mt-4 border-b border-slate-200 dark:border-slate-800 gap-2"><div className="flex items-center justify-center shrink-0"><input type="checkbox" checked={selectedRows.length > 0 && selectedRows.length === ledgerFiltered.length} onChange={handleSelectAll} className="custom-check" /></div><div className="flex-1 flex items-center justify-between text-[9px] font-extrabold text-slate-400 dark:text-slate-500 uppercase tracking-wide px-1"><div className="shrink-0 cursor-pointer flex items-center gap-0.5 hover:text-brand-teal select-none" onClick={() => handleSort('date')}>Date <SortIcon colKey="date"/></div><div className="shrink-0 cursor-pointer flex items-center gap-0.5 hover:text-brand-teal select-none" onClick={() => handleSort('category')}>Cat <SortIcon colKey="category"/></div><div className="shrink-0 cursor-pointer flex items-center gap-0.5 hover:text-brand-teal select-none" onClick={() => handleSort('amount')}>Amt <SortIcon colKey="amount"/></div><div className="shrink-0 cursor-pointer flex items-center gap-0.5 hover:text-brand-teal select-none" onClick={() => handleSort('description')}>Desc <SortIcon colKey="description"/></div><div className="shrink-0 cursor-pointer flex items-center gap-0.5 hover:text-brand-teal select-none" onClick={() => handleSort('account')}>Acc <SortIcon colKey="account"/></div></div><button onClick={toggleExpandCollapseAll} className="p-1.5 text-slate-400 hover:text-brand-teal transition-colors shrink-0 bg-slate-50 dark:bg-slate-800 rounded-lg"><ChevronsUpDown c="w-4 h-4"/></button></div>
                   )}
 
                   {groupedLedger.length === 0 ? <div className="modern-card p-12 text-center text-slate-400 font-bold text-sm mt-4 border border-slate-200 dark:border-slate-800">No transactions found.</div> : (
@@ -1300,15 +1086,11 @@
                          const isExpanded = !!expandedGroups[g.label];
                          return (
                            <div key={g.label} className="modern-card overflow-hidden border border-slate-200 dark:border-slate-800 shadow-sm">
-                              <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-white dark:bg-brand-cardDark px-4 py-4 sm:px-6 sm:py-5 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors gap-3 sm:gap-4 border-b border-slate-100 dark:border-slate-800 last:border-0" onClick={() => toggleGroup(g.label)}>
-                                 <div className="flex items-center gap-3 min-w-0"><ChevronDown c={`w-5 h-5 text-slate-400 transition-transform shrink-0 ${isExpanded ? 'rotate-180' : ''}`} /><span className="font-extrabold text-base sm:text-lg tracking-tight truncate">{g.label}</span>{g.isCurrentMonth && <span className="bg-brand-teal/20 text-brand-teal text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-wider shrink-0 hidden sm:inline-block">This Month</span>}</div>
-                                 <div className="flex items-center gap-3 shrink-0 pl-8 sm:pl-0"><div className="flex items-center text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 bg-brand-bgLight dark:bg-brand-bgDark px-3 py-1.5 rounded-xl whitespace-nowrap shadow-sm border border-slate-100 dark:border-slate-800">{g.count} entries <span className="mx-2 text-slate-300 dark:text-slate-600">|</span> <span className="text-slate-800 dark:text-slate-200 font-black blur-money">-{formatCompact(g.spent, isPrivacyMode)}</span></div>{g.invested > 0 && <span className="flex items-center text-[11px] sm:text-xs font-bold text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-500/10 px-3 py-1.5 rounded-xl whitespace-nowrap blur-money">+Inv {formatCompact(g.invested, isPrivacyMode)}</span>}</div>
-                              </div>
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between bg-white dark:bg-brand-cardDark px-4 py-4 sm:px-6 sm:py-5 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors gap-3 sm:gap-4 border-b border-slate-100 dark:border-slate-800 last:border-0" onClick={() => toggleGroup(g.label)}><div className="flex items-center gap-3 min-w-0"><ChevronDown c={`w-5 h-5 text-slate-400 transition-transform shrink-0 ${isExpanded ? 'rotate-180' : ''}`} /><span className="font-extrabold text-base sm:text-lg tracking-tight truncate">{g.label}</span>{g.isCurrentMonth && <span className="bg-brand-teal/20 text-brand-teal text-[10px] font-black px-2 py-1 rounded-lg uppercase tracking-wider shrink-0 hidden sm:inline-block">This Month</span>}</div><div className="flex items-center gap-3 shrink-0 pl-8 sm:pl-0"><div className="flex items-center text-[11px] sm:text-xs font-bold text-slate-500 dark:text-slate-400 bg-brand-bgLight dark:bg-brand-bgDark px-3 py-1.5 rounded-xl whitespace-nowrap shadow-sm border border-slate-100 dark:border-slate-800">{g.count} entries <span className="mx-2 text-slate-300 dark:text-slate-600">|</span> <span className="text-slate-800 dark:text-slate-200 font-black blur-money">-{formatCompact(g.spent, isPrivacyMode)}</span></div>{g.invested > 0 && <span className="flex items-center text-[11px] sm:text-xs font-bold text-amber-600 dark:text-amber-500 bg-amber-50 dark:bg-amber-500/10 px-3 py-1.5 rounded-xl whitespace-nowrap blur-money">+Inv {formatCompact(g.invested, isPrivacyMode)}</span>}</div></div>
                               {isExpanded && (
                                  <div className="divide-y divide-slate-100 dark:divide-slate-800/50 bg-white dark:bg-brand-cardDark">
                                    {g.entries.map(t => {
-                                      const isExcluded = (appData.excludedCats || []).includes(t.category);
-                                      const isIN = t.rawType === 'INCOME'; const isTRF = t.rawType === 'TRANSFER';
+                                      const isExcluded = (appData.excludedCats || []).includes(t.category); const isIN = t.rawType === 'INCOME'; const isTRF = t.rawType === 'TRANSFER';
                                       const IconComp = isIN ? ArrowDownRight : isTRF ? Repeat : ArrowUpRight;
                                       const colorClass = isIN ? 'text-brand-income bg-emerald-50 dark:bg-emerald-500/10 border-emerald-100 dark:border-emerald-500/20' : isTRF ? 'text-slate-500 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700' : 'text-brand-expense bg-rose-50 dark:bg-rose-500/10 border-rose-100 dark:border-rose-500/20';
                                       const badgeClass = isIN ? 'text-brand-income bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-100 dark:border-emerald-500/20' : isTRF ? 'text-brand-transfer bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/30' : 'text-brand-expense bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20';
@@ -1316,20 +1098,8 @@
                                       const sign = isIN ? '+' : isTRF ? '' : '-'; const txTags = extractTags(t.tags);
                                       return (
                                         <div key={t.id} className={`group ${isExcluded ? 'opacity-40 grayscale' : ''}`}>
-                                           <div className="flex lg:hidden px-4 py-3 sm:px-6 sm:py-4 items-start gap-3 sm:gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                                              <div className="flex items-center justify-center shrink-0 pt-0.5"><input type="checkbox" checked={selectedRows.includes(t.row_index)} onChange={() => handleSelectRow(t.row_index)} className="custom-check" /></div>
-                                              <div className={`hidden sm:flex w-[40px] h-[40px] rounded-xl items-center justify-center shrink-0 shadow-sm border ${colorClass}`}><IconComp c="w-5 h-5"/></div>
-                                              <div className="flex-1 min-w-0 flex flex-col justify-start">
-                                                 <div className="flex justify-between items-start gap-2 sm:mb-1"><p className={`text-sm sm:text-base font-extrabold break-words text-wrap leading-tight pr-2 ${isExcluded ? 'line-through text-slate-400' : ''}`}>{t.description}</p><p className={`text-base font-black blur-money ${amtColor} shrink-0 text-right mt-[-2px]`}>{sign}{formatINR(t.amount, isPrivacyMode)}</p></div>
-                                                 <div className="flex flex-wrap items-center gap-1.5 min-w-0 text-[9px] sm:text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide mt-1.5"><span className="shrink-0">{formatDateShort(t.date)}</span><span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600 shrink-0"></span><span className="truncate max-w-[140px]">{isTRF ? `${t.account} ➔ ${t.transfer_to}` : t.account}</span>{t.category && <span className={`px-1.5 py-0.5 rounded-md truncate max-w-[120px] shrink-0 ${badgeClass}`}>{t.category}</span>}</div>
-                                                 {t.notes && <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium break-words text-wrap leading-snug mt-1.5 pr-2">{t.notes}</p>}{txTags.length > 0 && (<div className="flex flex-wrap gap-1.5 mt-2">{txTags.map((tag, idx) => <span key={idx} className="text-[9px] font-extrabold text-brand-teal bg-brand-teal/10 border border-brand-teal/20 px-1.5 py-0.5 rounded-md">{tag}</span>)}</div>)}
-                                              </div>
-                                              <div className="flex flex-col items-end shrink-0 gap-2 ml-1"><div className="flex items-center gap-1"><button onClick={() => handleOpenEditTxn(t)} className="p-1.5 text-slate-400 hover:text-brand-teal bg-slate-100 dark:bg-slate-800 rounded-lg transition-colors"><EditPencil c="w-3.5 h-3.5" /></button><button onClick={() => setDeleteModalId(t.row_index)} className="p-1.5 text-slate-400 hover:text-brand-expense bg-slate-100 dark:bg-slate-800 rounded-lg transition-colors"><Trash2 c="w-3.5 h-3.5" /></button></div></div>
-                                           </div>
-                                           <div className="hidden lg:grid grid-cols-[2.5rem_6rem_12rem_8rem_1fr_10rem_5rem] gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
-                                              <div className="flex items-center justify-center"><input type="checkbox" checked={selectedRows.includes(t.row_index)} onChange={() => handleSelectRow(t.row_index)} className="custom-check" /></div>
-                                              <div className="text-xs font-bold text-slate-500 dark:text-slate-400">{formatDateStr(t.date)}</div><div className="flex flex-col items-start justify-center min-w-0 pr-2">{t.category && <span className={`text-[10px] font-bold px-2 py-1 rounded-lg truncate max-w-full ${badgeClass}`}>{t.category}</span>}</div><div className={`text-right text-sm font-black blur-money ${amtColor}`}>{sign}{formatINR(t.amount, isPrivacyMode)}</div><div className="flex flex-col min-w-0 px-4"><span className="text-sm font-extrabold truncate">{t.description}</span>{t.notes && <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">{t.notes}</span>}{txTags.length > 0 && <span className="text-[10px] text-brand-teal font-bold truncate mt-0.5">{txTags.join(' ')}</span>}</div><div className="text-xs font-bold text-slate-600 dark:text-slate-400 truncate flex items-center gap-1.5">{isTRF ? <Repeat c="w-3 h-3 text-slate-400 shrink-0"/> : <Wallet c="w-3 h-3 text-slate-400 shrink-0"/>}<span className="truncate">{isTRF ? `${t.account} ➔ ${t.transfer_to}` : t.account}</span></div><div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity"><button onClick={() => handleOpenEditTxn(t)} className="p-1.5 text-slate-400 hover:text-brand-teal bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg"><EditPencil c="w-3.5 h-3.5" /></button><button onClick={() => setDeleteModalId(t.row_index)} className="p-1.5 text-slate-400 hover:text-brand-expense bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 shadow-sm hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg"><Trash2 c="w-3.5 h-3.5" /></button></div>
-                                           </div>
+                                           <div className="flex lg:hidden px-4 py-3 sm:px-6 sm:py-4 items-start gap-3 sm:gap-4 hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors"><div className="flex items-center justify-center shrink-0 pt-0.5"><input type="checkbox" checked={selectedRows.includes(t.row_index)} onChange={() => handleSelectRow(t.row_index)} className="custom-check" /></div><div className={`hidden sm:flex w-[40px] h-[40px] rounded-xl items-center justify-center shrink-0 shadow-sm border ${colorClass}`}><IconComp c="w-5 h-5"/></div><div className="flex-1 min-w-0 flex flex-col justify-start"><div className="flex justify-between items-start gap-2 sm:mb-1"><p className={`text-sm sm:text-base font-extrabold break-words text-wrap leading-tight pr-2 ${isExcluded ? 'line-through text-slate-400' : ''}`}>{t.description}</p><p className={`text-base font-black blur-money ${amtColor} shrink-0 text-right mt-[-2px]`}>{sign}{formatINR(t.amount, isPrivacyMode)}</p></div><div className="flex flex-wrap items-center gap-1.5 min-w-0 text-[9px] sm:text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wide mt-1.5"><span className="shrink-0">{formatDateShort(t.date)}</span><span className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600 shrink-0"></span><span className="truncate max-w-[140px]">{isTRF ? `${t.account} ➔ ${t.transfer_to}` : t.account}</span>{t.category && <span className={`px-1.5 py-0.5 rounded-md truncate max-w-[120px] shrink-0 ${badgeClass}`}>{t.category}</span>}</div>{t.notes && <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium break-words text-wrap leading-snug mt-1.5 pr-2">{t.notes}</p>}{txTags.length > 0 && (<div className="flex flex-wrap gap-1.5 mt-2">{txTags.map((tag, idx) => <span key={idx} className="text-[9px] font-extrabold text-brand-teal bg-brand-teal/10 border border-brand-teal/20 px-1.5 py-0.5 rounded-md">{tag}</span>)}</div>)}</div><div className="flex flex-col items-end shrink-0 gap-2 ml-1"><div className="flex items-center gap-1"><button onClick={() => handleOpenEditTxn(t)} className="p-1.5 text-slate-400 hover:text-brand-teal bg-slate-100 dark:bg-slate-800 rounded-lg transition-colors"><EditPencil c="w-3.5 h-3.5" /></button><button onClick={() => setDeleteModalId(t.row_index)} className="p-1.5 text-slate-400 hover:text-brand-expense bg-slate-100 dark:bg-slate-800 rounded-lg transition-colors"><Trash2 c="w-3.5 h-3.5" /></button></div></div></div>
+                                           <div className="hidden lg:grid grid-cols-[2.5rem_6rem_12rem_8rem_1fr_10rem_5rem] gap-4 px-6 py-4 items-center hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors"><div className="flex items-center justify-center"><input type="checkbox" checked={selectedRows.includes(t.row_index)} onChange={() => handleSelectRow(t.row_index)} className="custom-check" /></div><div className="text-xs font-bold text-slate-500 dark:text-slate-400">{formatDateStr(t.date)}</div><div className="flex flex-col items-start justify-center min-w-0 pr-2">{t.category && <span className={`text-[10px] font-bold px-2 py-1 rounded-lg truncate max-w-full ${badgeClass}`}>{t.category}</span>}</div><div className={`text-right text-sm font-black blur-money ${amtColor}`}>{sign}{formatINR(t.amount, isPrivacyMode)}</div><div className="flex flex-col min-w-0 px-4"><span className="text-sm font-extrabold truncate">{t.description}</span>{t.notes && <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate mt-0.5">{t.notes}</span>}{txTags.length > 0 && <span className="text-[10px] text-brand-teal font-bold truncate mt-0.5">{txTags.join(' ')}</span>}</div><div className="text-xs font-bold text-slate-600 dark:text-slate-400 truncate flex items-center gap-1.5">{isTRF ? <Repeat c="w-3 h-3 text-slate-400 shrink-0"/> : <Wallet c="w-3 h-3 text-slate-400 shrink-0"/>}<span className="truncate">{isTRF ? `${t.account} ➔ ${t.transfer_to}` : t.account}</span></div><div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity"><button onClick={() => handleOpenEditTxn(t)} className="p-1.5 text-slate-400 hover:text-brand-teal bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg"><EditPencil c="w-3.5 h-3.5" /></button><button onClick={() => setDeleteModalId(t.row_index)} className="p-1.5 text-slate-400 hover:text-brand-expense bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 shadow-sm hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg"><Trash2 c="w-3.5 h-3.5" /></button></div></div>
                                         </div>
                                       );
                                    })}
@@ -1348,7 +1118,6 @@
             </div>
           </main>
 
-          {/* Centered Bulk Edit Bar */}
           {selectedRows.length > 0 && activeTab === 'ledger' && (
              <div className="fixed bottom-[88px] md:bottom-8 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-max z-50 animate-slide-up mx-auto">
                 <div className="bg-white dark:bg-brand-sidebar shadow-[0_8px_30px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.5)] rounded-2xl border border-slate-200 dark:border-slate-700/50 flex flex-row items-center p-2 relative">
@@ -1361,13 +1130,7 @@
                        <button onClick={() => setBulkModal({isOpen: true, action: 'DELETE'})} className="px-3 py-2 text-xs font-bold text-brand-expense hover:bg-rose-50 dark:hover:bg-rose-500/10 rounded-lg flex items-center gap-1.5"><Trash2 c="w-3.5 h-3.5"/> Delete</button>
                    </div>
                    <button onClick={() => setSelectedRows([])} className="ml-auto md:ml-2 p-1.5 text-slate-400 hover:text-slate-700 dark:hover:text-white rounded-full shrink-0"><X c="w-4 h-4"/></button>
-                   {isActionsMenuOpen && ( 
-                      <div className="absolute bottom-[110%] right-10 w-48 bg-white dark:bg-brand-sidebar border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl overflow-hidden py-1 z-50 animate-fade-in md:hidden">
-                         <button disabled={!canRecategorize} onClick={() => { if(canRecategorize) { setIsActionsMenuOpen(false); setBulkModal({isOpen: true, action: 'CATEGORY'}); } }} className={`w-full text-left px-4 py-3 text-xs font-bold flex items-center gap-2 ${!canRecategorize ? 'text-slate-400 opacity-40 cursor-not-allowed' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'}`}><TagIcon c="w-4 h-4"/> Re-categorize</button>
-                         <button onClick={() => { setIsActionsMenuOpen(false); setBulkModal({isOpen: true, action: 'TAGS'}); }} className="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2"><TagIcon c="w-4 h-4"/> Add Tags</button>
-                         <button onClick={() => { setIsActionsMenuOpen(false); setBulkModal({isOpen: true, action: 'DESC'}); }} className="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2"><EditPencil c="w-4 h-4"/> Description</button>
-                      </div> 
-                   )}
+                   {isActionsMenuOpen && ( <div className="absolute bottom-[110%] right-10 w-48 bg-white dark:bg-brand-sidebar border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl overflow-hidden py-1 z-50 animate-fade-in md:hidden"><button disabled={!canRecategorize} onClick={() => { if(canRecategorize) { setIsActionsMenuOpen(false); setBulkModal({isOpen: true, action: 'CATEGORY'}); } }} className={`w-full text-left px-4 py-3 text-xs font-bold flex items-center gap-2 ${!canRecategorize ? 'text-slate-400 opacity-40 cursor-not-allowed' : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'}`}><TagIcon c="w-4 h-4"/> Re-categorize</button><button onClick={() => { setIsActionsMenuOpen(false); setBulkModal({isOpen: true, action: 'TAGS'}); }} className="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2"><TagIcon c="w-4 h-4"/> Add Tags</button><button onClick={() => { setIsActionsMenuOpen(false); setBulkModal({isOpen: true, action: 'DESC'}); }} className="w-full text-left px-4 py-3 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 flex items-center gap-2"><EditPencil c="w-4 h-4"/> Description</button></div> )}
                 </div>
              </div>
           )}
