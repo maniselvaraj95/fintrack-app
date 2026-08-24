@@ -91,7 +91,7 @@
     const Wallet = ({c}) => <Icon c={c}><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4M3 5v14a2 2 0 0 0 2 2h16v-5M18 12a2 2 0 0 0 0 4h4v-4Z"/></Icon>;
     const EditPencil = ({c}) => <Icon c={c}><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></Icon>;
     const Trash2 = ({c}) => <Icon c={c}><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></Icon>;
-    const SettingsIcon = ({c}) => <Icon c={c}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></Icon>;
+    const SettingsIcon = ({c}) => <Icon c={c}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></Icon>;
     const TagIcon = ({c}) => <Icon c={c}><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82zM7 7h.01"/></Icon>;
     const LockIcon = ({c}) => <Icon c={c}><rect x="5" y="11" width="14" height="10" rx="2" ry="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></Icon>;
     const DeleteIcon = ({c}) => <Icon c={c}><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zM18 9l-6 6M12 9l6 6"/></Icon>;
@@ -138,7 +138,8 @@
         return () => { document.removeEventListener("mousedown", h); document.removeEventListener("touchstart", h); } 
       }, []);
 
-      const filtered = (options||[]).filter(o => String(o).toLowerCase().includes(String(search).toLowerCase()));
+      const safeOptions = Array.isArray(options) ? options.filter(Boolean) : [];
+      const filtered = safeOptions.filter(o => String(o).toLowerCase().includes(String(search).toLowerCase()));
       useEffect(() => { setHlIdx(-1); }, [search]);
       
       useEffect(() => {
@@ -175,7 +176,7 @@
               {compact && <div className="sticky top-0 bg-white dark:bg-brand-cardDark border-b border-slate-100 dark:border-slate-800 p-2 z-10"><input type="text" autoComplete={autoStr} autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" enterKeyHint="next" onKeyDown={handleKeyDown} value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search..." className="w-full bg-slate-50 dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-3 py-2 text-xs font-semibold outline-none text-slate-900 dark:text-white" /></div>}
               {filtered.length > 0 ? filtered.map((o, i) => {
                   const isEx = (excludedList || []).includes(o);
-                  return ( <div key={o} onClick={(e) => { e.stopPropagation(); onChange(o); setIsOpen(false); setSearch(''); }} className={`px-4 py-3 border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer text-sm font-bold transition-colors flex justify-between items-center last:border-0 ${i === hlIdx ? 'bg-slate-50 dark:bg-slate-800 text-brand-teal' : (isEx ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-300')}`}><span>{o}</span> {isEx && <EyeOff c="w-3.5 h-3.5 opacity-50" />}</div> )
+                  return ( <div key={`sel_${o}_${i}`} onClick={(e) => { e.stopPropagation(); onChange(o); setIsOpen(false); setSearch(''); }} className={`px-4 py-3 border-b border-slate-50 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800 cursor-pointer text-sm font-bold transition-colors flex justify-between items-center last:border-0 ${i === hlIdx ? 'bg-slate-50 dark:bg-slate-800 text-brand-teal' : (isEx ? 'text-slate-400 dark:text-slate-500' : 'text-slate-700 dark:text-slate-300')}`}><span>{o}</span> {isEx && <EyeOff c="w-3.5 h-3.5 opacity-50" />}</div> )
               }) : <div className="px-4 py-3 text-sm text-slate-400 font-medium text-center">No matches found</div>}
             </div>
           )}
@@ -212,7 +213,7 @@
                 <input type="text" placeholder="#paycheck" enterKeyHint="next" autoComplete={autoStr} autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" value={value} onChange={e=>onChange(e.target.value)} onKeyDown={handleKeyDown} onFocus={(e)=>{setTimeout(() => {e.target.scrollIntoView({ behavior: 'smooth', block: 'center' });}, 300);}} className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none dark:text-white" />
                 {isOpen && (
                     <div ref={listRef} className="absolute z-[200] w-full top-full mt-2 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl max-h-40 overflow-y-auto hide-scrollbar">
-                        {filtered.map((t, i) => ( <div key={t} onClick={()=>selectTag(t)} className={`px-4 py-2.5 border-b border-slate-50 dark:border-slate-800 cursor-pointer text-sm font-bold transition-colors last:border-0 ${i === hlIdx ? 'bg-slate-50 dark:bg-slate-800 text-brand-teal' : 'text-slate-700 dark:text-slate-300'}`}>{t}</div> ))}
+                        {filtered.map((t, i) => ( <div key={`tag_${t}_${i}`} onClick={()=>selectTag(t)} className={`px-4 py-2.5 border-b border-slate-50 dark:border-slate-800 cursor-pointer text-sm font-bold transition-colors last:border-0 ${i === hlIdx ? 'bg-slate-50 dark:bg-slate-800 text-brand-teal' : 'text-slate-700 dark:text-slate-300'}`}>{t}</div> ))}
                     </div>
                 )}
             </div>
@@ -264,8 +265,8 @@
       return (
           <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-brand-bgLight dark:bg-brand-bgDark transition-colors duration-300">
               <div className="flex flex-col items-center mb-12 animate-slide-up"><div className="w-16 h-16 bg-brand-teal rounded-2xl flex items-center justify-center text-white mb-6 shadow-md"><LockIcon c="w-8 h-8"/></div><h2 className="text-xl font-black text-slate-800 dark:text-white mb-2">App Locked</h2><p className="text-sm font-bold text-slate-500 dark:text-slate-400">Enter your PIN to continue</p></div>
-              <div className="flex gap-4 mb-12 min-h-[1.5rem]">{Array.from({ length: pinStr.length || 0 }).map((_, i) => (<div key={i} className={`w-4 h-4 rounded-full transition-all ${i < input.length ? 'bg-brand-teal scale-110' : 'bg-slate-200 dark:bg-slate-800'} ${error ? 'animate-pulse bg-brand-expense' : ''}`} />))}</div>
-              <div className="grid grid-cols-3 gap-4 sm:gap-6 max-w-[320px] w-full px-4">{[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => <button key={n} onClick={()=>handlePress(String(n))} className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] flex items-center justify-center text-3xl font-black text-slate-800 dark:text-white bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-800 active:scale-90 mx-auto">{n}</button>)}<div className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px]"></div><button onClick={()=>handlePress('0')} className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] flex items-center justify-center text-3xl font-black text-slate-800 dark:text-white bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-800 active:scale-90 mx-auto">0</button><button onClick={handleBackspace} className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] flex items-center justify-center text-slate-500 dark:text-slate-400 bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-800 active:scale-90 mx-auto"><DeleteIcon c="w-8 h-8"/></button></div>
+              <div className="flex gap-4 mb-12 min-h-[1.5rem]">{Array.from({ length: pinStr.length || 0 }).map((_, i) => (<div key={`pin_${i}`} className={`w-4 h-4 rounded-full transition-all ${i < input.length ? 'bg-brand-teal scale-110' : 'bg-slate-200 dark:bg-slate-800'} ${error ? 'animate-pulse bg-brand-expense' : ''}`} />))}</div>
+              <div className="grid grid-cols-3 gap-4 sm:gap-6 max-w-[320px] w-full px-4">{[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => <button key={`btn_${n}`} onClick={()=>handlePress(String(n))} className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] flex items-center justify-center text-3xl font-black text-slate-800 dark:text-white bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-800 active:scale-90 mx-auto">{n}</button>)}<div className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px]"></div><button onClick={()=>handlePress('0')} className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] flex items-center justify-center text-3xl font-black text-slate-800 dark:text-white bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-800 active:scale-90 mx-auto">0</button><button onClick={handleBackspace} className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] flex items-center justify-center text-slate-500 dark:text-slate-400 bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-800 active:scale-90 mx-auto"><DeleteIcon c="w-8 h-8"/></button></div>
           </div>
       );
     }
@@ -278,7 +279,7 @@
       if(max === 0 && min === 0) max = 1000; max = max > 0 ? max * 1.1 : max; min = min < 0 ? min * 1.1 : min;
       const range = max - min;
       const getX = (i) => pad.l + (i * (gW / Math.max(plotData.length, 1))) + (gW / Math.max(plotData.length, 1))/2;
-      const getY = (v) => pad.t + gH - ((v - min) / range) * gH;
+      const getY = (v) => { const rawY = pad.t + gH - ((v - min) / range) * gH; return isNaN(rawY) ? pad.t + gH : rawY; };
       const zeroY = getY(0); const barW = Math.min(24, (gW / Math.max(plotData.length, 1)) * 0.6);
 
       return (
@@ -288,14 +289,16 @@
               <line x1={pad.l} y1={zeroY} x2={width - pad.r} y2={zeroY} stroke={isDark ? '#3f3f46' : '#cbd5e1'} strokeWidth="2" />
               {[max, max/2, min/2, min].map((val, idx) => {
                  if(val===0 || isNaN(val)) return null; const y = getY(val);
-                 return ( <g key={idx}><line x1={pad.l} y1={y} x2={width - pad.r} y2={y} stroke={isDark ? '#27272a' : '#e2e8f0'} strokeDasharray="4 4" /><text x={pad.l - 10} y={y + 4} textAnchor="end" className="text-[10px] md:text-[8px] fill-slate-400 font-bold blur-money">{formatCompact(val, isPrivacy)}</text></g> )
+                 return ( <g key={`grid_${idx}`}><line x1={pad.l} y1={y} x2={width - pad.r} y2={y} stroke={isDark ? '#27272a' : '#e2e8f0'} strokeDasharray="4 4" /><text x={pad.l - 10} y={y + 4} textAnchor="end" className="text-[10px] md:text-[8px] fill-slate-400 font-bold blur-money">{formatCompact(val, isPrivacy)}</text></g> )
               })}
               {plotData.map((d, i) => {
-                 const x = getX(i) - barW/2; const y = d.net >= 0 ? getY(d.net) : zeroY; const h = Math.abs(getY(d.net) - zeroY); const fill = d.net >= 0 ? '#10b981' : '#f43f5e';
+                 const x = getX(i) - barW/2; const y = d.net >= 0 ? getY(d.net) : zeroY; const hRaw = Math.abs(getY(d.net) - zeroY); 
+                 const h = isNaN(hRaw) || hRaw < 0 ? 0 : Math.max(hRaw, 2); 
+                 const fill = d.net >= 0 ? '#10b981' : '#f43f5e';
                  return (
-                    <g key={i}>
+                    <g key={`bar_${i}`}>
                        <text x={getX(i)} y={height - 5} textAnchor="middle" className="text-[10px] md:text-[9px] fill-slate-500 font-extrabold tracking-wide">{d.label}</text>
-                       <rect x={x} y={y} width={barW} height={Math.max(h, 2)} fill={fill} rx="2" />
+                       <rect x={x} y={y} width={barW} height={h} fill={fill} rx="2" />
                        <text x={getX(i)} y={d.net >= 0 ? y - 6 : y + h + 12} textAnchor="middle" fill={fill} className="text-[9px] md:text-[8px] font-black blur-money">{formatCompact(d.net, isPrivacy)}</text>
                     </g>
                  );
@@ -313,7 +316,7 @@
       data.forEach(d => { if(d.in>max)max=d.in; if(d.out>max)max=d.out; if(d.avail>max)max=d.avail; if(d.inv>max)max=d.inv; if(d.avail<min)min=d.avail; if(d.inv<min)min=d.inv; }); 
       if(max===0) max=10000; const range = max - min;
       const getX = (i) => pad.l + (i / Math.max(data.length - 1, 1)) * gW; 
-      const getY = (v) => pad.t + gH - ((v - min) / range) * gH;
+      const getY = (v) => { const rawY = pad.t + gH - ((v - min) / range) * gH; return isNaN(rawY) ? pad.t + gH : rawY; };
       const makePath = (k) => data.map((d, i) => (i===0?'M':'L') + ' ' + getX(i) + ' ' + getY(d[k])).join(' ');
       const makeArea = (k) => makePath(k) + ' L ' + getX(data.length-1) + ' ' + getY(0) + ' L ' + getX(0) + ' ' + getY(0) + ' Z';
       let toolX = hoverIndex !== null ? getX(hoverIndex) : 0;
@@ -323,15 +326,15 @@
           <div className="flex justify-end gap-3 sm:gap-5 text-[9px] sm:text-[10px] font-extrabold tracking-widest mb-4 uppercase"><span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-brand-income"></span> Income</span><span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-brand-expense"></span> Spend</span><span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#f59e0b]"></span> Invested</span><span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#e06c53]"></span> Availability</span></div>
           <svg viewBox={`0 0 ${width} ${height}`} style={{ minWidth: isScrollable ? `${width}px` : '100%' }} className="w-full h-auto font-sans relative">
             <defs><linearGradient id="gIN" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#10b981" stopOpacity="0.05"/><stop offset="100%" stopColor="#10b981" stopOpacity="0"/></linearGradient><linearGradient id="gOUT" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#f43f5e" stopOpacity="0.05"/><stop offset="100%" stopColor="#f43f5e" stopOpacity="0"/></linearGradient></defs>
-            {[0, 0.5, 1].map(pct => { const y = pad.t + gH * (1 - pct); const val = min + range * pct; return ( <g key={pct}><line x1={pad.l} y1={y} x2={width - pad.r} y2={y} stroke={isDark ? '#27272a' : '#e2e8f0'} strokeDasharray="5 5" /><text x={pad.l - 10} y={y + 4} textAnchor="end" className="text-[10px] md:text-[9px] fill-slate-400 font-bold blur-money">{formatCompact(val, isPrivacy)}</text></g> ); })}
+            {[0, 0.5, 1].map(pct => { const y = pad.t + gH * (1 - pct); const val = min + range * pct; return ( <g key={`line_${pct}`}><line x1={pad.l} y1={y} x2={width - pad.r} y2={y} stroke={isDark ? '#27272a' : '#e2e8f0'} strokeDasharray="5 5" /><text x={pad.l - 10} y={y + 4} textAnchor="end" className="text-[10px] md:text-[9px] fill-slate-400 font-bold blur-money">{formatCompact(val, isPrivacy)}</text></g> ); })}
             {min < 0 && <line x1={pad.l} y1={getY(0)} x2={width - pad.r} y2={getY(0)} stroke={isDark ? '#3f3f46' : '#cbd5e1'} strokeDasharray="5 5" strokeWidth="1" />}
             <path d={makeArea('in')} fill="url(#gIN)" pointerEvents="none" /><path d={makePath('in')} fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" pointerEvents="none" />
             <path d={makeArea('out')} fill="url(#gOUT)" pointerEvents="none" /><path d={makePath('out')} fill="none" stroke="#f43f5e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" pointerEvents="none" />
             <path d={makePath('inv')} fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" pointerEvents="none" />
             <path d={makePath('avail')} fill="none" stroke="#e06c53" strokeWidth="2.5" strokeDasharray="6 4" strokeLinecap="round" pointerEvents="none" />
-            {data.map((d, i) => ( <g key={i} pointerEvents="none"><text x={getX(i)} y={height - 5} textAnchor="middle" className="text-[10px] md:text-[9px] fill-slate-500 font-extrabold tracking-wide">{d.label}</text><circle cx={getX(i)} cy={getY(d.in)} r="5" fill={isDark ? '#121e1f' : '#fff'} stroke="#10b981" strokeWidth="2.5" /><circle cx={getX(i)} cy={getY(d.out)} r="5" fill={isDark ? '#121e1f' : '#fff'} stroke="#f43f5e" strokeWidth="2.5" /><circle cx={getX(i)} cy={getY(d.inv)} r="5" fill={isDark ? '#121e1f' : '#fff'} stroke="#f59e0b" strokeWidth="2.5" /><circle cx={getX(i)} cy={getY(d.avail)} r="5" fill={isDark ? '#121e1f' : '#fff'} stroke="#e06c53" strokeWidth="2.5" /></g> ))}
+            {data.map((d, i) => ( <g key={`pt_${i}`} pointerEvents="none"><text x={getX(i)} y={height - 5} textAnchor="middle" className="text-[10px] md:text-[9px] fill-slate-500 font-extrabold tracking-wide">{d.label}</text><circle cx={getX(i)} cy={getY(d.in)} r="5" fill={isDark ? '#121e1f' : '#fff'} stroke="#10b981" strokeWidth="2.5" /><circle cx={getX(i)} cy={getY(d.out)} r="5" fill={isDark ? '#121e1f' : '#fff'} stroke="#f43f5e" strokeWidth="2.5" /><circle cx={getX(i)} cy={getY(d.inv)} r="5" fill={isDark ? '#121e1f' : '#fff'} stroke="#f59e0b" strokeWidth="2.5" /><circle cx={getX(i)} cy={getY(d.avail)} r="5" fill={isDark ? '#121e1f' : '#fff'} stroke="#e06c53" strokeWidth="2.5" /></g> ))}
             {hoverIndex !== null && <line x1={getX(hoverIndex)} y1={pad.t} x2={getX(hoverIndex)} y2={height - pad.b} stroke={isDark ? '#3f3f46' : '#94a3b8'} strokeWidth="1.5" strokeDasharray="4 4" pointerEvents="none" />}
-            {data.map((d, i) => <rect key={`h-${i}`} x={getX(i)-(gW/Math.max(data.length-1,1))/2} y={0} width={gW/Math.max(data.length-1,1)} height={height} fill="transparent" onMouseEnter={()=>setHoverIndex(i)} onMouseLeave={()=>setHoverIndex(null)} onTouchStart={()=>setHoverIndex(i)} className="cursor-crosshair outline-none" /> )}
+            {data.map((d, i) => <rect key={`h_${i}`} x={getX(i)-(gW/Math.max(data.length-1,1))/2} y={0} width={gW/Math.max(data.length-1,1)} height={height} fill="transparent" onMouseEnter={()=>setHoverIndex(i)} onMouseLeave={()=>setHoverIndex(null)} onTouchStart={()=>setHoverIndex(i)} className="cursor-crosshair outline-none" /> )}
             {hoverIndex !== null && (() => {
                const bX = toolX > width / 2 ? -160 : 10;
                return (
@@ -359,7 +362,7 @@
           {data.map((item, i) => {
             const pct = totalExpense > 0 ? (item.total / totalExpense) * 100 : 0;
             return (
-              <div key={i} className="flex flex-col gap-2">
+              <div key={`exp_${i}`} className="flex flex-col gap-2">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-3 min-w-0 pr-4"><div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-brand-bgDark border border-slate-200 dark:border-slate-800 flex items-center justify-center shrink-0 text-slate-500 dark:text-slate-400 font-black text-[10px] uppercase">{String(item.name || 'NA').substring(0, 2)}</div><div className="min-w-0"><p className="text-sm font-extrabold text-slate-800 dark:text-white truncate">{String(item.name || 'Unknown')}</p><p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest truncate mt-0.5">{String(item.cat || 'Uncategorized')}</p></div></div>
                   <div className="text-right shrink-0"><p className="text-sm font-black text-slate-900 dark:text-white blur-money">{formatINR(item.total, isPrivacy)}</p><p className="text-[10px] font-bold text-slate-400 blur-money mt-0.5">({isPrivacy ? '...' : pct.toFixed(1)}%)</p></div>
@@ -385,7 +388,7 @@
       return (
         <div className="relative w-[180px] h-[180px] shrink-0 mx-auto">
           <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-            {slices.map((s, i) => ( <path key={i} d={s.d} fill={s.color} opacity={activeSlice?(activeSlice.name===s.name?1:0.2):1} style={{ transform: activeSlice&&activeSlice.name===s.name ? 'scale(1.05)' : 'scale(1)', transformOrigin: `${center}px ${center}px`, transition: 'all 0.3s' }} className="cursor-pointer hover:opacity-80" onClick={() => onSelectCategory && onSelectCategory(selectedCategory === s.name ? 'All Categories' : s.name)} /> ))}
+            {slices.map((s, i) => ( <path key={`slice_${i}`} d={s.d} fill={s.color} opacity={activeSlice?(activeSlice.name===s.name?1:0.2):1} style={{ transform: activeSlice&&activeSlice.name===s.name ? 'scale(1.05)' : 'scale(1)', transformOrigin: `${center}px ${center}px`, transition: 'all 0.3s' }} className="cursor-pointer hover:opacity-80" onClick={() => onSelectCategory && onSelectCategory(selectedCategory === s.name ? 'All Categories' : s.name)} /> ))}
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none p-2">
             {activeSlice ? ( <><span className="text-[10px] font-bold uppercase tracking-widest text-slate-400 truncate max-w-[90px]">{activeSlice.name}</span><span className="text-xs font-black text-slate-800 dark:text-slate-100 mt-1 blur-money">{formatINR(activeSlice.value, isPrivacy)}</span></> ) : ( <><span className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Total</span><span className="text-sm font-black text-slate-800 dark:text-slate-100 mt-1 blur-money">{formatINR(total, isPrivacy)}</span></> )}
@@ -409,16 +412,12 @@
     }
 
     function MetricCard({ title, value, icon: IconComp, type, isDark }) {
-        let borderClass = "border-t-slate-800 dark:border-t-slate-200";
-        let bgClass = "modern-card p-4 sm:p-5 flex flex-col justify-center bg-brand-cardLight dark:bg-brand-cardDark border-t-4 ";
-        let textClass = "text-slate-800 dark:text-white";
-        
+        let borderClass = "border-t-slate-800 dark:border-t-slate-200"; let bgClass = "modern-card p-4 sm:p-5 flex flex-col justify-center bg-brand-cardLight dark:bg-brand-cardDark border-t-4 "; let textClass = "text-slate-800 dark:text-white";
         if (type === 'balance') borderClass = "border-t-blue-600 dark:border-t-blue-500"; 
         else if (type === 'income') borderClass = "border-t-brand-income"; 
         else if (type === 'expense') borderClass = "border-t-brand-expense";
         else if (type === 'invested') borderClass = "border-t-[#f59e0b]"; 
         else if (type === 'savings') borderClass = "border-t-brand-transfer";
-        
         return (
             <div className={`${bgClass} ${borderClass}`}>
                 <div className="flex justify-between items-start mb-2"><p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{title}</p>{IconComp && <IconComp c="w-4 h-4 text-slate-300 dark:text-slate-600" />}</div>
@@ -449,17 +448,13 @@
             return Object.entries(map).map(([name, total]) => ({name, total})).sort((a,b) => b.total - a.total).slice(0, 10); 
         }, [insightsData]);
 
-        const largestTxns = useMemo(() => {
-            return [...expenseTxns].sort((a,b) => b.amount - a.amount).slice(0, 5);
-        }, [expenseTxns]);
-
+        const largestTxns = useMemo(() => { return [...expenseTxns].sort((a,b) => b.amount - a.amount).slice(0, 5); }, [expenseTxns]);
         const frequentPayees = useMemo(() => { 
             const map = {}; 
             expenseTxns.forEach(r => { 
                 const desc = String(r.description || 'Unknown'); 
                 if (!map[desc]) map[desc] = { name: desc, count: 0, total: 0 }; 
-                map[desc].count += 1; 
-                map[desc].total += r.amount; 
+                map[desc].count += 1; map[desc].total += r.amount; 
             }); 
             return Object.values(map).sort((a,b) => b.count - a.count).slice(0, 5); 
         }, [expenseTxns]);
@@ -467,8 +462,7 @@
         const incomeSplitData = useMemo(() => { 
             const map = {}; 
             insightsData.filter(r => r.rawType === 'INCOME').forEach(r => { 
-                const cat = String(r.category || 'Uncategorized'); 
-                map[cat] = (map[cat] || 0) + r.amount; 
+                const cat = String(r.category || 'Uncategorized'); map[cat] = (map[cat] || 0) + r.amount; 
             }); 
             const colors = ['#1d8b4e', '#e06c53', '#047857', '#059669', '#10b981']; 
             return Object.entries(map).map(([name, value], idx) => ({ name, value, color: colors[idx % colors.length] })).sort((a,b) => b.value - a.value); 
@@ -477,10 +471,7 @@
         const categoryTagMatrix = useMemo(() => {
             const expenses = insightsData.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment'));
             if (!expenses.length) return null;
-            const tagMap = {}; 
-            expenses.forEach(r => { 
-                extractTags(r.tags).forEach(t => { tagMap[t] = (tagMap[t] || 0) + r.amount; }); 
-            });
+            const tagMap = {}; expenses.forEach(r => { extractTags(r.tags).forEach(t => { tagMap[t] = (tagMap[t] || 0) + r.amount; }); });
             const top5Tags = Object.entries(tagMap).sort((a,b) => b[1] - a[1]).slice(0,5).map(x => x[0]);
             if (top5Tags.length === 0) return null;
             const catMap = {};
@@ -488,11 +479,7 @@
                 const c = String(r.category || 'Uncategorized');
                 if (!catMap[c]) catMap[c] = { total: 0, tags: {} };
                 catMap[c].total += r.amount;
-                extractTags(r.tags).forEach(t => { 
-                    if (top5Tags.includes(t)) {
-                        catMap[c].tags[t] = (catMap[c].tags[t] || 0) + r.amount; 
-                    }
-                });
+                extractTags(r.tags).forEach(t => { if (top5Tags.includes(t)) { catMap[c].tags[t] = (catMap[c].tags[t] || 0) + r.amount; } });
             });
             const sortedCats = Object.entries(catMap).sort((a,b) => b[1].total - a[1].total).slice(0,8);
             return { tags: top5Tags, cats: sortedCats };
@@ -500,17 +487,10 @@
 
         return (
             <div className="animate-fade-in space-y-4 sm:space-y-6 max-w-4xl mx-auto pb-8">
-                
                 <div className="modern-card p-3 flex flex-col sm:flex-row items-center justify-between gap-3 border border-slate-200 dark:border-slate-800">
                     <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200 pl-3 uppercase tracking-widest">Filter Insights</span>
                     <div className="w-full sm:w-64">
-                        <SearchableSelect 
-                            options={['All Categories', ...allUniqueCategories]} 
-                            value={insightsCategoryFilter} 
-                            onChange={(val) => setInsightsCategoryFilter(val)} 
-                            placeholder="Search category..." 
-                            compact={true} 
-                        />
+                        <SearchableSelect options={allUniqueCategories} value={insightsCategoryFilter} onChange={(val) => setInsightsCategoryFilter(val)} placeholder="Search category..." compact={true} />
                     </div>
                 </div>
                 
@@ -529,16 +509,15 @@
                 )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-                    
                     <div className="modern-card p-6 sm:p-8">
                         <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><TagIcon c="w-5 h-5 text-brand-teal" /> Spending by Tags</h3>
                         {topTags.length === 0 ? <p className="text-xs text-slate-500 font-medium">No tags used.</p> : (
                             <div className="space-y-5">
-                                {topTags.map((tag) => { 
+                                {topTags.map((tag, idx) => { 
                                     const pct = totalExpense > 0 ? (tag.total / totalExpense) * 100 : 0; 
                                     const maxTagTotal = topTags[0]?.total || 1;
                                     return (
-                                        <div key={tag.name}>
+                                        <div key={`tag_${idx}`}>
                                             <div className="flex justify-between items-center mb-1.5">
                                                 <span className="text-xs font-extrabold text-brand-teal dark:text-teal-300 bg-teal-50 dark:bg-teal-900/30 border border-teal-100 dark:border-teal-800 px-2 py-0.5 rounded-md">{tag.name}</span>
                                                 <div className="text-right">
@@ -561,10 +540,8 @@
                         <div className="divide-y divide-slate-50 dark:divide-slate-800">
                             {frequentPayees.length === 0 ? <p className="text-xs text-slate-500 font-medium">No payees found.</p> : (
                                 frequentPayees.map((t, idx) => (
-                                    <div key={idx} className="py-3.5 flex justify-between items-center">
-                                        <div className="min-w-0 pr-4">
-                                            <p className="text-sm font-extrabold text-slate-800 dark:text-slate-100 truncate">{t.name}</p>
-                                        </div>
+                                    <div key={`payee_${idx}`} className="py-3.5 flex justify-between items-center">
+                                        <div className="min-w-0 pr-4"><p className="text-sm font-extrabold text-slate-800 dark:text-slate-100 truncate">{t.name}</p></div>
                                         <div className="text-right shrink-0">
                                             <p className="text-xs font-black text-slate-800 dark:text-slate-200 blur-money">{isPrivacy ? '......' : `${t.count}x`}</p>
                                             <p className="text-[10px] font-bold text-slate-400 blur-money mt-0.5">{formatINR(t.total, isPrivacy)} <span className="ml-1">({isPrivacy ? '...' : ((t.total/totalExpense)*100).toFixed(1)}%)</span></p>
@@ -582,12 +559,10 @@
                                 largestTxns.map((t, idx) => { 
                                     const pct = totalExpense > 0 ? (t.amount / totalExpense) * 100 : 0; 
                                     return (
-                                        <div key={idx} className="py-3.5 flex justify-between items-center">
+                                        <div key={`lg_exp_${idx}`} className="py-3.5 flex justify-between items-center">
                                             <div className="min-w-0 pr-4">
                                                 <p className="text-sm font-extrabold text-slate-800 dark:text-slate-100 truncate mb-1">{t.description}</p>
-                                                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                                    <span>{formatDateStr(t.date)}</span>
-                                                </div>
+                                                <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest"><span>{formatDateStr(t.date)}</span></div>
                                             </div>
                                             <div className="text-right shrink-0">
                                                 <p className="text-sm font-black text-brand-expense blur-money">-{formatINR(t.amount, isPrivacy)}</p>
@@ -604,10 +579,10 @@
                         <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><ArrowDownRight c="w-5 h-5 text-brand-income"/> Income Sources</h3>
                         {incomeSplitData.length === 0 ? <p className="text-xs text-slate-500 font-medium">No income found.</p> : (
                             <div className="space-y-5">
-                                {incomeSplitData.map((inc) => { 
+                                {incomeSplitData.map((inc, idx) => { 
                                     const pct = totalIncome > 0 ? (inc.value / totalIncome) * 100 : 0; 
                                     return (
-                                        <div key={inc.name}>
+                                        <div key={`inc_${idx}`}>
                                             <div className="flex justify-between items-center mb-1.5">
                                                 <div className="flex items-center gap-2">
                                                     <div className="w-2.5 h-2.5 rounded-sm" style={{backgroundColor: inc.color}}></div>
@@ -627,7 +602,6 @@
                             </div>
                         )}
                     </div>
-                    
                 </div>
 
                 {categoryTagMatrix && (
@@ -642,13 +616,13 @@
                                </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
-                               {(categoryTagMatrix.cats||[]).map(([catName, catData]) => (
-                                  <tr key={catName} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                               {(categoryTagMatrix.cats||[]).map(([catName, catData], rIdx) => (
+                                  <tr key={`row_${rIdx}`} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
                                      <td className="py-3 px-5 text-xs font-bold truncate max-w-[140px] sm:max-w-[200px]">{catName}</td>
-                                     {(categoryTagMatrix.tags||[]).map(t => {
+                                     {(categoryTagMatrix.tags||[]).map((t, cIdx) => {
                                         const val = catData.tags[t] || 0;
                                         return (
-                                           <td key={t} className="p-1.5 text-center">
+                                           <td key={`cell_${cIdx}`} className="p-1.5 text-center">
                                               {val > 0 ? <div className="bg-brand-teal/10 text-brand-teal text-[11px] font-black py-2 px-3 rounded-xl blur-money">{formatCompact(val, isPrivacy)}</div> : <span className="text-slate-300 dark:text-slate-700">-</span>}
                                            </td>
                                         )
@@ -682,14 +656,385 @@
 
       useEffect(() => {
         if (editData) {
-          setType(editData.rawType||'EXPENSE');
-          setDate(editData.date||new Date().toISOString().split('T')[0]);
-          setAmount(editData.amount||'');
-          setDescription(editData.description?String(editData.description):'');
-          setCategory(editData.category||'');
-          setAccount(editData.account||'');
-          setTransferTo(editData.transfer_to||'');
-          setTags(editData.tags||'');
-          setNotes(editData.notes||'');
+          setType(editData.rawType||'EXPENSE'); setDate(editData.date||new Date().toISOString().split('T')[0]); setAmount(editData.amount||''); setDescription(editData.description?String(editData.description):''); setCategory(editData.category||''); setAccount(editData.account||''); setTransferTo(editData.transfer_to||''); setTags(editData.tags||''); setNotes(editData.notes||'');
         } else {
-          setType('EXPENSE'); setDate(new Date().toISOString().split('T')[0]); setAmount(''); setDescription('');I'm having a hard time fulfilling your request. Can I help you with something else instead?
+          setType('EXPENSE'); setDate(new Date().toISOString().split('T')[0]); setAmount(''); setDescription(''); setCategory(''); setAccount(''); setTransferTo(''); setTags(''); setNotes('');
+        }
+        setErrorMsg('');
+      }, [editData, isOpen, settings]);
+
+      if (!isOpen) return null;
+      const preventEnter = (e) => { if(e.key === 'Enter') e.preventDefault(); };
+      const handleSubmit = (e) => {
+        e.preventDefault(); 
+        if (!String(description).trim()) return setErrorMsg("Please enter a description.");
+        if (!amount || parseFloat(amount) <= 0) return setErrorMsg("Please enter a valid amount.");
+        if (!category && type !== 'TRANSFER') return setErrorMsg("Please select a Category.");
+        if (!account) return setErrorMsg("Please select an Account.");
+        if (type === 'TRANSFER' && (!transferTo || account === transferTo)) return setErrorMsg("Please select a valid Transfer Target.");
+        setErrorMsg(""); 
+
+        const finalCat = type === 'TRANSFER' ? 'TRANSFER' : normalizeCategory(category);
+        const payload = { row_index: editData ? editData.row_index : null, date, type, amount, description, category: finalCat, account, transfer_to: type === 'TRANSFER' ? transferTo : '', tags, notes };
+        
+        onSave(prev => {
+            const newTxns = [...(prev.transactions || [])]; const fakeId = editData ? editData.row_index : 'temp_' + Date.now();
+            const opt = { ...payload, row_index: fakeId, amount: parseFloat(amount) };
+            if (editData) { const idx = newTxns.findIndex(t => t.row_index === editData.row_index); if (idx > -1) newTxns[idx] = opt; } else { newTxns.unshift(opt); }
+            return { ...prev, transactions: newTxns };
+        });
+        setIsBackgroundSyncing(true); onClose();
+        apiCall('SAVE_TRANSACTION', { data: payload }).then(res => { onSave(res); setIsBackgroundSyncing(false); }).catch(e => { console.error(e); setIsBackgroundSyncing(false); alert("Save failed: " + e.message); });
+      };
+
+      const catOptions = type === 'INCOME' ? safeIncomeCats : safeExpenseCats;
+
+      return (
+        <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+          <div className="bg-white dark:bg-brand-cardDark rounded-t-[2rem] sm:rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-slide-up flex flex-col max-h-[90vh] border border-slate-100 dark:border-slate-800">
+            <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-800"><h2 className="text-lg font-black text-slate-800 dark:text-white">{editData ? 'Edit Transaction' : 'Add transaction'}</h2><button onClick={onClose} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"><X c="w-4 h-4"/></button></div>
+            <div className="p-5 overflow-y-auto hide-scrollbar">
+              <div className="flex p-1 mb-6 bg-[#f0f2f5] dark:bg-slate-800 rounded-full shadow-sm">
+                 <button type="button" disabled={!!editData} onClick={()=>setType('EXPENSE')} className={`flex-1 py-2.5 text-xs font-bold rounded-full transition-all ${type==='EXPENSE'?'bg-brand-expense text-white':'text-slate-500'} ${!!editData && type!=='EXPENSE' ? 'opacity-40 cursor-not-allowed' : ''}`}>Expense</button>
+                 <button type="button" disabled={!!editData} onClick={()=>setType('INCOME')} className={`flex-1 py-2.5 text-xs font-bold rounded-full transition-all ${type==='INCOME'?'bg-brand-income text-white':'text-slate-500'} ${!!editData && type!=='INCOME' ? 'opacity-40 cursor-not-allowed' : ''}`}>Income</button>
+                 <button type="button" disabled={!!editData} onClick={()=>setType('TRANSFER')} className={`flex-1 py-2.5 text-xs font-bold rounded-full transition-all ${type==='TRANSFER'?'bg-brand-transfer text-white':'text-slate-500'} ${!!editData && type!=='TRANSFER' ? 'opacity-40 cursor-not-allowed' : ''}`}>Transfer</button>
+              </div>
+              {errorMsg && <div className="mb-6 p-3 bg-brand-expense/10 text-brand-expense rounded-full flex items-center gap-3 text-xs font-bold"><div className="w-5 h-5 rounded-full bg-brand-expense text-white flex items-center justify-center shrink-0">!</div>{errorMsg}</div>}
+              <form id="txnForm" onSubmit={handleSubmit} className="space-y-4">
+                <div><label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Description</label><input type="text" enterKeyHint="next" placeholder="Example: Daily Food" value={description} onChange={e=>setDescription(e.target.value)} onKeyDown={preventEnter} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none dark:text-white" /></div>
+                <div className="flex gap-4"><div className="flex-1"><label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Amount</label><input type="number" enterKeyHint="next" step="0.01" value={amount} onChange={e=>setAmount(e.target.value)} onKeyDown={preventEnter} className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none dark:text-white" /></div><div className="flex-1"><label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Date</label><input type="date" enterKeyHint="next" value={date} onChange={e=>setDate(e.target.value)} onKeyDown={preventEnter} className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none dark:text-white" /></div></div>
+                
+                {type === 'TRANSFER' ? (
+                   <div className="flex gap-4 animate-fade-in">
+                      <div className="flex-1"><label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Account (From)</label><SearchableSelect options={safeAccounts} value={account} onChange={setAccount} placeholder="Select..." compact={true} /></div>
+                      <div className="flex-1"><label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Transfer To</label><SearchableSelect options={safeAccounts.filter(a => a !== account)} value={transferTo} onChange={setTransferTo} placeholder="Select target..." compact={true} /></div>
+                   </div>
+                ) : (
+                   <div className="flex gap-4 animate-fade-in">
+                      <div className="flex-1"><label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Category</label><SearchableSelect options={catOptions} value={category} onChange={setCategory} placeholder="Select..." compact={true} excludedList={excludedCats} /></div>
+                      <div className="flex-1"><label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">{type==='INCOME'?'To Account':'Account'}</label><SearchableSelect options={safeAccounts} value={account} onChange={setAccount} placeholder="Select..." compact={true} /></div>
+                   </div>
+                )}
+                
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Tags</label>
+                  <TagAutocomplete value={tags} onChange={setTags} availableTags={allAvailableTags} />
+                  <label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5 mt-5">Notes</label><textarea placeholder="Optional note" value={notes} onChange={e=>setNotes(e.target.value)} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className="w-full h-20 bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-2xl px-4 py-3 text-sm font-bold outline-none dark:text-white resize-none"></textarea>
+                </div>
+              </form>
+            </div>
+            <div className="p-4 sm:p-5 border-t border-slate-100 dark:border-slate-800 flex gap-3 justify-end"><button onClick={onClose} className="px-6 py-2.5 rounded-full font-bold text-sm bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700">Cancel</button><button form="txnForm" type="submit" className="px-6 py-2.5 rounded-full font-bold text-sm text-white bg-brand-teal">{editData ? 'Update' : 'Save'}</button></div>
+          </div>
+        </div>
+      );
+    }
+
+    function SettingsView({ appData, onSave, appPin, autoLockTime, setIsBackgroundSyncing }) {
+      const safeIncomeCats = appData?.settings?.incomeCats||[]; const safeExpenseCats = appData?.settings?.expenseCats||[]; const safeAccounts = appData?.settings?.accounts||[];
+      const [exCats, setExCats] = useState(appData.excludedCats||[]); const [bals, setBals] = useState(appData.balances||[]);
+      const [incCats, setIncCats] = useState([]); const [expCats, setExpCats] = useState([]);
+      const [pin, setPin] = useState(appPin||''); const [showPin, setShowPin] = useState(false); const [lockTime, setLockTime] = useState(autoLockTime||'0');
+      const [saving, setSaving] = useState(false); const [saveError, setSaveError] = useState('');
+
+      const [snapshotDate, setSnapshotDate] = useState(() => {
+         if (appData.balances && appData.balances.length > 0) { const latest = [...appData.balances].sort((a,b) => parseDateLocal(b.date) - parseDateLocal(a.date))[0]; if (latest && latest.date) return latest.date; }
+         return new Date().toISOString().split('T')[0];
+      });
+
+      useEffect(() => {
+        setIncCats(safeIncomeCats.map((c, i) => ({ id: `inc_${i}`, orig: c, val: c }))); setExpCats(safeExpenseCats.map((c, i) => ({ id: `exp_${i}`, orig: c, val: c }))); setExCats(appData.excludedCats||[]); setBals(appData.balances||[]);
+      }, [appData]);
+
+      const moveCat = (idx, dir, type) => {
+          const list = type === 'INC' ? [...incCats] : [...expCats]; const setter = type === 'INC' ? setIncCats : setExpCats;
+          if (dir === 'UP' && idx > 0) { [list[idx-1], list[idx]] = [list[idx], list[idx-1]]; setter(list); } 
+          else if (dir === 'DOWN' && idx < list.length - 1) { [list[idx+1], list[idx]] = [list[idx], list[idx+1]]; setter(list); }
+      };
+
+      const handleSave = () => {
+         if (pin.length > 0 && (pin.length < 4 || pin.length > 8)) { setSaveError("PIN must be between 4 and 8 digits."); return; }
+         setSaveError(''); setSaving(true); setIsBackgroundSyncing(true);
+         
+         const renames = []; const finalIncCats = []; const finalExpCats = [];
+         incCats.forEach(c => { const cleanVal = normalizeCategory(c.val); if (cleanVal !== '') finalIncCats.push(cleanVal); if (c.orig && c.orig !== cleanVal && cleanVal !== '') renames.push({ old: c.orig, new: cleanVal }); });
+         expCats.forEach(c => { const cleanVal = normalizeCategory(c.val); if (cleanVal !== '') finalExpCats.push(cleanVal); if (c.orig && c.orig !== cleanVal && cleanVal !== '') renames.push({ old: c.orig, new: cleanVal }); });
+         
+         const cleanBals = bals.map(b => ({...b, balance: b.balance === '' ? 0 : parseFloat(b.balance)}));
+         const payload = { excludedCats: exCats, balances: cleanBals, incomeCats: finalIncCats, expenseCats: finalExpCats, categoryRenames: renames, appPin: pin, autoLockTime: lockTime };
+         
+         onSave(prev => {
+             let updatedTxns = [...(prev.transactions || [])];
+             renames.forEach(r => { updatedTxns = updatedTxns.map(t => t.category === r.old ? { ...t, category: r.new } : t); });
+             return { ...prev, transactions: updatedTxns, settings: { ...prev.settings, incomeCats: payload.incomeCats, expenseCats: payload.expenseCats }, balances: payload.balances, excludedCats: payload.excludedCats, appPin: payload.appPin, autoLockTime: payload.autoLockTime };
+         });
+         apiCall('SAVE_SETTINGS', { payload }).then(() => { setSaving(false); setIsBackgroundSyncing(false); }).catch(e => { console.error(e); setSaving(false); setIsBackgroundSyncing(false); alert("Settings save failed. Please check your connection."); });
+      };
+
+      return (
+         <div className="animate-fade-in space-y-6 max-w-4xl mx-auto pb-8">
+            <div className="modern-card p-6 sm:p-8">
+               <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 mb-6 border-b border-slate-100 dark:border-slate-800 pb-5"><div><h3 className="text-xl font-extrabold">System Settings</h3></div><button onClick={handleSave} disabled={saving} className="bg-brand-teal text-white font-bold py-2.5 px-6 rounded-full text-sm shadow-sm">{saving ? 'Saving...' : 'Save Configuration'}</button></div>
+               {saveError && <div className="mb-6 p-3 bg-rose-50 text-brand-expense rounded-full text-xs font-bold text-center border border-rose-100">{saveError}</div>}
+               <h4 className="text-sm font-bold mb-4">Account Snapshots</h4>
+               <div className="mb-6 bg-slate-50 dark:bg-brand-bgDark border border-slate-100 dark:border-slate-800 p-5 rounded-3xl"><label className="block text-[11px] font-bold mb-1">Global Snapshot Date</label><input type="date" value={snapshotDate} onChange={e=>setSnapshotDate(e.target.value)} className="w-full sm:w-64 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-semibold outline-none" /></div>
+               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">{safeAccounts.map(acc => { 
+                   const ex = bals.find(b => b.account === acc && b.date === snapshotDate) || { balance: '' }; 
+                   return (
+                     <div key={acc} className="p-5 bg-slate-50 dark:bg-brand-bgDark rounded-3xl border border-slate-100 dark:border-slate-800"><h4 className="font-bold text-sm mb-3 truncate">{acc}</h4><input type="number" step="0.01" value={ex.balance} onChange={e => {
+                         const val = parseFloat(e.target.value); const isNaNVal = isNaN(val);
+                         setBals(prev => { const existingIndex = prev.findIndex(b => b.account === acc && b.date === snapshotDate); let newBals = [...prev]; if (existingIndex >= 0) newBals[existingIndex] = { ...newBals[existingIndex], balance: isNaNVal ? '' : val }; else newBals.push({ account: acc, date: snapshotDate, balance: isNaNVal ? '' : val }); return newBals; });
+                     }} className="w-full bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none" /></div>
+                   ) 
+               })}</div>
+               
+               <div className="border-t border-slate-100 dark:border-slate-800 pt-6 mt-8">
+                   <h3 className="text-xl font-extrabold mb-4">Security</h3>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                       <div className="bg-slate-50 dark:bg-brand-bgDark rounded-3xl p-5 border border-slate-100 dark:border-slate-800"><label className="block text-[11px] font-bold mb-2">App Access PIN</label><div className="flex gap-3"><input type="text" inputMode="numeric" pattern="[0-9]*" maxLength="8" placeholder="Leave blank to disable" value={pin} onChange={(e)=>setPin(e.target.value.replace(/[^0-9]/g,''))} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className={`flex-1 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold tracking-widest outline-none ${!showPin && pin ? 'pin-input' : ''}`}/><button onClick={()=>setShowPin(!showPin)} className="p-3 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full aspect-square flex items-center justify-center">{showPin?<EyeOff c="w-4 h-4"/>:<Eye c="w-4 h-4"/>}</button></div></div>
+                       <div className="bg-slate-50 dark:bg-brand-bgDark rounded-3xl p-5 border border-slate-100 dark:border-slate-800"><label className="block text-[11px] font-bold mb-2">Auto-Lock Timer</label><select value={lockTime} onChange={(e)=>setLockTime(e.target.value)} className="w-full bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-3 text-sm font-bold outline-none"><option value="0">Never</option><option value="1">1 minute</option><option value="5">5 minutes</option><option value="15">15 minutes</option><option value="30">30 minutes</option></select></div>
+                   </div>
+               </div>
+
+               <div className="border-t border-slate-100 dark:border-slate-800 pt-6">
+                   <h3 className="text-xl font-extrabold mb-4">Categories</h3>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="bg-slate-50 dark:bg-brand-bgDark rounded-3xl p-5 border border-slate-100 dark:border-slate-800">
+                          <h4 className="text-xs font-bold mb-4 uppercase tracking-widest">Income Categories</h4>
+                          <div className="space-y-2">
+                             {incCats.map((item, i) => { 
+                                 const isEx = exCats.includes(item.val); 
+                                 return (
+                                     <div key={item.id} className="flex justify-between items-center p-1 bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-700">
+                                         <div className="flex flex-col mx-1 shrink-0"><button type="button" onClick={()=>moveCat(i, 'UP', 'INC')} disabled={i===0} className={`p-0.5 rounded ${i===0?'text-slate-200 dark:text-slate-800':'text-slate-400 hover:text-brand-teal'}`}><ChevronUp c="w-3 h-3"/></button><button type="button" onClick={()=>moveCat(i, 'DOWN', 'INC')} disabled={i===incCats.length-1} className={`p-0.5 rounded ${i===incCats.length-1?'text-slate-200 dark:text-slate-800':'text-slate-400 hover:text-brand-teal'}`}><ChevronDown c="w-3 h-3"/></button></div>
+                                         <input value={item.val} onChange={(e)=>{const n=[...incCats];n[i]={...n[i], val:e.target.value};setIncCats(n);}} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className={`flex-1 min-w-0 bg-transparent outline-none text-sm font-bold px-2 ${isEx?'line-through opacity-50':''}`} />
+                                         <div className="flex gap-2 pr-2 shrink-0 items-center"><div onClick={()=>setExCats(isEx?exCats.filter(x=>x!==item.val):[...exCats,item.val])} className={`w-9 h-5 flex items-center rounded-full p-1 cursor-pointer transition-colors ${!isEx?'bg-brand-teal':'bg-slate-300 dark:bg-slate-700'}`}><div className={`bg-white w-3 h-3 rounded-full transition-transform ${!isEx?'translate-x-4':''}`}></div></div><button type="button" onClick={()=>setIncCats(incCats.filter((_,x)=>x!==i))} className="text-slate-300 hover:text-brand-expense p-1"><Trash2 c="w-4 h-4"/></button></div>
+                                     </div>
+                                 ) 
+                             })}
+                          </div>
+                          <button onClick={()=>setIncCats([...incCats, {id: 'inc_'+Date.now(), orig: '', val: 'New Income'}])} className="w-full mt-4 text-brand-teal font-bold py-2.5 rounded-full text-xs uppercase border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark hover:bg-slate-50">Add Income Category</button>
+                      </div>
+                      <div className="bg-slate-50 dark:bg-brand-bgDark rounded-3xl p-5 border border-slate-100 dark:border-slate-800">
+                          <h4 className="text-xs font-bold mb-4 uppercase tracking-widest">Expense Categories</h4>
+                          <div className="space-y-2">
+                             {expCats.map((item, i) => { 
+                                 const isEx = exCats.includes(item.val); 
+                                 return (
+                                     <div key={item.id} className="flex justify-between items-center p-1 bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-700">
+                                         <div className="flex flex-col mx-1 shrink-0"><button type="button" onClick={()=>moveCat(i, 'UP', 'EXP')} disabled={i===0} className={`p-0.5 rounded ${i===0?'text-slate-200 dark:text-slate-800':'text-slate-400 hover:text-brand-teal'}`}><ChevronUp c="w-3 h-3"/></button><button type="button" onClick={()=>moveCat(i, 'DOWN', 'EXP')} disabled={i===expCats.length-1} className={`p-0.5 rounded ${i===expCats.length-1?'text-slate-200 dark:text-slate-800':'text-slate-400 hover:text-brand-teal'}`}><ChevronDown c="w-3 h-3"/></button></div>
+                                         <input value={item.val} onChange={(e)=>{const n=[...expCats];n[i]={...n[i], val:e.target.value};setExpCats(n);}} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className={`flex-1 min-w-0 bg-transparent outline-none text-sm font-bold px-2 ${isEx?'line-through opacity-50':''}`} />
+                                         <div className="flex gap-2 pr-2 shrink-0 items-center"><div onClick={()=>setExCats(isEx?exCats.filter(x=>x!==item.val):[...exCats,item.val])} className={`w-9 h-5 flex items-center rounded-full p-1 cursor-pointer transition-colors ${!isEx?'bg-brand-teal':'bg-slate-300 dark:bg-slate-700'}`}><div className={`bg-white w-3 h-3 rounded-full transition-transform ${!isEx?'translate-x-4':''}`}></div></div><button type="button" onClick={()=>setExpCats(expCats.filter((_,x)=>x!==i))} className="text-slate-300 hover:text-brand-expense p-1"><Trash2 c="w-4 h-4"/></button></div>
+                                     </div>
+                                 ) 
+                             })}
+                          </div>
+                          <button onClick={()=>setExpCats([...expCats, {id: 'exp_'+Date.now(), orig: '', val: 'New Expense'}])} className="w-full mt-4 text-brand-teal font-bold py-2.5 rounded-full text-xs uppercase border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark hover:bg-slate-50">Add Expense Category</button>
+                      </div>
+                   </div>
+               </div>
+
+               <div className="border-t border-slate-100 dark:border-slate-800 pt-6 mt-8"><h3 className="text-xl font-extrabold mb-4 text-rose-600 dark:text-rose-500">Danger Zone</h3><div className="bg-rose-50 dark:bg-rose-500/10 rounded-3xl p-5 border border-rose-100 dark:border-rose-500/20 flex flex-col sm:flex-row justify-between sm:items-center gap-4"><div><h4 className="text-[11px] font-bold text-rose-800 dark:text-rose-200 uppercase tracking-wider mb-1">Disconnect App</h4><p className="text-xs text-rose-600 dark:text-rose-300 font-medium">Remove API keys and clear local cache from this device.</p></div><button onClick={()=>{if(window.confirm("Disconnect and clear all local data?")){try{localStorage.removeItem('API_URL');localStorage.removeItem('API_KEY');localStorage.removeItem('finTrackerCache');}catch(e){}window.location.reload();}}} className="bg-white dark:bg-brand-cardDark text-brand-expense font-bold py-2.5 px-6 rounded-full text-sm border border-rose-200 dark:border-rose-800 shadow-sm whitespace-nowrap">Disconnect</button></div></div>
+
+            </div>
+         </div>
+      );
+    }
+
+    function BulkActionModal({ isOpen, action, count, onClose, onConfirm, bulkCategoryOptions, excludedCats }) {
+      const [val, setVal] = useState('');
+      useEffect(() => { if (!isOpen) setVal(''); }, [isOpen]);
+      if (!isOpen) return null;
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        if (action === 'CATEGORY' && !val) return alert("Select Category");
+        let up = {};
+        if (action === 'CATEGORY') up.category = normalizeCategory(val);
+        if (action === 'TAGS') up.tags = val;
+        if (action === 'DESC') up.description = val;
+        onConfirm(up);
+      };
+
+      let t = "", l = "", inp = null;
+      if (action === 'CATEGORY') {
+        t = "Recategorize"; l = "Select new category:";
+        inp = <SearchableSelect options={bulkCategoryOptions} value={val} onChange={setVal} placeholder="Select..." excludedList={excludedCats} />;
+      } else if (action === 'TAGS') {
+        t = "Overwrite Tags"; l = "Enter new tags:";
+        inp = <input type="text" placeholder="#vacation" value={val} onChange={e=>setVal(e.target.value)} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none" />;
+      } else if (action === 'DESC') {
+        t = "Redescribe"; l = "Enter description:";
+        inp = <input type="text" placeholder="e.g. Swiggy" value={val} onChange={e=>setVal(e.target.value)} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold outline-none" />;
+      }
+
+      return (
+        <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+           <div className="bg-white dark:bg-brand-cardDark rounded-t-[2rem] sm:rounded-[2rem] w-full max-w-sm overflow-hidden shadow-xl animate-slide-up pb-6 sm:pb-0 border border-slate-100 dark:border-slate-800">
+              <div className="p-5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center"><h2 className="text-base font-black">{t}</h2><button onClick={onClose} className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800"><X c="w-5 h-5 text-slate-500"/></button></div>
+              <form onSubmit={handleSubmit} className="p-6 bg-slate-50 dark:bg-brand-bgDark">
+                 <p className="text-[11px] text-slate-500 font-bold mb-4 uppercase tracking-widest">{l}</p>{inp}
+                 <div className="mt-8 flex gap-3"><button type="button" onClick={onClose} className="flex-1 py-3 rounded-full font-bold bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700">Cancel</button><button type="submit" className="flex-1 py-3 rounded-full font-black text-white bg-brand-teal">Apply</button></div>
+              </form>
+           </div>
+        </div>
+      );
+    }
+
+    function App() {
+      const [appData, setAppData] = useState({ transactions: [], settings: { incomeCats: [], expenseCats: [], accounts: [] }, balances: [], excludedCats: [], appPin: '', autoLockTime: '0' });
+      const [isLoading, setIsLoading] = useState(true);
+      const [isBackgroundSyncing, setIsBackgroundSyncing] = useState(false);
+      const [activeTab, setActiveTab] = useState('overview');
+      const [period, setPeriod] = useState('This Month');
+      const [isModalOpen, setIsModalOpen] = useState(false);
+      const [editTxn, setEditTxn] = useState(null); 
+      const [searchQ, setSearchQ] = useState('');
+      const [ledgerCategoryFilter, setLedgerCategoryFilter] = useState('All');
+      const [ledgerAccountFilter, setLedgerAccountFilter] = useState('All');
+      const [ledgerTagFilter, setLedgerTagFilter] = useState(null);
+      const [ledgerTypeFilter, setLedgerTypeFilter] = useState('ALL'); 
+      const [tagsExpanded, setTagsExpanded] = useState(false); 
+      const [selectedRows, setSelectedRows] = useState([]);
+      const [bulkModal, setBulkModal] = useState({ isOpen: false, action: null });
+      const [deleteModalId, setDeleteModalId] = useState(null); 
+      const [balancesExpanded, setBalancesExpanded] = useState(false);
+      const [customFrom, setCustomFrom] = useState('');
+      const [customTo, setCustomTo] = useState('');
+      const [expandedGroups, setExpandedGroups] = useState({});
+      const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false);
+      const [isAuthenticated, setIsAuthenticated] = useState(false);
+      const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'desc' });
+      const [isSetupComplete, setIsSetupComplete] = useState(!!(GLOBAL_API_URL && GLOBAL_API_KEY));
+      
+      const [isDarkMode, setIsDarkMode] = useState(() => { try { return localStorage.getItem('theme') === 'dark'; } catch(e) { return false; } });
+      const [isPrivacyMode, setIsPrivacyMode] = useState(() => { try { const s = localStorage.getItem('privacyMode'); return s !== null ? s === 'true' : true; } catch(e) { return true; } });
+
+      const [mobileTooltip, setMobileTooltip] = useState({ text: '', x: 0, y: 0, visible: false, pos: 'top' });
+      const touchShowTimer = useRef(null); const touchHideTimer = useRef(null);
+
+      const handleTouchStart = (text, e, pos = 'top') => {
+        if (touchHideTimer.current) clearTimeout(touchHideTimer.current);
+        const touch = e.touches[0]; let clampX = touch.clientX;
+        if (clampX < 60) clampX = 60; if (clampX > window.innerWidth - 60) clampX = window.innerWidth - 60;
+        touchShowTimer.current = setTimeout(() => { setMobileTooltip({ text, x: clampX, y: pos === 'top' ? touch.clientY - 55 : touch.clientY + 45, visible: true, pos }); }, 400);
+      };
+
+      const handleTouchEnd = () => {
+        if (touchShowTimer.current) { clearTimeout(touchShowTimer.current); touchShowTimer.current = null; }
+        touchHideTimer.current = setTimeout(() => { setMobileTooltip(prev => ({ ...prev, visible: false })); }, 1000);
+      };
+
+      useEffect(() => {
+        let aT;
+        const rT = () => { if (aT) clearTimeout(aT); if (appData.autoLockTime && appData.autoLockTime !== '0' && isAuthenticated) { aT = setTimeout(() => { setIsAuthenticated(false); }, parseInt(appData.autoLockTime) * 60000); } };
+        const hA = () => rT();
+        ['mousemove','keydown','touchstart','scroll','click'].forEach(e => window.addEventListener(e, hA));
+        rT(); return () => { ['mousemove','keydown','touchstart','scroll','click'].forEach(e => window.removeEventListener(e, hA)); if (aT) clearTimeout(aT); };
+      }, [appData.autoLockTime, isAuthenticated]);
+      
+      useEffect(() => { 
+          if (!isSetupComplete) return;
+          try { const c = localStorage.getItem('finTrackerCache'); if (c) { setAppData(JSON.parse(c)); setIsLoading(false); setIsBackgroundSyncing(true); } } catch(e) {} 
+          apiCall('GET_DATA').then(res => { setAppData(res); try { localStorage.setItem('finTrackerCache', JSON.stringify(res)); } catch(e) {} setIsLoading(false); setIsBackgroundSyncing(false); }).catch(e => { console.error(e); setIsLoading(false); setIsBackgroundSyncing(false); }); 
+      }, [isSetupComplete]);
+
+      useEffect(() => { if (appData.transactions && appData.transactions.length > 0) { try { localStorage.setItem('finTrackerCache', JSON.stringify(appData)); } catch(e) {} } }, [appData]);
+
+      useEffect(() => {
+        const m = document.getElementById("theme-color-meta");
+        if (isDarkMode) { document.documentElement.classList.add('dark'); try { localStorage.setItem('theme','dark'); } catch(e) {} if (m) m.setAttribute("content","#1c1917"); } 
+        else { document.documentElement.classList.remove('dark'); try { localStorage.setItem('theme','light'); } catch(e) {} if (m) m.setAttribute("content","#e06c53"); }
+      }, [isDarkMode]);
+
+      useEffect(() => {
+        if (isPrivacyMode) { document.body.classList.add('privacy-active'); try { localStorage.setItem('privacyMode','true'); } catch(e) {} } 
+        else { document.body.classList.remove('privacy-active'); try { localStorage.setItem('privacyMode','false'); } catch(e) {} }
+      }, [isPrivacyMode]);
+
+      const handleManualRefresh = () => { setIsBackgroundSyncing(true); apiCall('GET_DATA').then(res => { setAppData(res); try { localStorage.setItem('finTrackerCache', JSON.stringify(res)); } catch(e) {} setIsBackgroundSyncing(false); }).catch(e => { setTimeout(() => setIsBackgroundSyncing(false), 800); }); };
+      const handleSort = (k) => setSortConfig(p => ({ key: k, direction: p.key===k && p.direction==='desc' ? 'asc' : 'desc' }));
+      const SortIcon = ({ colKey }) => sortConfig.key !== colKey ? <div className="w-3 h-3 opacity-0"></div> : (sortConfig.direction === 'asc' ? <ChevronUp c="w-3 h-3 text-brand-teal" /> : <ChevronDown c="w-3 h-3 text-brand-teal" />);
+
+      const parsedData = useMemo(() => (appData.transactions || []).map((r, i) => { 
+          const d = new Date(r.date); return { ...r, id: i, amount: parseAmt(r.amount), monthIdx: isNaN(d.getMonth()) ? -1 : d.getMonth(), year: isNaN(d.getFullYear()) ? -1 : d.getFullYear(), rawType: String(r.type||'').toUpperCase(), category: normalizeCategory(r.category) }; 
+      }).filter(r => r.amount > 0 && r.year !== -1).sort((a,b) => new Date(b.date) - new Date(a.date)), [appData.transactions]);
+
+      const activeData = useMemo(() => { const ex = appData.excludedCats || []; return parsedData.filter(t => !ex.includes(t.category)); }, [parsedData, appData.excludedCats]);
+      const allAvailableTags = useMemo(() => { const s = new Set(); parsedData.forEach(t => extractTags(t.tags).forEach(tag => s.add(tag))); return Array.from(s).sort(); }, [parsedData]);
+      
+      const ledgerCatOptions = useMemo(() => {
+         let defined = [];
+         if (ledgerTypeFilter === 'EXPENSE') defined = appData?.settings?.expenseCats || [];
+         else if (ledgerTypeFilter === 'INCOME') defined = appData?.settings?.incomeCats || [];
+         else defined = Array.from(new Set([...(appData?.settings?.incomeCats||[]), ...(appData?.settings?.expenseCats||[])]));
+         const historical = Array.from(new Set(parsedData.filter(d => d.rawType !== 'TRANSFER').map(d => d.category))).filter(Boolean);
+         const extras = historical.filter(c => !defined.includes(c) && c !== 'TRANSFER').sort();
+         return ['All Categories', ...defined, ...extras];
+      }, [appData.settings, parsedData, ledgerTypeFilter]);
+
+      const globalCategories = useMemo(() => {
+         const defined = Array.from(new Set([...(appData?.settings?.incomeCats||[]), ...(appData?.settings?.expenseCats||[])]));
+         const historical = Array.from(new Set(parsedData.filter(d => d.rawType !== 'TRANSFER').map(d => d.category))).filter(Boolean);
+         const extras = historical.filter(c => !defined.includes(c) && c !== 'TRANSFER').sort();
+         return ['All Categories', ...defined, ...extras];
+      }, [appData.settings, parsedData]);
+
+      const latestInfo = useMemo(() => activeData.length ? { year: activeData[0].year, monthIdx: activeData[0].monthIdx } : { year: new Date().getFullYear(), monthIdx: new Date().getMonth() }, [activeData]);
+      
+      const monthlyAggsForAllTime = useMemo(() => {
+          const aggs = {};
+          activeData.forEach(r => {
+            const k = `${r.year}-${String(r.monthIdx).padStart(2,'0')}`;
+            if (!aggs[k]) aggs[k] = { year: r.year, monthIdx: r.monthIdx, label: MONTH_NAMES[r.monthIdx], in: 0, out: 0, inv: 0 };
+            if (r.rawType === 'INCOME') aggs[k].in += r.amount; else if (r.category && String(r.category).toLowerCase() === 'investment') aggs[k].inv += r.amount; else if (r.rawType === 'EXPENSE') aggs[k].out += r.amount;
+          });
+          let run = 0; return Object.keys(aggs).sort().map(k => { const m = aggs[k]; const avail = run + m.in; run += (m.in - m.out - m.inv); return { ...m, avail, key: k }; });
+      }, [activeData]);
+
+      const filterByPeriod = (dStr, y, mIdx) => {
+          const d = parseDateLocal(dStr); const { year, monthIdx } = latestInfo;
+          if (period === 'This Month') return y === year && mIdx === monthIdx;
+          if (period === 'Last Month') return y === (monthIdx === 0 ? year-1 : year) && mIdx === (monthIdx === 0 ? 11 : monthIdx-1);
+          if (period === '3M') return d >= new Date(year, monthIdx - 2, 1) && d <= new Date(year, monthIdx + 1, 0);
+          if (period === '6M') return d >= new Date(year, monthIdx - 5, 1) && d <= new Date(year, monthIdx + 1, 0);
+          if (period === 'YTD') return y === year && mIdx <= monthIdx;
+          if (period === '12M') return d >= new Date(year, monthIdx - 11, 1) && d <= new Date(year, monthIdx + 1, 0);
+          if (period === 'Custom') { if (customFrom && d < parseDateLocal(customFrom)) return false; if (customTo && d > parseDateLocal(customTo)) return false; return true; }
+          return true;
+      };
+
+      const analyticsFiltered = useMemo(() => activeData.filter(r => filterByPeriod(r.date, r.year, r.monthIdx)), [activeData, period, latestInfo, customFrom, customTo]);
+      
+      const ledgerFiltered = useMemo(() => {
+        let f = parsedData.filter(r => filterByPeriod(r.date, r.year, r.monthIdx)); 
+        if (ledgerTypeFilter !== 'ALL') f = f.filter(r => r.rawType === ledgerTypeFilter);
+        if (ledgerCategoryFilter !== 'All') f = f.filter(r => r.category === ledgerCategoryFilter);
+        if (ledgerAccountFilter !== 'All') f = f.filter(r => r.account === ledgerAccountFilter || r.transfer_to === ledgerAccountFilter);
+        if (ledgerTagFilter) f = f.filter(r => extractTags(r.tags).includes(ledgerTagFilter));
+        if (searchQ) {
+          const q = searchQ.toLowerCase().trim(); const isNum = !isNaN(q) && q !== '';
+          f = f.filter(r => { const matchText = `${String(r.description||'')} ${String(r.category||'')} ${String(r.tags||'')} ${String(r.notes||'')} ${String(r.account||'')} ${String(r.transfer_to||'')}`.toLowerCase().includes(q); const matchNum = isNum ? String(r.amount).includes(q) || Number(r.amount) === Number(q) : false; return matchText || matchNum; });
+        }
+        return f;
+      }, [parsedData, searchQ, ledgerCategoryFilter, ledgerTagFilter, ledgerTypeFilter, ledgerAccountFilter, period, latestInfo, customFrom, customTo]);
+
+      const selectedSum = useMemo(() => ledgerFiltered.filter(t => selectedRows.includes(t.row_index)).reduce((s, t) => { if (t.rawType === 'TRANSFER') return s; return s + (t.rawType === 'INCOME' ? t.amount : -t.amount); }, 0), [selectedRows, ledgerFiltered]);
+
+      const groupedLedger = useMemo(() => {
+          const grps = {}; const cy = new Date().getFullYear()*100 + new Date().getMonth();
+          ledgerFiltered.forEach(t => {
+            const d = parseDateLocal(t.date); const y = isNaN(d.getTime()) ? '' : d.getFullYear(); const lbl = isNaN(d.getTime()) ? 'Unknown' : `${MONTH_NAMES_FULL[d.getMonth()]} ${y}`; const sK = isNaN(d.getTime()) ? 0 : y*100+d.getMonth();
+            if (!grps[lbl]) grps[lbl] = { label: lbl, sortKey: sK, isCurrentMonth: sK===cy, entries: [], count: 0, spent: 0, invested: 0 };
+            grps[lbl].entries.push(t); grps[lbl].count++;
+            if (t.rawType==='EXPENSE') { if (t.category && String(t.category).toLowerCase()==='investment') grps[lbl].invested += t.amount; else grps[lbl].spent += t.amount; }
+          });
+          const arr = Object.values(grps).sort((a,b) => b.sortKey - a.sortKey);
+          arr.forEach(g => g.entries.sort((a,b) => {
+            let vA = a[sortConfig.key]; let vB = b[sortConfig.key];
+            if (sortConfig.key==='amount') { vA = parseFloat(vA)||0; vB = parseFloat(vB)||0; } else if (sortConfig.key==='date') { vA = new Date(vA).getTime(); vB = new Date(vB).getTime(); } else { vA = String(vA||'').toLowerCase(); vB = String(vB||'').toLowerCase(); }
+            if (vA < vB) return sortConfig.direction==='asc' ? -1 : 1; if (vA > vB) return sortConfig.direction==='asc' ? 1 : -1; return 0;
+          }));
+          return arr;
+      }, [ledgerFiltered, sortConfig]);
+
+      useEffect(() => { if (groupedLedger.length > 0 && Object.keys(expandedGroups).length === 0)Sorry, something went wrong. Please try your request again.
