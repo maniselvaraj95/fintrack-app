@@ -481,15 +481,7 @@
         }, [insightsData]);
 
         const largestTxns = useMemo(() => { return [...expenseTxns].sort((a,b) => b.amount - a.amount).slice(0, 5); }, [expenseTxns]);
-        const frequentPayees = useMemo(() => { 
-            const map = {}; 
-            expenseTxns.forEach(r => { 
-                const desc = String(r.description || 'Unknown'); 
-                if (!map[desc]) map[desc] = { name: desc, count: 0, total: 0 }; 
-                map[desc].count += 1; map[desc].total += r.amount; 
-            }); 
-            return Object.values(map).sort((a,b) => b.count - a.count).slice(0, 5); 
-        }, [expenseTxns]);
+        const frequentPayees = useMemo(() => { const map = {}; expenseTxns.forEach(r => { const raw = String(r.description || 'Unknown').trim(); const key = raw.toLowerCase(); if (!map[key]) map[key] = { name: raw, count: 0, total: 0 }; map[key].count += 1; map[key].total += r.amount; }); return Object.values(map).sort((a,b) => b.count - a.count).slice(0, 5); }, [expenseTxns]);
 
         const incomeSplitData = useMemo(() => { 
             const map = {}; 
@@ -1103,11 +1095,7 @@
 
       const totalBalance = Object.values(accountBalances).reduce((s, a) => s + a.current, 0);
       const chartData = useMemo(() => monthlyAggsForAllTime.filter(r => filterByPeriod(new Date(r.year, r.monthIdx, 1), r.year, r.monthIdx)), [monthlyAggsForAllTime, period, latestInfo, customFrom, customTo]);
-const topMerchants = useMemo(() => {
-        const m = {};
-        analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { const d = String(r.description || 'Unknown'); if (!m[d]) m[d] = { name: d, cat: r.category, total: 0 }; m[d].total += r.amount; });
-        return Object.values(m).sort((a,b) => b.total - a.total).slice(0, 10);
-      }, [analyticsFiltered]);
+const topMerchants = useMemo(() => { const m = {}; analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { const raw = String(r.description || 'Unknown').trim(); const key = raw.toLowerCase(); if (!m[key]) m[key] = { name: raw, cat: r.category, total: 0 }; m[key].total += r.amount; }); return Object.values(m).sort((a,b) => b.total - a.total).slice(0, 10); }, [analyticsFiltered]);
 
       const categorySplitData = useMemo(() => {
         const map = {};
