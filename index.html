@@ -224,7 +224,8 @@
           )}
         </div>
       );
-      function TagAutocomplete({ value, onChange, availableTags }) {
+    }
+    function TagAutocomplete({ value, onChange, availableTags }) {
         const [isOpen, setIsOpen] = useState(false); const [hlIdx, setHlIdx] = useState(-1); const listRef = useRef(null);
         
         const words = String(value || '').split(','); const currentWord = words[words.length - 1].trim(); const search = currentWord.startsWith('#') ? currentWord.slice(1) : currentWord;
@@ -730,7 +731,7 @@
             </div>
         );
     }
-      function TransactionModal({ isOpen, onClose, onSave, settings, editData, allAvailableTags, excludedCats = [], setIsBackgroundSyncing }) {
+    function TransactionModal({ isOpen, onClose, onSave, settings, editData, allAvailableTags, excludedCats = [], setIsBackgroundSyncing }) {
       const [type, setType] = useState('EXPENSE');
       const [date, setDate] = useState('');
       const [amount, setAmount] = useState('');
@@ -1380,4 +1381,4 @@
   </script>
 </body>
 </html>
-    }
+    
