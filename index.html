@@ -35,6 +35,7 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
     * { -webkit-tap-highlight-color: transparent !important; }
+    header button { flex-shrink: 0 !important; }
     button, a, input, select, textarea, .nav-item { -webkit-touch-callout: none !important; outline: none !important; }
     body{font-family:'Plus Jakarta Sans',sans-serif;-webkit-font-smoothing:antialiased;transition:background-color .3s,color .3s;}
     .modern-card{background:#ffffff;border-radius:1.25rem;box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);border:1px solid #e2e8f0;transition:all .3s;}
@@ -318,8 +319,8 @@
            <div className="flex justify-end gap-3 sm:gap-5 text-[9px] sm:text-[10px] font-extrabold tracking-widest mb-4 uppercase"><span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-brand-income"></span> Positive Savings</span><span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-brand-expense"></span> Deficit</span></div>
            <svg viewBox={`0 0 ${width} ${height}`} style={{ minWidth: isScrollable ? `${width}px` : '100%' }} className="w-full h-auto font-sans relative">
               <line x1={pad.l} y1={zeroY} x2={width - pad.r} y2={zeroY} stroke={isDark ? '#3f3f46' : '#cbd5e1'} strokeWidth="2" />
-              {[max, max/2, min/2, min].map((val, idx) => {
-                 if(val===0 || isNaN(val)) return null; const y = getY(val);
+              {[max, max/2, min < 0 ? min : null].map((val, idx) => {
+                 if(!val || val===0 || isNaN(val)) return null; const y = getY(val);
                  return ( <g key={`grid_${idx}`}><line x1={pad.l} y1={y} x2={width - pad.r} y2={y} stroke={isDark ? '#27272a' : '#e2e8f0'} strokeDasharray="4 4" /><text x={pad.l - 10} y={y + 4} textAnchor="end" className="text-[10px] md:text-[8px] fill-slate-400 font-bold blur-money">{formatCompact(val, isPrivacy)}</text></g> )
               })}
               {plotData.map((d, i) => {
