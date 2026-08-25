@@ -10,13 +10,14 @@
   <meta name="theme-color" content="#e06c53" id="theme-color-meta">
   <link rel="manifest" href="manifest.json">
   <title>FinTrack</title>
-  <link rel="icon" type="image/png" sizes="192x192" href="./Icon-192.png">
-  <link rel="apple-touch-icon" href="./Icon-192.png">
-  <!-- FORCE CLEAR OLD CACHE -->
+  <link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  
   <script>
     if ('caches' in window) { caches.keys().then(names => { for (let name of names) caches.delete(name); }); }
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.getRegistrations().then(regs => { for (let reg of regs) reg.unregister(); });
+      window.addEventListener('load', () => { try { navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW:', e)); } catch(e) {} });
     }
   </script>
 
@@ -37,16 +38,8 @@
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
     * { -webkit-tap-highlight-color: transparent !important; }
     
-    /* FIX FOR SQUISHED HEADER BUTTONS */
-    header button.nav-item {
-        flex-shrink: 0 !important;
-        min-width: 40px !important;
-        min-height: 40px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-    }
-
+    header button.nav-item { flex-shrink: 0 !important; min-width: 40px !important; min-height: 40px !important; display: flex !important; align-items: center !important; justify-content: center !important; }
+    
     button, a, input, select, textarea, .nav-item { -webkit-touch-callout: none !important; outline: none !important; }
     body{font-family:'Plus Jakarta Sans',sans-serif;-webkit-font-smoothing:antialiased;transition:background-color .3s,color .3s;}
     .modern-card{background:#ffffff;border-radius:1.25rem;box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);border:1px solid #e2e8f0;transition:all .3s;}
@@ -168,7 +161,7 @@
       return { style: { backgroundColor: '#e06c53' }, className: 'text-white font-black' };
     }
 
-function SearchableSelect({ options, value, onChange, placeholder, compact = false, excludedList = [], disabled = false }) {
+    function SearchableSelect({ options, value, onChange, placeholder, compact = false, excludedList = [], disabled = false }) {
       const [isOpen, setIsOpen] = useState(false);
       const [search, setSearch] = useState('');
       const [hlIdx, setHlIdx] = useState(-1);
@@ -284,7 +277,7 @@ function SearchableSelect({ options, value, onChange, placeholder, compact = fal
             </div>
         );
     }
-    function SetupScreen({ onSave }) {
+function SetupScreen({ onSave }) {
         const [u, setU] = useState(''); const [k, setK] = useState(''); const [loading, setLoading] = useState(false); const [errMsg, setErrMsg] = useState('');
         const handle = async (e) => {
             e.preventDefault(); if (!u.trim() || !k.trim()) return;
@@ -342,7 +335,6 @@ function SearchableSelect({ options, value, onChange, placeholder, compact = fal
       let min = 0, max = 0; plotData.forEach(d => { if(d.net > max) max = d.net; if(d.net < min) min = d.net; });
       if(max === 0 && min === 0) max = 1000; max = max > 0 ? max * 1.1 : max; min = min < 0 ? min * 1.1 : min;
       
-      // POWER SCALING: Solves the "tiny negative bar" issue while handling negatives/zero perfectly
       const tScale = (v) => Math.sign(v) * Math.pow(Math.abs(v), 0.5);
       const tMin = tScale(min); const tMax = tScale(max); const tRange = tMax - tMin;
       
@@ -350,7 +342,6 @@ function SearchableSelect({ options, value, onChange, placeholder, compact = fal
       const getY = (v) => { const rawY = pad.t + gH - ((tScale(v) - tMin) / tRange) * gH; return isNaN(rawY) ? pad.t + gH : rawY; };
       const zeroY = getY(0); const barW = Math.min(24, (gW / Math.max(plotData.length, 1)) * 0.6);
 
-      // Eliminates grid clutter: Only show Max, Zero, and Min
       const gridLines = min < 0 ? [max, 0, min] : [max, max/2, 0];
 
       return (
@@ -473,7 +464,7 @@ function SearchableSelect({ options, value, onChange, placeholder, compact = fal
       return (
         <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in sm:pb-4 pb-24">
            <div className="bg-white dark:bg-brand-cardDark rounded-[2rem] w-full max-w-[320px] mx-auto overflow-hidden shadow-2xl animate-slide-up p-6 text-center border border-slate-100 dark:border-slate-800">
-              <div className="w-14 h-14 bg-rose-50 dark:bg-rose-500/10 text-brand-expense rounded-full flex items-center justify-center mx-auto mb-4"><Icon i="trash" c="w-7 h-7 text-brand-expense"/></div>
+              <div className="w-14 h-14 bg-rose-50 dark:bg-rose-500/10 text-brand-expense rounded-full flex items-center justify-center mx-auto mb-4"><Trash2 c="w-7 h-7 text-brand-expense"/></div>
               <h2 className="text-lg font-black text-slate-800 dark:text-white mb-2">{title}</h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-bold mb-6">{message}</p>
               <div className="flex gap-3"><button onClick={onCancel} className="flex-1 py-3 rounded-full font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Cancel</button><button onClick={onConfirm} className="flex-1 py-3 rounded-full font-bold text-white bg-brand-expense hover:bg-rose-700 transition-colors shadow-sm">Delete</button></div>
@@ -484,22 +475,20 @@ function SearchableSelect({ options, value, onChange, placeholder, compact = fal
 
     function MetricCard({ title, value, icon: IconComp, type, isDark }) {
         let borderClass = "border-t-slate-800 dark:border-t-slate-200"; let bgClass = "modern-card p-4 sm:p-5 flex flex-col justify-center bg-brand-cardLight dark:bg-brand-cardDark border-t-4 "; let textClass = "text-slate-800 dark:text-white";
-        let iconName = null;
+        
         if (type === 'balance') borderClass = "border-t-blue-600 dark:border-t-blue-500"; 
-        else if (type === 'income') { borderClass = "border-t-brand-income"; iconName = "arrowDownRight"; }
-        else if (type === 'expense') { borderClass = "border-t-brand-expense"; iconName = "activity"; }
+        else if (type === 'income') borderClass = "border-t-brand-income"; 
+        else if (type === 'expense') borderClass = "border-t-brand-expense";
         else if (type === 'invested') borderClass = "border-t-[#f59e0b]"; 
         else if (type === 'savings') borderClass = "border-t-brand-transfer";
-        else if (type === 'default') iconName = "list";
         
         return (
             <div className={`${bgClass} ${borderClass}`}>
-                <div className="flex justify-between items-start mb-2"><p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{title}</p>{iconName && <Icon i={iconName} c="w-4 h-4 text-slate-300 dark:text-slate-600" />}</div>
+                <div className="flex justify-between items-start mb-2"><p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{title}</p>{IconComp && <IconComp c="w-4 h-4 text-slate-300 dark:text-slate-600" />}</div>
                 <p className={`text-lg sm:text-xl font-black tracking-tight blur-money ${textClass}`}>{value}</p>
             </div>
         );
     }
-
     function InsightsView({ analyticsFiltered = [], allUniqueCategories = [], isPrivacy, isDarkMode, chartData = [] }) {
         const [analyticsCategory, setAnalyticsCategory] = useState('All Categories');
         
@@ -612,10 +601,10 @@ function SearchableSelect({ options, value, onChange, placeholder, compact = fal
                 </div>
                 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-                    <MetricCard title="Transactions" value={isPrivacy ? '......' : insightsData.length} type="default" />
-                    <MetricCard title="Avg. Expense" value={formatINR(avgExpense, isPrivacy)} type="expense" />
-                    <MetricCard title="Total Income" value={formatINR(totalIncome, isPrivacy)} type="income" />
-                    <MetricCard title="Net Change" value={formatINR(totalIncome - totalExpense, isPrivacy)} type="default" />
+                    <MetricCard title="Transactions" value={isPrivacy ? '......' : insightsData.length} icon={List} type="default" />
+                    <MetricCard title="Avg. Expense" value={formatINR(avgExpense, isPrivacy)} icon={Activity} type="expense" />
+                    <MetricCard title="Total Income" value={formatINR(totalIncome, isPrivacy)} icon={ArrowDownRight} type="income" />
+                    <MetricCard title="Net Change" value={formatINR(totalIncome - totalExpense, isPrivacy)} icon={Wallet} type="default" />
                 </div>
                 
                 {chartData && chartData.length > 0 && (
@@ -628,7 +617,7 @@ function SearchableSelect({ options, value, onChange, placeholder, compact = fal
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                     
                     <div className="modern-card p-6 sm:p-8">
-                        <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><Icon i="tag" c="w-5 h-5 text-brand-teal" /> Spending by Tags</h3>
+                        <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><TagIcon c="w-5 h-5 text-brand-teal" /> Spending by Tags</h3>
                         {topTags.length === 0 ? <p className="text-xs text-slate-500 font-medium">No tags used.</p> : (
                             <div className="space-y-5">
                                 {topTags.map((tag, idx) => { 
@@ -654,7 +643,7 @@ function SearchableSelect({ options, value, onChange, placeholder, compact = fal
                     </div>
                     
                     <div className="modern-card p-6 sm:p-8">
-                        <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><Icon i="repeat" c="w-5 h-5 text-[#f59e0b]" /> Most Frequent Payees</h3>
+                        <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><Repeat c="w-5 h-5 text-[#f59e0b]" /> Most Frequent Payees</h3>
                         <div className="divide-y divide-slate-50 dark:divide-slate-800">
                             {frequentPayees.length === 0 ? <p className="text-xs text-slate-500 font-medium">No payees found.</p> : (
                                 frequentPayees.map((t, idx) => (
@@ -673,7 +662,7 @@ function SearchableSelect({ options, value, onChange, placeholder, compact = fal
                     </div>
                     
                     <div className="modern-card p-6 sm:p-8">
-                        <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><Icon i="arrowUpRight" c="w-5 h-5 text-brand-expense"/> Largest Single Expenses</h3>
+                        <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><ArrowUpRight c="w-5 h-5 text-brand-expense"/> Largest Single Expenses</h3>
                         <div className="divide-y divide-slate-50 dark:divide-slate-800">
                             {largestTxns.length === 0 ? <p className="text-xs text-slate-500 font-medium">No expenses found.</p> : (
                                 largestTxns.map((t, idx) => { 
@@ -698,7 +687,7 @@ function SearchableSelect({ options, value, onChange, placeholder, compact = fal
                     </div>
                     
                     <div className="modern-card p-6 sm:p-8">
-                        <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><Icon i="arrowDownRight" c="w-5 h-5 text-brand-income"/> Income Sources</h3>
+                        <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><ArrowDownRight c="w-5 h-5 text-brand-income"/> Income Sources</h3>
                         {incomeSplitData.length === 0 ? <p className="text-xs text-slate-500 font-medium">No income found.</p> : (
                             <div className="space-y-5">
                                 {incomeSplitData.map((inc, idx) => { 
@@ -760,7 +749,8 @@ function SearchableSelect({ options, value, onChange, placeholder, compact = fal
             </div>
         );
     }
- function TransactionModal({ isOpen, onClose, onSave, settings, editData, allAvailableTags, excludedCats = [], setIsBackgroundSyncing }) {
+
+    function TransactionModal({ isOpen, onClose, onSave, settings, editData, allAvailableTags, excludedCats = [], setIsBackgroundSyncing }) {
       const [type, setType] = useState('EXPENSE');
       const [date, setDate] = useState('');
       const [amount, setAmount] = useState('');
@@ -1014,6 +1004,7 @@ function SearchableSelect({ options, value, onChange, placeholder, compact = fal
            </div>
         </div>
       );
+    }
 
     function App() {
       const [appData, setAppData] = useState({ transactions: [], settings: { incomeCats: [], expenseCats: [], accounts: [] }, balances: [], excludedCats: [], appPin: '', autoLockTime: '0' });
@@ -1196,7 +1187,7 @@ function SearchableSelect({ options, value, onChange, placeholder, compact = fal
 
       const topMerchants = useMemo(() => {
         const m = {};
-        analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { const d = String(r.description || 'Unknown'); if (!m[d]) m[d] = { name: d, cat: r.category, total: 0 }; m[d].total += r.amount; });
+        analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { const raw = String(r.description || 'Unknown').trim(); const key = raw.toLowerCase(); if (!m[key]) m[key] = { name: raw, cat: r.category, total: 0 }; m[key].total += r.amount; });
         return Object.values(m).sort((a,b) => b.total - a.total).slice(0, 10);
       }, [analyticsFiltered]);
 
@@ -1276,7 +1267,7 @@ function SearchableSelect({ options, value, onChange, placeholder, compact = fal
                     <button onClick={handleManualRefresh} onTouchStart={(e) => handleTouchStart('Refresh', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><RefreshCw c={`w-4 h-4 ${isBackgroundSyncing ? 'animate-spin text-brand-teal' : ''}`}/><span className="nav-tooltip-bottom">Refresh</span></button>
                     {appData.appPin && <button onClick={() => setIsAuthenticated(false)} onTouchStart={(e) => handleTouchStart('Lock App', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><LockIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Lock App</span></button>}
                     <button onClick={() => setIsPrivacyMode(!isPrivacyMode)} onTouchStart={(e) => handleTouchStart('Privacy Mode', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${isPrivacyMode ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`}>{isPrivacyMode ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Privacy</span></button>
-                    <button onClick={() => setIsDarkMode(!isDarkMode)} onTouchStart={(e) => handleTouchStart('Toggle Theme', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800">{isDarkMode ? <Sun c="w-4 h-4"/> : <Moon c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Theme</span></button>
+                    <button onClick={() => setIsDarkMode(!isDarkMode)} onTouchStart={(e) => handleTouchStart('Toggle Theme', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><Sun c="w-4 h-4"/><span className="nav-tooltip-bottom">Theme</span></button>
                     <button onClick={() => setActiveTab('settings')} onTouchStart={(e) => handleTouchStart('Settings', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`}><SettingsIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Settings</span></button>
                  </div>
               </div>
@@ -1423,4 +1414,3 @@ function SearchableSelect({ options, value, onChange, placeholder, compact = fal
   </script>
 </body>
 </html>
-    
