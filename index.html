@@ -316,7 +316,7 @@
 
     function SavingsBarChart({ data = [], height = 250, isDark, isPrivacy }) {
       const isScrollable = data.length > 12; const width = isScrollable ? Math.max(600, data.length * 52) : 600;
-      const pad = { t: 20, r: 15, b: 25, l: 45 }; const gW = width - pad.l - pad.r; const gH = height - pad.t - pad.b;
+      const pad = { t: 20, r: 15, b: 25, l: 65 }; const gW = width - pad.l - pad.r; const gH = height - pad.t - pad.b;
       const plotData = data.map(d => ({ ...d, net: d.in - d.out }));
       let min = 0, max = 0; plotData.forEach(d => { if(d.net > max) max = d.net; if(d.net < min) min = d.net; });
       if(max === 0 && min === 0) max = 1000; max = max > 0 ? max * 1.1 : max; min = min < 0 ? min * 1.1 : min;
@@ -361,7 +361,7 @@
     function AreaChart({ data = [], height = 250, isDark, isPrivacy }) {
       const [hoverIndex, setHoverIndex] = useState(null);
       const isScrollable = data.length > 12; const width = isScrollable ? Math.max(600, data.length * 52) : 600;
-      const pad = { t: 15, r: 15, b: 25, l: 45 }; const gW = width - pad.l - pad.r; const gH = height - pad.t - pad.b;
+      const pad = { t: 15, r: 15, b: 25, l: 65 }; const gW = width - pad.l - pad.r; const gH = height - pad.t - pad.b;
       let min = 0, max = 0; 
       data.forEach(d => { if(d.in>max)max=d.in; if(d.out>max)max=d.out; if(d.avail>max)max=d.avail; if(d.inv>max)max=d.inv; if(d.avail<min)min=d.avail; if(d.inv<min)min=d.inv; }); 
       if(max===0) max=10000; const range = max - min;
