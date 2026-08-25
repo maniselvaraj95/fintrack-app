@@ -11,11 +11,11 @@
   <link rel="manifest" href="manifest.json">
   <title>FinTrack</title>
   
+  <!-- FORCE CLEAR OLD CACHE -->
   <script>
+    if ('caches' in window) { caches.keys().then(names => { for (let name of names) caches.delete(name); }); }
     if ('serviceWorker' in navigator) {
-      window.addEventListener('load', () => {
-        try { navigator.serviceWorker.register('./sw.js').catch(e => console.warn('SW:', e)); } catch(e) {}
-      });
+      navigator.serviceWorker.getRegistrations().then(regs => { for (let reg of regs) reg.unregister(); });
     }
   </script>
 
@@ -35,7 +35,17 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
     * { -webkit-tap-highlight-color: transparent !important; }
-    header button { flex-shrink: 0 !important; }
+    
+    /* FIX FOR SQUISHED HEADER BUTTONS */
+    header button.nav-item {
+        flex-shrink: 0 !important;
+        min-width: 40px !important;
+        min-height: 40px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
     button, a, input, select, textarea, .nav-item { -webkit-touch-callout: none !important; outline: none !important; }
     body{font-family:'Plus Jakarta Sans',sans-serif;-webkit-font-smoothing:antialiased;transition:background-color .3s,color .3s;}
     .modern-card{background:#ffffff;border-radius:1.25rem;box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);border:1px solid #e2e8f0;transition:all .3s;}
@@ -110,7 +120,7 @@
     const Activity = ({c}) => <Icon c={c}><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></Icon>;
     const PieChart = ({c}) => <Icon c={c}><path d="M21.2 15.9A10 10 0 1 1 8 2.8M22 12A10 10 0 0 0 12 2v10z"/></Icon>;
     const List = ({c}) => <Icon c={c}><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></Icon>;
-    const Sparkles = ({c}) => <Icon c={c}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></Icon>;
+    const Sparkles = ({c}) => <Icon c={c}><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1-1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></Icon>;
     const ArrowUpRight = ({c}) => <Icon c={c}><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></Icon>;
     const ArrowDownRight = ({c}) => <Icon c={c}><line x1="7" y1="7" x2="17" y2="17"/><polyline points="17 7 17 7 17 17"/></Icon>;
     const Repeat = ({c}) => <Icon c={c}><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></Icon>;
@@ -122,7 +132,7 @@
     const Wallet = ({c}) => <Icon c={c}><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4M3 5v14a2 2 0 0 0 2 2h16v-5M18 12a2 2 0 0 0 0 4h4v-4Z"/></Icon>;
     const EditPencil = ({c}) => <Icon c={c}><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></Icon>;
     const Trash2 = ({c}) => <Icon c={c}><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></Icon>;
-    const SettingsIcon = ({c}) => <Icon c={c}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></Icon>;
+    const SettingsIcon = ({c}) => <Icon c={c}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></Icon>;
     const TagIcon = ({c}) => <Icon c={c}><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82zM7 7h.01"/></Icon>;
     const LockIcon = ({c}) => <Icon c={c}><rect x="5" y="11" width="14" height="10" rx="2" ry="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></Icon>;
     const DeleteIcon = ({c}) => <Icon c={c}><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zM18 9l-6 6M12 9l6 6"/></Icon>;
@@ -156,6 +166,7 @@
       if (intensity <= 0.80) return { style: { backgroundColor: isDark ? '#c2410c' : '#f97316' }, className: 'text-white font-extrabold' };
       return { style: { backgroundColor: '#e06c53' }, className: 'text-white font-black' };
     }
+
     function SearchableSelect({ options, value, onChange, placeholder, compact = false, excludedList = [], disabled = false }) {
       const [isOpen, setIsOpen] = useState(false);
       const [search, setSearch] = useState('');
@@ -213,9 +224,7 @@
           )}
         </div>
       );
-    }
-
-    function TagAutocomplete({ value, onChange, availableTags }) {
+      function TagAutocomplete({ value, onChange, availableTags }) {
         const [isOpen, setIsOpen] = useState(false); const [hlIdx, setHlIdx] = useState(-1); const listRef = useRef(null);
         
         const words = String(value || '').split(','); const currentWord = words[words.length - 1].trim(); const search = currentWord.startsWith('#') ? currentWord.slice(1) : currentWord;
@@ -267,7 +276,7 @@
         return (
             <div className="fixed inset-0 z-[300] flex items-center justify-center bg-brand-bgLight dark:bg-brand-bgDark p-4 transition-colors duration-300">
                 <div className="modern-card max-w-sm w-full p-8 animate-slide-up border border-slate-200 dark:border-slate-800 shadow-2xl">
-                    <div className="flex justify-center mb-6"><div className="w-16 h-16 bg-brand-teal rounded-2xl flex items-center justify-center text-white shadow-sm"><IndianRupee c="w-8 h-8"/></div></div>
+                    <div className="flex justify-center mb-6"><div className="w-16 h-16 bg-brand-teal rounded-2xl flex items-center justify-center text-white shadow-sm"><Icon i="rupee" c="w-8 h-8"/></div></div>
                     <h2 className="text-2xl font-black text-slate-800 dark:text-white text-center mb-2">FinTrack Setup</h2>
                     <p className="text-xs font-bold text-slate-500 dark:text-slate-400 text-center mb-6">Link your secure Google Sheet to this device.</p>
                     {errMsg && <div className="mb-4 p-3 bg-rose-50 text-brand-expense rounded-full text-xs font-bold text-center border border-rose-100">{errMsg}</div>}
@@ -296,9 +305,9 @@
       useEffect(() => { const hk = (e) => { if (error) return; if(e.key>='0'&&e.key<='9') handlePress(e.key); else if(e.key==='Backspace'||e.key==='Delete') handleBackspace(); }; window.addEventListener('keydown', hk); return () => window.removeEventListener('keydown', hk); }, [error, pinStr]);
       return (
           <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-brand-bgLight dark:bg-brand-bgDark transition-colors duration-300">
-              <div className="flex flex-col items-center mb-12 animate-slide-up"><div className="w-16 h-16 bg-brand-teal rounded-2xl flex items-center justify-center text-white mb-6 shadow-md"><LockIcon c="w-8 h-8"/></div><h2 className="text-xl font-black text-slate-800 dark:text-white mb-2">App Locked</h2><p className="text-sm font-bold text-slate-500 dark:text-slate-400">Enter your PIN to continue</p></div>
+              <div className="flex flex-col items-center mb-12 animate-slide-up"><div className="w-16 h-16 bg-brand-teal rounded-2xl flex items-center justify-center text-white mb-6 shadow-md"><Icon i="lock" c="w-8 h-8"/></div><h2 className="text-xl font-black text-slate-800 dark:text-white mb-2">App Locked</h2><p className="text-sm font-bold text-slate-500 dark:text-slate-400">Enter your PIN to continue</p></div>
               <div className="flex gap-4 mb-12 min-h-[1.5rem]">{Array.from({ length: pinStr.length || 0 }).map((_, i) => (<div key={`pin_${i}`} className={`w-4 h-4 rounded-full transition-all ${i < input.length ? 'bg-brand-teal scale-110' : 'bg-slate-200 dark:bg-slate-800'} ${error ? 'animate-pulse bg-brand-expense' : ''}`} />))}</div>
-              <div className="grid grid-cols-3 gap-4 sm:gap-6 max-w-[320px] w-full px-4">{[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => <button key={`btn_${n}`} onClick={()=>handlePress(String(n))} className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] flex items-center justify-center text-3xl font-black text-slate-800 dark:text-white bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-800 active:scale-90 mx-auto">{n}</button>)}<div className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px]"></div><button onClick={()=>handlePress('0')} className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] flex items-center justify-center text-3xl font-black text-slate-800 dark:text-white bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-800 active:scale-90 mx-auto">0</button><button onClick={handleBackspace} className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] flex items-center justify-center text-slate-500 dark:text-slate-400 bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-800 active:scale-90 mx-auto"><DeleteIcon c="w-8 h-8"/></button></div>
+              <div className="grid grid-cols-3 gap-4 sm:gap-6 max-w-[320px] w-full px-4">{[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => <button key={`btn_${n}`} onClick={()=>handlePress(String(n))} className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] flex items-center justify-center text-3xl font-black text-slate-800 dark:text-white bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-800 active:scale-90 mx-auto">{n}</button>)}<div className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px]"></div><button onClick={()=>handlePress('0')} className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] flex items-center justify-center text-3xl font-black text-slate-800 dark:text-white bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-800 active:scale-90 mx-auto">0</button><button onClick={handleBackspace} className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] flex items-center justify-center text-slate-500 dark:text-slate-400 bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-800 active:scale-90 mx-auto"><Icon i="trash2" c="w-8 h-8"/></button></div>
           </div>
       );
     }
@@ -434,7 +443,7 @@
       return (
         <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in sm:pb-4 pb-24">
            <div className="bg-white dark:bg-brand-cardDark rounded-[2rem] w-full max-w-[320px] mx-auto overflow-hidden shadow-2xl animate-slide-up p-6 text-center border border-slate-100 dark:border-slate-800">
-              <div className="w-14 h-14 bg-rose-50 dark:bg-rose-500/10 text-brand-expense rounded-full flex items-center justify-center mx-auto mb-4"><Trash2 c="w-7 h-7 text-brand-expense"/></div>
+              <div className="w-14 h-14 bg-rose-50 dark:bg-rose-500/10 text-brand-expense rounded-full flex items-center justify-center mx-auto mb-4"><Icon i="trash" c="w-7 h-7 text-brand-expense"/></div>
               <h2 className="text-lg font-black text-slate-800 dark:text-white mb-2">{title}</h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-bold mb-6">{message}</p>
               <div className="flex gap-3"><button onClick={onCancel} className="flex-1 py-3 rounded-full font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Cancel</button><button onClick={onConfirm} className="flex-1 py-3 rounded-full font-bold text-white bg-brand-expense hover:bg-rose-700 transition-colors shadow-sm">Delete</button></div>
@@ -445,27 +454,29 @@
 
     function MetricCard({ title, value, icon: IconComp, type, isDark }) {
         let borderClass = "border-t-slate-800 dark:border-t-slate-200"; let bgClass = "modern-card p-4 sm:p-5 flex flex-col justify-center bg-brand-cardLight dark:bg-brand-cardDark border-t-4 "; let textClass = "text-slate-800 dark:text-white";
-        
+        let iconName = null;
         if (type === 'balance') borderClass = "border-t-blue-600 dark:border-t-blue-500"; 
-        else if (type === 'income') borderClass = "border-t-brand-income"; 
-        else if (type === 'expense') borderClass = "border-t-brand-expense";
+        else if (type === 'income') { borderClass = "border-t-brand-income"; iconName = "arrowDownRight"; }
+        else if (type === 'expense') { borderClass = "border-t-brand-expense"; iconName = "activity"; }
         else if (type === 'invested') borderClass = "border-t-[#f59e0b]"; 
         else if (type === 'savings') borderClass = "border-t-brand-transfer";
+        else if (type === 'default') iconName = "list";
         
         return (
             <div className={`${bgClass} ${borderClass}`}>
-                <div className="flex justify-between items-start mb-2"><p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{title}</p>{IconComp && <IconComp c="w-4 h-4 text-slate-300 dark:text-slate-600" />}</div>
+                <div className="flex justify-between items-start mb-2"><p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">{title}</p>{iconName && <Icon i={iconName} c="w-4 h-4 text-slate-300 dark:text-slate-600" />}</div>
                 <p className={`text-lg sm:text-xl font-black tracking-tight blur-money ${textClass}`}>{value}</p>
             </div>
         );
     }
+
     function InsightsView({ analyticsFiltered = [], allUniqueCategories = [], isPrivacy, isDarkMode, chartData = [] }) {
-        const [insightsCategoryFilter, setInsightsCategoryFilter] = useState('All Categories');
+        const [analyticsCategory, setAnalyticsCategory] = useState('All Categories');
         
         const insightsData = useMemo(() => {
-            if (insightsCategoryFilter === 'All Categories' || insightsCategoryFilter === 'All') return analyticsFiltered;
-            return analyticsFiltered.filter(r => r.category === insightsCategoryFilter);
-        }, [analyticsFiltered, insightsCategoryFilter]);
+            if (analyticsCategory === 'All Categories' || analyticsCategory === 'All') return analyticsFiltered;
+            return analyticsFiltered.filter(r => String(r.category || 'Uncategorized') === analyticsCategory);
+        }, [analyticsFiltered, analyticsCategory]);
 
         const expenseTxns = useMemo(() => insightsData.filter(r => r.rawType === 'EXPENSE'), [insightsData]);
         const totalExpense = useMemo(() => expenseTxns.reduce((a, b) => a + b.amount, 0), [expenseTxns]);
@@ -482,7 +493,17 @@
         }, [insightsData]);
 
         const largestTxns = useMemo(() => { return [...expenseTxns].sort((a,b) => b.amount - a.amount).slice(0, 5); }, [expenseTxns]);
-        const frequentPayees = useMemo(() => { const map = {}; expenseTxns.forEach(r => { const raw = String(r.description || 'Unknown').trim(); const key = raw.toLowerCase(); if (!map[key]) map[key] = { name: raw, count: 0, total: 0 }; map[key].count += 1; map[key].total += r.amount; }); return Object.values(map).sort((a,b) => b.count - a.count).slice(0, 5); }, [expenseTxns]);
+        
+        const frequentPayees = useMemo(() => { 
+            const map = {}; 
+            expenseTxns.forEach(r => { 
+                const raw = String(r.description || 'Unknown').trim();
+                const key = raw.toLowerCase();
+                if (!map[key]) map[key] = { name: raw, count: 0, total: 0 }; 
+                map[key].count += 1; map[key].total += r.amount; 
+            }); 
+            return Object.values(map).sort((a,b) => b.count - a.count).slice(0, 5); 
+        }, [expenseTxns]);
 
         const incomeSplitData = useMemo(() => { 
             const map = {}; 
@@ -492,6 +513,27 @@
             const colors = ['#1d8b4e', '#e06c53', '#047857', '#059669', '#10b981']; 
             return Object.entries(map).map(([name, value], idx) => ({ name, value, color: colors[idx % colors.length] })).sort((a,b) => b.value - a.value); 
         }, [insightsData]);
+
+        const categorySplitData = useMemo(() => {
+            const map = {};
+            analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { 
+                const cat = String(r.category || 'Uncategorized'); 
+                if (!map[cat]) map[cat] = 0; 
+                map[cat] += r.amount; 
+            });
+            const colors = ['#e06c53', '#cb5a42', '#1d8b4e', '#f59e0b', '#2563eb', '#ec4899', '#8b5cf6', '#14b8a6'];
+            return Object.entries(map).map(([name, value], idx) => ({ name, value, color: colors[idx % colors.length] })).sort((a, b) => b.value - a.value);
+        }, [analyticsFiltered]);
+
+        const accountSplitData = useMemo(() => {
+            const map = {};
+            analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { 
+                const acc = String(r.account || 'Cash/Other'); 
+                if (!map[acc]) map[acc] = 0; 
+                map[acc] += r.amount; 
+            });
+            return Object.entries(map).map(([acc, total]) => ({ acc, total })).sort((a, b) => b.total - a.total);
+        }, [analyticsFiltered]);
 
         const categoryTagMatrix = useMemo(() => {
             const expenses = insightsData.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment'));
@@ -510,6 +552,19 @@
             return { tags: top5Tags, cats: sortedCats };
         }, [insightsData]);
 
+        const heatmapData = useMemo(() => {
+            let expenses = analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment'));
+            if (analyticsCategory !== 'All Categories') expenses = expenses.filter(r => String(r.category || 'Uncategorized') === analyticsCategory);
+            if (!expenses.length) return { topCategories: [], monthCols: [], matrix: {}, maxVal: 0 };
+            const catTotals = {}; const catMonthMatrix = {};
+            expenses.forEach(row => { const cat = String(row.category || 'Uncategorized'); if (!catTotals[cat]) { catTotals[cat] = 0; catMonthMatrix[cat] = {}; } catTotals[cat] += row.amount; const mKey = MONTH_NAMES[row.monthIdx]; if (!catMonthMatrix[cat][mKey]) catMonthMatrix[cat][mKey] = 0; catMonthMatrix[cat][mKey] += row.amount; });
+            const topCategories = Object.keys(catTotals).sort((a, b) => catTotals[b] - catTotals[a]).slice(0, 10);
+            const activeMonthIndices = Array.from(new Set(expenses.map(r => r.monthIdx))).sort((a,b) => a - b);
+            const monthCols = activeMonthIndices.map(mIdx => ({ index: mIdx, key: MONTH_NAMES[mIdx], label: MONTH_NAMES[mIdx] }));
+            let maxVal = 0; topCategories.forEach(cat => { monthCols.forEach(m => { const val = (catMonthMatrix[cat] && catMonthMatrix[cat][m.key]) || 0; if (val > maxVal) maxVal = val; }); });
+            return { topCategories, monthCols, matrix: catMonthMatrix, maxVal };
+        }, [analyticsFiltered, analyticsCategory]);
+
         return (
             <div className="animate-fade-in space-y-4 sm:space-y-6 max-w-4xl mx-auto pb-8">
                 
@@ -517,9 +572,9 @@
                     <span className="text-xs font-extrabold text-slate-800 dark:text-slate-200 pl-3 uppercase tracking-widest">Filter Insights</span>
                     <div className="w-full sm:w-64">
                         <SearchableSelect 
-                            options={['All Categories', ...allUniqueCategories]} 
-                            value={insightsCategoryFilter} 
-                            onChange={(val) => setInsightsCategoryFilter(val)} 
+                            options={allUniqueCategories} 
+                            value={analyticsCategory} 
+                            onChange={(val) => setAnalyticsCategory(val)} 
                             placeholder="Search category..." 
                             compact={true} 
                         />
@@ -527,10 +582,10 @@
                 </div>
                 
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-                    <MetricCard title="Transactions" value={isPrivacy ? '......' : insightsData.length} icon={List} type="default" />
-                    <MetricCard title="Avg. Expense" value={formatINR(avgExpense, isPrivacy)} icon={Activity} type="expense" />
-                    <MetricCard title="Total Income" value={formatINR(totalIncome, isPrivacy)} icon={ArrowDownRight} type="income" />
-                    <MetricCard title="Net Change" value={formatINR(totalIncome - totalExpense, isPrivacy)} icon={Wallet} type="default" />
+                    <MetricCard title="Transactions" value={isPrivacy ? '......' : insightsData.length} type="default" />
+                    <MetricCard title="Avg. Expense" value={formatINR(avgExpense, isPrivacy)} type="expense" />
+                    <MetricCard title="Total Income" value={formatINR(totalIncome, isPrivacy)} type="income" />
+                    <MetricCard title="Net Change" value={formatINR(totalIncome - totalExpense, isPrivacy)} type="default" />
                 </div>
                 
                 {chartData && chartData.length > 0 && (
@@ -543,14 +598,14 @@
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                     
                     <div className="modern-card p-6 sm:p-8">
-                        <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><TagIcon c="w-5 h-5 text-brand-teal" /> Spending by Tags</h3>
+                        <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><Icon i="tag" c="w-5 h-5 text-brand-teal" /> Spending by Tags</h3>
                         {topTags.length === 0 ? <p className="text-xs text-slate-500 font-medium">No tags used.</p> : (
                             <div className="space-y-5">
-                                {topTags.map((tag) => { 
+                                {topTags.map((tag, idx) => { 
                                     const pct = totalExpense > 0 ? (tag.total / totalExpense) * 100 : 0; 
                                     const maxTagTotal = topTags[0]?.total || 1;
                                     return (
-                                        <div key={tag.name}>
+                                        <div key={`tag_${idx}`}>
                                             <div className="flex justify-between items-center mb-1.5">
                                                 <span className="text-xs font-extrabold text-brand-teal dark:text-teal-300 bg-teal-50 dark:bg-teal-900/30 border border-teal-100 dark:border-teal-800 px-2 py-0.5 rounded-md">{tag.name}</span>
                                                 <div className="text-right">
@@ -569,11 +624,11 @@
                     </div>
                     
                     <div className="modern-card p-6 sm:p-8">
-                        <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><Repeat c="w-5 h-5 text-[#f59e0b]" /> Most Frequent Payees</h3>
+                        <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><Icon i="repeat" c="w-5 h-5 text-[#f59e0b]" /> Most Frequent Payees</h3>
                         <div className="divide-y divide-slate-50 dark:divide-slate-800">
                             {frequentPayees.length === 0 ? <p className="text-xs text-slate-500 font-medium">No payees found.</p> : (
                                 frequentPayees.map((t, idx) => (
-                                    <div key={idx} className="py-3.5 flex justify-between items-center">
+                                    <div key={`payee_${idx}`} className="py-3.5 flex justify-between items-center">
                                         <div className="min-w-0 pr-4">
                                             <p className="text-sm font-extrabold text-slate-800 dark:text-slate-100 truncate">{t.name}</p>
                                         </div>
@@ -588,13 +643,13 @@
                     </div>
                     
                     <div className="modern-card p-6 sm:p-8">
-                        <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><ArrowUpRight c="w-5 h-5 text-brand-expense"/> Largest Single Expenses</h3>
+                        <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><Icon i="arrowUpRight" c="w-5 h-5 text-brand-expense"/> Largest Single Expenses</h3>
                         <div className="divide-y divide-slate-50 dark:divide-slate-800">
                             {largestTxns.length === 0 ? <p className="text-xs text-slate-500 font-medium">No expenses found.</p> : (
                                 largestTxns.map((t, idx) => { 
                                     const pct = totalExpense > 0 ? (t.amount / totalExpense) * 100 : 0; 
                                     return (
-                                        <div key={idx} className="py-3.5 flex justify-between items-center">
+                                        <div key={`lg_exp_${idx}`} className="py-3.5 flex justify-between items-center">
                                             <div className="min-w-0 pr-4">
                                                 <p className="text-sm font-extrabold text-slate-800 dark:text-slate-100 truncate mb-1">{t.description}</p>
                                                 <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
@@ -613,13 +668,13 @@
                     </div>
                     
                     <div className="modern-card p-6 sm:p-8">
-                        <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><ArrowDownRight c="w-5 h-5 text-brand-income"/> Income Sources</h3>
+                        <h3 className="text-sm font-black text-slate-800 dark:text-white flex items-center gap-2 mb-6"><Icon i="arrowDownRight" c="w-5 h-5 text-brand-income"/> Income Sources</h3>
                         {incomeSplitData.length === 0 ? <p className="text-xs text-slate-500 font-medium">No income found.</p> : (
                             <div className="space-y-5">
-                                {incomeSplitData.map((inc) => { 
+                                {incomeSplitData.map((inc, idx) => { 
                                     const pct = totalIncome > 0 ? (inc.value / totalIncome) * 100 : 0; 
                                     return (
-                                        <div key={inc.name}>
+                                        <div key={`inc_${idx}`}>
                                             <div className="flex justify-between items-center mb-1.5">
                                                 <div className="flex items-center gap-2">
                                                     <div className="w-2.5 h-2.5 rounded-sm" style={{backgroundColor: inc.color}}></div>
@@ -654,13 +709,13 @@
                                </tr>
                             </thead>
                             <tbody className="divide-y divide-slate-50 dark:divide-slate-800/50">
-                               {(categoryTagMatrix.cats||[]).map(([catName, catData]) => (
-                                  <tr key={catName} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
+                               {(categoryTagMatrix.cats||[]).map(([catName, catData], rIdx) => (
+                                  <tr key={`row_${rIdx}`} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/30 transition-colors">
                                      <td className="py-3 px-5 text-xs font-bold truncate max-w-[140px] sm:max-w-[200px]">{catName}</td>
-                                     {(categoryTagMatrix.tags||[]).map(t => {
+                                     {(categoryTagMatrix.tags||[]).map((t, cIdx) => {
                                         const val = catData.tags[t] || 0;
                                         return (
-                                           <td key={t} className="p-1.5 text-center">
+                                           <td key={`cell_${cIdx}`} className="p-1.5 text-center">
                                               {val > 0 ? <div className="bg-brand-teal/10 text-brand-teal text-[11px] font-black py-2 px-3 rounded-xl blur-money">{formatCompact(val, isPrivacy)}</div> : <span className="text-slate-300 dark:text-slate-700">-</span>}
                                            </td>
                                         )
@@ -675,8 +730,7 @@
             </div>
         );
     }
-
-    function TransactionModal({ isOpen, onClose, onSave, settings, editData, allAvailableTags, excludedCats = [], setIsBackgroundSyncing }) {
+      function TransactionModal({ isOpen, onClose, onSave, settings, editData, allAvailableTags, excludedCats = [], setIsBackgroundSyncing }) {
       const [type, setType] = useState('EXPENSE');
       const [date, setDate] = useState('');
       const [amount, setAmount] = useState('');
@@ -828,7 +882,7 @@
                <div className="border-t border-slate-100 dark:border-slate-800 pt-6 mt-8">
                    <h3 className="text-xl font-extrabold mb-4">Security</h3>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
-                       <div className="bg-slate-50 dark:bg-brand-bgDark rounded-3xl p-5 border border-slate-100 dark:border-slate-800"><label className="block text-[11px] font-bold mb-2">App Access PIN</label><div className="flex gap-3"><input type="text" inputMode="numeric" pattern="[0-9]*" maxLength="8" placeholder="Leave blank to disable" value={pin} onChange={(e)=>setPin(e.target.value.replace(/[^0-9]/g,''))} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className={`flex-1 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold tracking-widest outline-none ${!showPin && pin ? 'pin-input' : ''}`}/><button onClick={()=>setShowPin(!showPin)} className="p-3 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full aspect-square flex items-center justify-center"><EyeOff c="w-4 h-4"/></button></div></div>
+                       <div className="bg-slate-50 dark:bg-brand-bgDark rounded-3xl p-5 border border-slate-100 dark:border-slate-800"><label className="block text-[11px] font-bold mb-2">App Access PIN</label><div className="flex gap-3"><input type="text" inputMode="numeric" pattern="[0-9]*" maxLength="8" placeholder="Leave blank to disable" value={pin} onChange={(e)=>setPin(e.target.value.replace(/[^0-9]/g,''))} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className={`flex-1 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold tracking-widest outline-none ${!showPin && pin ? 'pin-input' : ''}`}/><button onClick={()=>setShowPin(!showPin)} className="p-3 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full aspect-square flex items-center justify-center">{showPin ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/>}</button></div></div>
                        <div className="bg-slate-50 dark:bg-brand-bgDark rounded-3xl p-5 border border-slate-100 dark:border-slate-800"><label className="block text-[11px] font-bold mb-2">Auto-Lock Timer</label><select value={lockTime} onChange={(e)=>setLockTime(e.target.value)} className="w-full bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-3 text-sm font-bold outline-none"><option value="0">Never</option><option value="1">1 minute</option><option value="5">5 minutes</option><option value="15">15 minutes</option><option value="30">30 minutes</option></select></div>
                    </div>
                </div>
@@ -925,7 +979,7 @@
       const [activeTab, setActiveTab] = useState('overview');
       const [period, setPeriod] = useState('This Month');
       const [isModalOpen, setIsModalOpen] = useState(false);
-      const [editTxn, setEditTxn] = useState(null);
+      const [editTxn, setEditTxn] = useState(null); 
       const [analyticsCategory, setAnalyticsCategory] = useState('All Categories');
       const [searchQ, setSearchQ] = useState('');
       const [ledgerCategoryFilter, setLedgerCategoryFilter] = useState('All');
@@ -1096,7 +1150,12 @@
 
       const totalBalance = Object.values(accountBalances).reduce((s, a) => s + a.current, 0);
       const chartData = useMemo(() => monthlyAggsForAllTime.filter(r => filterByPeriod(new Date(r.year, r.monthIdx, 1), r.year, r.monthIdx)), [monthlyAggsForAllTime, period, latestInfo, customFrom, customTo]);
-const topMerchants = useMemo(() => { const m = {}; analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { const raw = String(r.description || 'Unknown').trim(); const key = raw.toLowerCase(); if (!m[key]) m[key] = { name: raw, cat: r.category, total: 0 }; m[key].total += r.amount; }); return Object.values(m).sort((a,b) => b.total - a.total).slice(0, 10); }, [analyticsFiltered]);
+
+      const topMerchants = useMemo(() => {
+        const m = {};
+        analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { const d = String(r.description || 'Unknown'); if (!m[d]) m[d] = { name: d, cat: r.category, total: 0 }; m[d].total += r.amount; });
+        return Object.values(m).sort((a,b) => b.total - a.total).slice(0, 10);
+      }, [analyticsFiltered]);
 
       const categorySplitData = useMemo(() => {
         const map = {};
@@ -1123,6 +1182,7 @@ const topMerchants = useMemo(() => { const m = {}; analyticsFiltered.filter(r =>
         let maxVal = 0; topCategories.forEach(cat => { monthCols.forEach(m => { const val = (catMonthMatrix[cat] && catMonthMatrix[cat][m.key]) || 0; if (val > maxVal) maxVal = val; }); });
         return { topCategories, monthCols, matrix: catMonthMatrix, maxVal };
       }, [analyticsFiltered, analyticsCategory]);
+
       const handleOpenNewTxn = () => { setEditTxn(null); setIsModalOpen(true); };
       const handleOpenEditTxn = (txn) => { setEditTxn(txn); setIsModalOpen(true); };
       const handleSelectRow = (rI) => setSelectedRows(p => p.includes(rI) ? p.filter(r=>r!==rI) : [...p, rI]);
@@ -1173,7 +1233,7 @@ const topMerchants = useMemo(() => { const m = {}; analyticsFiltered.filter(r =>
                     <button onClick={handleManualRefresh} onTouchStart={(e) => handleTouchStart('Refresh', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><RefreshCw c={`w-4 h-4 ${isBackgroundSyncing ? 'animate-spin text-brand-teal' : ''}`}/><span className="nav-tooltip-bottom">Refresh</span></button>
                     {appData.appPin && <button onClick={() => setIsAuthenticated(false)} onTouchStart={(e) => handleTouchStart('Lock App', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><LockIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Lock App</span></button>}
                     <button onClick={() => setIsPrivacyMode(!isPrivacyMode)} onTouchStart={(e) => handleTouchStart('Privacy Mode', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${isPrivacyMode ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`}>{isPrivacyMode ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Privacy</span></button>
-                    <button onClick={() => setIsDarkMode(!isDarkMode)} onTouchStart={(e) => handleTouchStart('Toggle Theme', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><Sun c="w-4 h-4"/><span className="nav-tooltip-bottom">Theme</span></button>
+                    <button onClick={() => setIsDarkMode(!isDarkMode)} onTouchStart={(e) => handleTouchStart('Toggle Theme', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800">{isDarkMode ? <Sun c="w-4 h-4"/> : <Moon c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Theme</span></button>
                     <button onClick={() => setActiveTab('settings')} onTouchStart={(e) => handleTouchStart('Settings', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800'}`}><SettingsIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Settings</span></button>
                  </div>
               </div>
@@ -1320,3 +1380,4 @@ const topMerchants = useMemo(() => { const m = {}; analyticsFiltered.filter(r =>
   </script>
 </body>
 </html>
+    }
