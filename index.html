@@ -148,7 +148,7 @@
     const formatDateShort = (s) => { const d=parseDateLocal(s); return isNaN(d)?'':`${String(d.getDate()).padStart(2,'0')} ${MONTH_NAMES[d.getMonth()]}`; };
     const parseAmt = (v) => { const n=parseFloat(String(v).replace(/[^\d.-]/g, '')); return isNaN(n)?0:n; };
     const formatINR = (v, p) => p ? '₹ ......' : new Intl.NumberFormat('en-IN', { style:'currency',currency:'INR',maximumFractionDigits:0 }).format(v);
-    const formatCompact = (v, p) => p ? '......' : (Math.abs(v)>=100000 ? `₹${(v/100000).toFixed(2)}L` : Math.abs(v)>=1000 ? `₹${(v/1000).toFixed(2)}k` : `₹${Math.round(v)}`);
+    const formatCompact = (v, p) => p ? '......' : (Math.abs(v)>=100000 ? (v<0?'-₹':'₹')+(Math.abs(v)/100000).toFixed(2)+'L' : Math.abs(v)>=1000 ? (v<0?'-₹':'₹')+(Math.abs(v)/1000).toFixed(2)+'k' : (v<0?'-₹':'₹')+Math.round(Math.abs(v)));
     const extractTags = (s) => String(s||'').split(/[\s,;]+/).map(t=>t.trim().toLowerCase()).filter(t=>t.length>0&&t!=='#').map(t=>t.startsWith('#')?t:`#${t}`);
 
     const normalizeCategory = (cat) => {
@@ -277,7 +277,7 @@
         return (
             <div className="fixed inset-0 z-[300] flex items-center justify-center bg-brand-bgLight dark:bg-brand-bgDark p-4 transition-colors duration-300">
                 <div className="modern-card max-w-sm w-full p-8 animate-slide-up border border-slate-200 dark:border-slate-800 shadow-2xl">
-                    <div className="flex justify-center mb-6"><div className="w-16 h-16 bg-brand-teal rounded-2xl flex items-center justify-center text-white shadow-sm"><Icon i="rupee" c="w-8 h-8"/></div></div>
+                    <div className="flex justify-center mb-6"><div className="w-16 h-16 bg-brand-teal rounded-2xl flex items-center justify-center text-white shadow-sm"><IndianRupee c="w-8 h-8"/></div></div>
                     <h2 className="text-2xl font-black text-slate-800 dark:text-white text-center mb-2">FinTrack Setup</h2>
                     <p className="text-xs font-bold text-slate-500 dark:text-slate-400 text-center mb-6">Link your secure Google Sheet to this device.</p>
                     {errMsg && <div className="mb-4 p-3 bg-rose-50 text-brand-expense rounded-full text-xs font-bold text-center border border-rose-100">{errMsg}</div>}
@@ -306,9 +306,9 @@
       useEffect(() => { const hk = (e) => { if (error) return; if(e.key>='0'&&e.key<='9') handlePress(e.key); else if(e.key==='Backspace'||e.key==='Delete') handleBackspace(); }; window.addEventListener('keydown', hk); return () => window.removeEventListener('keydown', hk); }, [error, pinStr]);
       return (
           <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-brand-bgLight dark:bg-brand-bgDark transition-colors duration-300">
-              <div className="flex flex-col items-center mb-12 animate-slide-up"><div className="w-16 h-16 bg-brand-teal rounded-2xl flex items-center justify-center text-white mb-6 shadow-md"><Icon i="lock" c="w-8 h-8"/></div><h2 className="text-xl font-black text-slate-800 dark:text-white mb-2">App Locked</h2><p className="text-sm font-bold text-slate-500 dark:text-slate-400">Enter your PIN to continue</p></div>
+              <div className="flex flex-col items-center mb-12 animate-slide-up"><div className="w-16 h-16 bg-brand-teal rounded-2xl flex items-center justify-center text-white mb-6 shadow-md"><LockIcon c="w-8 h-8"/></div><h2 className="text-xl font-black text-slate-800 dark:text-white mb-2">App Locked</h2><p className="text-sm font-bold text-slate-500 dark:text-slate-400">Enter your PIN to continue</p></div>
               <div className="flex gap-4 mb-12 min-h-[1.5rem]">{Array.from({ length: pinStr.length || 0 }).map((_, i) => (<div key={`pin_${i}`} className={`w-4 h-4 rounded-full transition-all ${i < input.length ? 'bg-brand-teal scale-110' : 'bg-slate-200 dark:bg-slate-800'} ${error ? 'animate-pulse bg-brand-expense' : ''}`} />))}</div>
-              <div className="grid grid-cols-3 gap-4 sm:gap-6 max-w-[320px] w-full px-4">{[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => <button key={`btn_${n}`} onClick={()=>handlePress(String(n))} className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] flex items-center justify-center text-3xl font-black text-slate-800 dark:text-white bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-800 active:scale-90 mx-auto">{n}</button>)}<div className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px]"></div><button onClick={()=>handlePress('0')} className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] flex items-center justify-center text-3xl font-black text-slate-800 dark:text-white bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-800 active:scale-90 mx-auto">0</button><button onClick={handleBackspace} className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] flex items-center justify-center text-slate-500 dark:text-slate-400 bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-800 active:scale-90 mx-auto"><Icon i="trash2" c="w-8 h-8"/></button></div>
+              <div className="grid grid-cols-3 gap-4 sm:gap-6 max-w-[320px] w-full px-4">{[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => <button key={`btn_${n}`} onClick={()=>handlePress(String(n))} className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] flex items-center justify-center text-3xl font-black text-slate-800 dark:text-white bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-800 active:scale-90 mx-auto">{n}</button>)}<div className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px]"></div><button onClick={()=>handlePress('0')} className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] flex items-center justify-center text-3xl font-black text-slate-800 dark:text-white bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-800 active:scale-90 mx-auto">0</button><button onClick={handleBackspace} className="w-[84px] h-[84px] sm:w-[90px] sm:h-[90px] flex items-center justify-center text-slate-500 dark:text-slate-400 bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-800 active:scale-90 mx-auto"><BackspaceIcon c="w-8 h-8"/></button></div>
           </div>
       );
     }
@@ -319,18 +319,25 @@
       const plotData = data.map(d => ({ ...d, net: d.in - d.out }));
       let min = 0, max = 0; plotData.forEach(d => { if(d.net > max) max = d.net; if(d.net < min) min = d.net; });
       if(max === 0 && min === 0) max = 1000; max = max > 0 ? max * 1.1 : max; min = min < 0 ? min * 1.1 : min;
-      const range = max - min;
+      
+      // POWER SCALING: Solves the "tiny negative bar" issue while handling negatives/zero perfectly
+      const tScale = (v) => Math.sign(v) * Math.pow(Math.abs(v), 0.5);
+      const tMin = tScale(min); const tMax = tScale(max); const tRange = tMax - tMin;
+      
       const getX = (i) => pad.l + (i * (gW / Math.max(plotData.length, 1))) + (gW / Math.max(plotData.length, 1))/2;
-      const getY = (v) => { const rawY = pad.t + gH - ((v - min) / range) * gH; return isNaN(rawY) ? pad.t + gH : rawY; };
+      const getY = (v) => { const rawY = pad.t + gH - ((tScale(v) - tMin) / tRange) * gH; return isNaN(rawY) ? pad.t + gH : rawY; };
       const zeroY = getY(0); const barW = Math.min(24, (gW / Math.max(plotData.length, 1)) * 0.6);
+
+      // Eliminates grid clutter: Only show Max, Zero, and Min
+      const gridLines = min < 0 ? [max, 0, min] : [max, max/2, 0];
 
       return (
         <div className="w-full overflow-x-auto hide-scrollbar">
            <div className="flex justify-end gap-3 sm:gap-5 text-[9px] sm:text-[10px] font-extrabold tracking-widest mb-4 uppercase"><span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-brand-income"></span> Positive Savings</span><span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-sm bg-brand-expense"></span> Deficit</span></div>
            <svg viewBox={`0 0 ${width} ${height}`} style={{ minWidth: isScrollable ? `${width}px` : '100%' }} className="w-full h-auto font-sans relative">
               <line x1={pad.l} y1={zeroY} x2={width - pad.r} y2={zeroY} stroke={isDark ? '#3f3f46' : '#cbd5e1'} strokeWidth="2" />
-              {[max, max/2, min < 0 ? min : null].map((val, idx) => {
-                 if(!val || val===0 || isNaN(val)) return null; const y = getY(val);
+              {gridLines.map((val, idx) => {
+                 if(val===null || isNaN(val)) return null; const y = getY(val);
                  return ( <g key={`grid_${idx}`}><line x1={pad.l} y1={y} x2={width - pad.r} y2={y} stroke={isDark ? '#27272a' : '#e2e8f0'} strokeDasharray="4 4" /><text x={pad.l - 10} y={y + 4} textAnchor="end" className="text-[10px] md:text-[8px] fill-slate-400 font-bold blur-money">{formatCompact(val, isPrivacy)}</text></g> )
               })}
               {plotData.map((d, i) => {
