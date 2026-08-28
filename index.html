@@ -390,44 +390,107 @@ function LockScreen({ correctPin, onUnlock }) {
       );
     }
 
-    function AreaChart({ data = [], height = 250, isDark, isPrivacy }) {
+function AreaChart({ data = [], height = 250, isDark, isPrivacy }) {
       const [hoverIndex, setHoverIndex] = useState(null);
-      const isScrollable = data.length > 12; const width = isScrollable ? Math.max(600, data.length * 52) : 600;
-      const pad = { t: 15, r: 15, b: 25, l: 65 }; const gW = width - pad.l - pad.r; const gH = height - pad.t - pad.b;
+
+      // Automatically clear tooltip if the date range changes
+      useEffect(() => {
+        setHoverIndex(null);
+      }, [data]);
+
+      if (!data || data.length === 0) return null;
+
+      const isScrollable = data.length > 12; 
+      const width = isScrollable ? Math.max(600, data.length * 52) : 600;
+      const pad = { t: 15, r: 15, b: 25, l: 65 }; 
+      const gW = width - pad.l - pad.r; 
+      const gH = height - pad.t - pad.b;
+
       let min = 0, max = 0; 
-      data.forEach(d => { if(d.in>max)max=d.in; if(d.out>max)max=d.out; if(d.avail>max)max=d.avail; if(d.inv>max)max=d.inv; if(d.avail<min)min=d.avail; if(d.inv<min)min=d.inv; }); 
-      if(max===0) max=10000; const range = max - min;
+      data.forEach(d => { 
+        if(d.in > max) max = d.in; 
+        if(d.out > max) max = d.out; 
+        if(d.avail > max) max = d.avail; 
+        if(d.inv > max) max = d.inv; 
+        if(d.avail < min) min = d.avail; 
+        if(d.inv < min) min = d.inv; 
+      }); 
+      if(max === 0) max = 10000; 
+      const range = max - min;
+
       const getX = (i) => pad.l + (i / Math.max(data.length - 1, 1)) * gW; 
-      const getY = (v) => { const rawY = pad.t + gH - ((v - min) / range) * gH; return isNaN(rawY) ? pad.t + gH : rawY; };
-      const makePath = (k) => data.map((d, i) => (i===0?'M':'L') + ' ' + getX(i) + ' ' + getY(d[k])).join(' ');
-      const makeArea = (k) => makePath(k) + ' L ' + getX(data.length-1) + ' ' + getY(0) + ' L ' + getX(0) + ' ' + getY(0) + ' Z';
-      let toolX = hoverIndex !== null ? getX(hoverIndex) : 0;
+      const getY = (v) => { 
+        const rawY = pad.t + gH - ((v - min) / range) * gH; 
+        return isNaN(rawY) ? pad.t + gH : rawY; 
+      };
+
+      const makePath = (k) => data.map((d, i) => (i === 0 ? 'M' : 'L') + ' ' + getX(i) + ' ' + getY(d[k])).join(' ');
+      const makeArea = (k) => makePath(k) + ' L ' + getX(data.length - 1) + ' ' + getY(0) + ' L ' + getX(0) + ' ' + getY(0) + ' Z';
+      
+      const safeHoverIndex = (hoverIndex !== null && hoverIndex >= 0 && hoverIndex < data.length) ? hoverIndex : null;
+      let toolX = safeHoverIndex !== null ? getX(safeHoverIndex) : 0;
       
       return (
         <div className="w-full overflow-x-auto hide-scrollbar">
-          <div className="flex justify-end gap-3 sm:gap-5 text-[9px] sm:text-[10px] font-extrabold tracking-widest mb-4 uppercase"><span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-brand-income"></span> Income</span><span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-brand-expense"></span> Spend</span><span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#f59e0b]"></span> Invested</span><span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#e06c53]"></span> Availability</span></div>
+          <div className="flex justify-end gap-3 sm:gap-5 text-[9px] sm:text-[10px] font-extrabold tracking-widest mb-4 uppercase">
+            <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-brand-income"></span> Income</span>
+            <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-brand-expense"></span> Spend</span>
+            <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#f59e0b]"></span> Invested</span>
+            <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5"><span className="w-2.5 h-2.5 rounded-full bg-[#e06c53]"></span> Availability</span>
+          </div>
           <svg viewBox={`0 0 ${width} ${height}`} style={{ minWidth: isScrollable ? `${width}px` : '100%' }} className="w-full h-auto font-sans relative">
-            <defs><linearGradient id="gIN" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#10b981" stopOpacity="0.05"/><stop offset="100%" stopColor="#10b981" stopOpacity="0"/></linearGradient><linearGradient id="gOUT" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#f43f5e" stopOpacity="0.05"/><stop offset="100%" stopColor="#f43f5e" stopOpacity="0"/></linearGradient></defs>
-            {[0, 0.5, 1].map(pct => { const y = pad.t + gH * (1 - pct); const val = min + range * pct; return ( <g key={`line_${pct}`}><line x1={pad.l} y1={y} x2={width - pad.r} y2={y} stroke={isDark ? '#27272a' : '#e2e8f0'} strokeDasharray="5 5" /><text x={pad.l - 10} y={y + 4} textAnchor="end" className="text-[10px] md:text-[9px] fill-slate-400 font-bold blur-money">{formatCompact(val, isPrivacy)}</text></g> ); })}
+            <defs>
+              <linearGradient id="gIN" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#10b981" stopOpacity="0.05"/><stop offset="100%" stopColor="#10b981" stopOpacity="0"/></linearGradient>
+              <linearGradient id="gOUT" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#f43f5e" stopOpacity="0.05"/><stop offset="100%" stopColor="#f43f5e" stopOpacity="0"/></linearGradient>
+            </defs>
+            {[0, 0.5, 1].map(pct => { 
+              const y = pad.t + gH * (1 - pct); 
+              const val = min + range * pct; 
+              return ( 
+                <g key={`line_${pct}`}>
+                  <line x1={pad.l} y1={y} x2={width - pad.r} y2={y} stroke={isDark ? '#27272a' : '#e2e8f0'} strokeDasharray="5 5" />
+                  <text x={pad.l - 10} y={y + 4} textAnchor="end" className="text-[10px] md:text-[9px] fill-slate-400 font-bold blur-money">{formatCompact(val, isPrivacy)}</text>
+                </g> 
+              ); 
+            })}
             {min < 0 && <line x1={pad.l} y1={getY(0)} x2={width - pad.r} y2={getY(0)} stroke={isDark ? '#3f3f46' : '#cbd5e1'} strokeDasharray="5 5" strokeWidth="1" />}
-            <path d={makeArea('in')} fill="url(#gIN)" pointerEvents="none" /><path d={makePath('in')} fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" pointerEvents="none" />
-            <path d={makeArea('out')} fill="url(#gOUT)" pointerEvents="none" /><path d={makePath('out')} fill="none" stroke="#f43f5e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" pointerEvents="none" />
+            <path d={makeArea('in')} fill="url(#gIN)" pointerEvents="none" />
+            <path d={makePath('in')} fill="none" stroke="#10b981" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" pointerEvents="none" />
+            <path d={makeArea('out')} fill="url(#gOUT)" pointerEvents="none" />
+            <path d={makePath('out')} fill="none" stroke="#f43f5e" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" pointerEvents="none" />
             <path d={makePath('inv')} fill="none" stroke="#f59e0b" strokeWidth="2.5" strokeLinecap="round" pointerEvents="none" />
             <path d={makePath('avail')} fill="none" stroke="#e06c53" strokeWidth="2.5" strokeDasharray="6 4" strokeLinecap="round" pointerEvents="none" />
-            {data.map((d, i) => ( <g key={`pt_${i}`} pointerEvents="none"><text x={getX(i)} y={height - 5} textAnchor="middle" className="text-[10px] md:text-[9px] fill-slate-500 font-extrabold tracking-wide">{d.label}</text><circle cx={getX(i)} cy={getY(d.in)} r="5" fill={isDark ? '#121e1f' : '#fff'} stroke="#10b981" strokeWidth="2.5" /><circle cx={getX(i)} cy={getY(d.out)} r="5" fill={isDark ? '#121e1f' : '#fff'} stroke="#f43f5e" strokeWidth="2.5" /><circle cx={getX(i)} cy={getY(d.inv)} r="5" fill={isDark ? '#121e1f' : '#fff'} stroke="#f59e0b" strokeWidth="2.5" /><circle cx={getX(i)} cy={getY(d.avail)} r="5" fill={isDark ? '#121e1f' : '#fff'} stroke="#e06c53" strokeWidth="2.5" /></g> ))}
-            {hoverIndex !== null && <line x1={getX(hoverIndex)} y1={pad.t} x2={getX(hoverIndex)} y2={height - pad.b} stroke={isDark ? '#3f3f46' : '#94a3b8'} strokeWidth="1.5" strokeDasharray="4 4" pointerEvents="none" />}
-            {data.map((d, i) => <rect key={`h_${i}`} x={getX(i)-(gW/Math.max(data.length-1,1))/2} y={0} width={gW/Math.max(data.length-1,1)} height={height} fill="transparent" onMouseEnter={()=>setHoverIndex(i)} onMouseLeave={()=>setHoverIndex(null)} onTouchStart={()=>setHoverIndex(i)} className="cursor-crosshair outline-none" /> )}
-            {hoverIndex !== null && (() => {
+            
+            {data.map((d, i) => ( 
+              <g key={`pt_${i}`} pointerEvents="none">
+                <text x={getX(i)} y={height - 5} textAnchor="middle" className="text-[10px] md:text-[9px] fill-slate-500 font-extrabold tracking-wide">{d.label}</text>
+                <circle cx={getX(i)} cy={getY(d.in)} r="5" fill={isDark ? '#121e1f' : '#fff'} stroke="#10b981" strokeWidth="2.5" />
+                <circle cx={getX(i)} cy={getY(d.out)} r="5" fill={isDark ? '#121e1f' : '#fff'} stroke="#f43f5e" strokeWidth="2.5" />
+                <circle cx={getX(i)} cy={getY(d.inv)} r="5" fill={isDark ? '#121e1f' : '#fff'} stroke="#f59e0b" strokeWidth="2.5" />
+                <circle cx={getX(i)} cy={getY(d.avail)} r="5" fill={isDark ? '#121e1f' : '#fff'} stroke="#e06c53" strokeWidth="2.5" />
+              </g> 
+            ))}
+            
+            {safeHoverIndex !== null && (
+              <line x1={getX(safeHoverIndex)} y1={pad.t} x2={getX(safeHoverIndex)} y2={height - pad.b} stroke={isDark ? '#3f3f46' : '#94a3b8'} strokeWidth="1.5" strokeDasharray="4 4" pointerEvents="none" />
+            )}
+            
+            {data.map((d, i) => (
+              <rect key={`h_${i}`} x={getX(i) - (gW / Math.max(data.length - 1, 1)) / 2} y={0} width={gW / Math.max(data.length - 1, 1)} height={height} fill="transparent" onMouseEnter={() => setHoverIndex(i)} onMouseLeave={() => setHoverIndex(null)} onTouchStart={() => setHoverIndex(i)} className="cursor-crosshair outline-none" />
+            ))}
+            
+            {safeHoverIndex !== null && data[safeHoverIndex] && (() => {
                const bX = toolX > width / 2 ? -160 : 10;
+               const item = data[safeHoverIndex];
                return (
                    <g transform={`translate(${toolX}, 5)`} pointerEvents="none" className="animate-fade-in z-50">
                       <rect x={bX} y="0" width="150" height="96" rx="16" fill={isDark ? '#1a2e2f' : '#122b2c'} opacity="0.98" filter="drop-shadow(0 10px 15px rgba(0,0,0,0.15))" />
-                      <text x={bX+75} y="20" textAnchor="middle" fill="#ffffff" className="text-[12px] md:text-[11px] font-extrabold tracking-wider">{data[hoverIndex].label}</text>
-                      <line x1={bX+15} y1="26" x2={bX+135} y2="26" stroke={isDark ? '#274041' : '#1a3d3e'} strokeWidth="1" />
-                      <text x={bX+15} y="42" fill="#94a3b8" className="text-[10px] md:text-[9px] font-bold">Inc:</text><text x={bX+135} y="42" textAnchor="end" fill="#10b981" className="text-[11px] md:text-[10px] font-black blur-money">{formatCompact(data[hoverIndex].in, isPrivacy)}</text>
-                      <text x={bX+15} y="58" fill="#94a3b8" className="text-[10px] md:text-[9px] font-bold">Exp:</text><text x={bX+135} y="58" textAnchor="end" fill="#f43f5e" className="text-[11px] md:text-[10px] font-black blur-money">{formatCompact(data[hoverIndex].out, isPrivacy)}</text>
-                      <text x={bX+15} y="74" fill="#94a3b8" className="text-[10px] md:text-[9px] font-bold">Inv:</text><text x={bX+135} y="74" textAnchor="end" fill="#f59e0b" className="text-[11px] md:text-[10px] font-black blur-money">{formatCompact(data[hoverIndex].inv, isPrivacy)}</text>
-                      <text x={bX+15} y="90" fill="#94a3b8" className="text-[10px] md:text-[9px] font-bold">Avail:</text><text x={bX+135} y="90" textAnchor="end" fill="#e06c53" className="text-[11px] md:text-[10px] font-black blur-money">{formatCompact(data[hoverIndex].avail, isPrivacy)}</text>
+                      <text x={bX + 75} y="20" textAnchor="middle" fill="#ffffff" className="text-[12px] md:text-[11px] font-extrabold tracking-wider">{item.label}</text>
+                      <line x1={bX + 15} y1="26" x2={bX + 135} y2="26" stroke={isDark ? '#274041' : '#1a3d3e'} strokeWidth="1" />
+                      <text x={bX + 15} y="42" fill="#94a3b8" className="text-[10px] md:text-[9px] font-bold">Inc:</text><text x={bX + 135} y="42" textAnchor="end" fill="#10b981" className="text-[11px] md:text-[10px] font-black blur-money">{formatCompact(item.in, isPrivacy)}</text>
+                      <text x={bX + 15} y="58" fill="#94a3b8" className="text-[10px] md:text-[9px] font-bold">Exp:</text><text x={bX + 135} y="58" textAnchor="end" fill="#f43f5e" className="text-[11px] md:text-[10px] font-black blur-money">{formatCompact(item.out, isPrivacy)}</text>
+                      <text x={bX + 15} y="74" fill="#94a3b8" className="text-[10px] md:text-[9px] font-bold">Inv:</text><text x={bX + 135} y="74" textAnchor="end" fill="#f59e0b" className="text-[11px] md:text-[10px] font-black blur-money">{formatCompact(item.inv, isPrivacy)}</text>
+                      <text x={bX + 15} y="90" fill="#94a3b8" className="text-[10px] md:text-[9px] font-bold">Avail:</text><text x={bX + 135} y="90" textAnchor="end" fill="#e06c53" className="text-[11px] md:text-[10px] font-black blur-money">{formatCompact(item.avail, isPrivacy)}</text>
                    </g>
                );
             })()}
