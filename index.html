@@ -278,7 +278,8 @@
             </div>
         );
     }
-function SetupScreen({ onSave }) {
+    
+    function SetupScreen({ onSave }) {
         const [u, setU] = useState(''); const [k, setK] = useState(''); const [loading, setLoading] = useState(false); const [errMsg, setErrMsg] = useState('');
         const handle = async (e) => {
             e.preventDefault(); if (!u.trim() || !k.trim()) return;
@@ -307,7 +308,7 @@ function SetupScreen({ onSave }) {
         );
     }
 
-function LockScreen({ correctPin, onUnlock }) {
+    function LockScreen({ correctPin, onUnlock }) {
       const [input, setInput] = useState(''); const [error, setError] = useState(false); const [isResetting, setIsResetting] = useState(false);
       const pinStr = String(correctPin || '');
       
@@ -389,7 +390,7 @@ function LockScreen({ correctPin, onUnlock }) {
       );
     }
 
-function AreaChart({ data = [], height = 250, isDark, isPrivacy }) {
+    function AreaChart({ data = [], height = 250, isDark, isPrivacy }) {
       const [hoverIndex, setHoverIndex] = useState(null);
 
       useEffect(() => { setHoverIndex(null); }, [data]);
