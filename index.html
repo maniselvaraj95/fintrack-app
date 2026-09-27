@@ -37,9 +37,11 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
     * { -webkit-tap-highlight-color: transparent !important; }
+    
     header button.nav-item { flex-shrink: 0 !important; min-width: 40px !important; min-height: 40px !important; display: flex !important; align-items: center !important; justify-content: center !important; }
-    .date-picker-input::-webkit-calendar-picker-indicator { background: transparent; bottom: 0; color: transparent; cursor: pointer; height: auto; left: 0; position: absolute; right: 0; top: 0; width: auto; opacity: 0; }
+        .date-picker-input::-webkit-calendar-picker-indicator { background: transparent; bottom: 0; color: transparent; cursor: pointer; height: auto; left: 0; position: absolute; right: 0; top: 0; width: auto; opacity: 0; }
     .native-select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background: transparent; }
+    
     button, a, input, select, textarea, .nav-item { -webkit-touch-callout: none !important; outline: none !important; }
     body{font-family:'Plus Jakarta Sans',sans-serif;-webkit-font-smoothing:antialiased;transition:background-color .3s,color .3s;}
     .modern-card{background:#ffffff;border-radius:1.25rem;box-shadow:0 4px 6px -1px rgba(0,0,0,0.05);border:1px solid #e2e8f0;transition:all .3s;}
@@ -134,7 +136,6 @@
     const Moon = ({c}) => <Icon c={c}><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></Icon>;
     const Eye = ({c}) => <Icon c={c}><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></Icon>;
     const EyeOff = ({c}) => <Icon c={c}><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24M1 1l22 22"/></Icon>;
-    const Landmark = ({c}) => <Icon c={c}><line x1="3" y1="22" x2="21" y2="22"/><line x1="6" y1="18" x2="6" y2="11"/><line x1="10" y1="18" x2="10" y2="11"/><line x1="14" y1="18" x2="14" y2="11"/><line x1="18" y1="18" x2="18" y2="11"/><polygon points="12 2 20 7 4 7 12 2"/></Icon>;
 
     const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     const MONTH_NAMES_FULL = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -278,8 +279,7 @@
             </div>
         );
     }
-    
-    function SetupScreen({ onSave }) {
+function SetupScreen({ onSave }) {
         const [u, setU] = useState(''); const [k, setK] = useState(''); const [loading, setLoading] = useState(false); const [errMsg, setErrMsg] = useState('');
         const handle = async (e) => {
             e.preventDefault(); if (!u.trim() || !k.trim()) return;
@@ -308,7 +308,7 @@
         );
     }
 
-    function LockScreen({ correctPin, onUnlock }) {
+function LockScreen({ correctPin, onUnlock }) {
       const [input, setInput] = useState(''); const [error, setError] = useState(false); const [isResetting, setIsResetting] = useState(false);
       const pinStr = String(correctPin || '');
       
@@ -390,10 +390,14 @@
       );
     }
 
-    function AreaChart({ data = [], height = 250, isDark, isPrivacy }) {
+function AreaChart({ data = [], height = 250, isDark, isPrivacy }) {
       const [hoverIndex, setHoverIndex] = useState(null);
 
-      useEffect(() => { setHoverIndex(null); }, [data]);
+      // Automatically clear tooltip if the date range changes
+      useEffect(() => {
+        setHoverIndex(null);
+      }, [data]);
+
       if (!data || data.length === 0) return null;
 
       const isScrollable = data.length > 12; 
@@ -546,7 +550,7 @@
               <div className="w-14 h-14 bg-rose-50 dark:bg-rose-500/10 text-brand-expense rounded-full flex items-center justify-center mx-auto mb-4"><Trash2 c="w-7 h-7 text-brand-expense"/></div>
               <h2 className="text-lg font-black text-slate-800 dark:text-white mb-2">{title}</h2>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-bold mb-6">{message}</p>
-              <div className="flex gap-3"><button onClick={onCancel} className="flex-1 py-3 rounded-full font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Cancel</button><button onClick={onConfirm} className="flex-1 py-3 rounded-full font-bold text-white bg-brand-expense hover:bg-rose-700 transition-colors shadow-sm">Confirm</button></div>
+              <div className="flex gap-3"><button onClick={onCancel} className="flex-1 py-3 rounded-full font-bold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">Cancel</button><button onClick={onConfirm} className="flex-1 py-3 rounded-full font-bold text-white bg-brand-expense hover:bg-rose-700 transition-colors shadow-sm">Delete</button></div>
            </div>
         </div>
       );
@@ -568,233 +572,6 @@
             </div>
         );
     }
-
-    // ---------- NEW NET WORTH COMPONENTS ----------
-
-    const ASSET_CATEGORIES = {
-        'Equity': ['Direct Stock', 'Equity MF', 'ETF'],
-        'Debt': ['Debt MF', 'PPF', 'EPF', 'NPS', 'VPF', 'FD', 'RD', 'Bonds'],
-        'Real Estate': ['Physical Property', 'REITs'],
-        'Commodities': ['Physical Gold/Silver', 'Digital Gold', 'SGB']
-    };
-
-    const LIABILITY_CATEGORIES = {
-        'Loans': ['Home Loan', 'Car Loan', 'Personal Loan', 'Education Loan'],
-        'Credit': ['Credit Card Debt', 'Pay Later']
-    };
-
-    function NetWorthModal({ isOpen, onClose, onSave, editData, setIsBackgroundSyncing }) {
-        const [type, setType] = useState('ASSET');
-        const [category, setCategory] = useState('');
-        const [subCategory, setSubCategory] = useState('');
-        const [ticker, setTicker] = useState('');
-        const [quantity, setQuantity] = useState('');
-        const [name, setName] = useState('');
-        const [value, setValue] = useState('');
-        const [notes, setNotes] = useState('');
-        const [errorMsg, setErrorMsg] = useState('');
-
-        useEffect(() => {
-            if (editData) {
-                setType(editData.type || 'ASSET');
-                setCategory(editData.category || '');
-                setSubCategory(editData.subCategory || '');
-                setTicker(editData.ticker || '');
-                setQuantity(editData.quantity || '');
-                setName(editData.name || '');
-                setValue(editData.value || '');
-                setNotes(editData.notes || '');
-            } else {
-                setType('ASSET'); setCategory(''); setSubCategory(''); setTicker(''); setQuantity(''); setName(''); setValue(''); setNotes('');
-            }
-            setErrorMsg('');
-        }, [editData, isOpen]);
-
-        if (!isOpen) return null;
-
-        const catOptions = type === 'ASSET' ? Object.keys(ASSET_CATEGORIES) : Object.keys(LIABILITY_CATEGORIES);
-        const subCatOptions = (type === 'ASSET' ? ASSET_CATEGORIES[category] : LIABILITY_CATEGORIES[category]) || [];
-        const isLiveTicker = ['Direct Stock', 'Equity MF', 'ETF'].includes(subCategory);
-
-        const handleSubmit = (e) => {
-            e.preventDefault(); 
-            if (!category) return setErrorMsg("Select a category.");
-            if (!subCategory) return setErrorMsg("Select a sub-category.");
-            
-            if (isLiveTicker) {
-                if (!ticker) return setErrorMsg("Google Finance Ticker is required.");
-                if (!quantity || parseFloat(quantity) <= 0) return setErrorMsg("Valid quantity required.");
-            } else {
-                if (!name) return setErrorMsg("Item name is required.");
-                if (!value || parseFloat(value) < 0) return setErrorMsg("Valid value required.");
-            }
-
-            const payload = {
-                row_index: editData ? editData.row_index : null,
-                type, category, subCategory, notes,
-                ticker: isLiveTicker ? ticker : '',
-                quantity: isLiveTicker ? parseFloat(quantity) : '',
-                name: !isLiveTicker ? name : '',
-                value: !isLiveTicker ? parseFloat(value) : ''
-            };
-
-            setIsBackgroundSyncing(true); onClose();
-            apiCall('SAVE_NET_WORTH', { data: payload }).then(res => { 
-                onSave(res); setIsBackgroundSyncing(false); 
-            }).catch(e => { console.error(e); setIsBackgroundSyncing(false); alert("Save failed: " + e.message); });
-        };
-
-        return (
-            <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
-                <div className="bg-white dark:bg-brand-cardDark rounded-t-[2rem] sm:rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl animate-slide-up flex flex-col max-h-[90vh] border border-slate-100 dark:border-slate-800">
-                    <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-800"><h2 className="text-lg font-black text-slate-800 dark:text-white">{editData ? 'Edit Entry' : 'Add Net Worth Item'}</h2><button onClick={onClose} className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"><X c="w-4 h-4"/></button></div>
-                    <div className="p-5 overflow-y-auto hide-scrollbar">
-                        <div className="flex p-1 mb-6 bg-[#f0f2f5] dark:bg-slate-800 rounded-full shadow-sm">
-                           <button type="button" onClick={()=>{setType('ASSET'); setCategory(''); setSubCategory('');}} className={`flex-1 py-2.5 text-xs font-bold rounded-full transition-all ${type==='ASSET'?'bg-brand-income text-white':'text-slate-500'}`}>Asset</button>
-                           <button type="button" onClick={()=>{setType('LIABILITY'); setCategory(''); setSubCategory('');}} className={`flex-1 py-2.5 text-xs font-bold rounded-full transition-all ${type==='LIABILITY'?'bg-brand-expense text-white':'text-slate-500'}`}>Liability</button>
-                        </div>
-                        {errorMsg && <div className="mb-6 p-3 bg-brand-expense/10 text-brand-expense rounded-full flex items-center gap-3 text-xs font-bold"><div className="w-5 h-5 rounded-full bg-brand-expense text-white flex items-center justify-center shrink-0">!</div>{errorMsg}</div>}
-                        <form id="nwForm" onSubmit={handleSubmit} className="space-y-4">
-                            <div className="flex gap-4">
-                                <div className="flex-1"><label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Category</label><SearchableSelect options={catOptions} value={category} onChange={(v) => {setCategory(v); setSubCategory('');}} placeholder="Select..." compact={true} /></div>
-                                <div className="flex-1"><label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Sub-Category</label><SearchableSelect options={subCatOptions} value={subCategory} onChange={setSubCategory} placeholder="Select..." compact={true} disabled={!category} /></div>
-                            </div>
-
-                            {subCategory && (
-                                <div className="animate-fade-in space-y-4 mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-                                    {isLiveTicker ? (
-                                        <div className="space-y-4">
-                                            <div className="p-3 bg-blue-50 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300 rounded-xl text-[11px] font-bold border border-blue-100 dark:border-blue-800/50 flex gap-2">
-                                                <Sparkles c="w-4 h-4 shrink-0" />
-                                                <span>Smart Tracking Active! Enter the exact Google Finance Ticker (e.g. <b>NSE:RELIANCE</b> or <b>MUTF_IN:SBI_CONT_FUND_REG_G</b>) and quantity. Prices update automatically.</span>
-                                            </div>
-                                            <div className="flex gap-4">
-                                                <div className="flex-[2]"><label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Ticker Symbol</label><input type="text" value={ticker} onChange={e=>setTicker(e.target.value)} placeholder="NSE:TCS" className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 h-[42px] text-sm font-bold outline-none dark:text-white uppercase" /></div>
-                                                <div className="flex-1"><label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Units / Shares</label><input type="number" step="0.001" value={quantity} onChange={e=>setQuantity(e.target.value)} className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 h-[42px] text-sm font-bold outline-none dark:text-white" /></div>
-                                            </div>
-                                        </div>
-                                    ) : (
-                                        <div className="space-y-4">
-                                            <div><label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Item Name</label><input type="text" value={name} onChange={e=>setName(e.target.value)} placeholder="e.g. SBI Fixed Deposit" className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 h-[42px] text-sm font-bold outline-none dark:text-white" /></div>
-                                            <div><label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Current Value</label><input type="number" step="0.01" value={value} onChange={e=>setValue(e.target.value)} className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 h-[42px] text-sm font-bold outline-none dark:text-white" /></div>
-                                        </div>
-                                    )}
-                                    <div><label className="block text-[10px] font-bold text-slate-800 dark:text-slate-200 mb-1.5">Notes (Optional)</label><input type="text" value={notes} onChange={e=>setNotes(e.target.value)} placeholder="Maturity date, account num..." className="w-full bg-white dark:bg-brand-bgDark border border-slate-200 dark:border-slate-700 rounded-full px-4 h-[42px] text-sm font-bold outline-none dark:text-white" /></div>
-                                </div>
-                            )}
-                        </form>
-                    </div>
-                    <div className="p-4 sm:p-5 border-t border-slate-100 dark:border-slate-800 flex gap-3 justify-end"><button onClick={onClose} className="px-6 py-2.5 rounded-full font-bold text-sm bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700">Cancel</button><button form="nwForm" type="submit" className="px-6 py-2.5 rounded-full font-bold text-sm text-white bg-brand-teal">{editData ? 'Update' : 'Save'}</button></div>
-                </div>
-            </div>
-        );
-    }
-
-    function NetWorthView({ appData, isPrivacyMode, isDarkMode, onEdit, onDeleteTrigger }) {
-        const data = appData.netWorth || [];
-        const assets = data.filter(d => d.type === 'ASSET');
-        const liabilities = data.filter(d => d.type === 'LIABILITY');
-        
-        const totalAssets = assets.reduce((a, b) => a + (parseFloat(b.value) || 0), 0);
-        const totalLiabilities = liabilities.reduce((a, b) => a + (parseFloat(b.value) || 0), 0);
-        const netWorthValue = totalAssets - totalLiabilities;
-
-        const assetSplit = useMemo(() => {
-            const map = {}; assets.forEach(r => { map[r.category] = (map[r.category] || 0) + (parseFloat(r.value)||0); });
-            const colors = ['#1d8b4e', '#f59e0b', '#2563eb', '#8b5cf6'];
-            return Object.entries(map).map(([name, value], idx) => ({ name, value, color: colors[idx % colors.length] })).sort((a,b) => b.value - a.value);
-        }, [assets]);
-
-        return (
-            <div className="animate-fade-in space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="md:col-span-1">
-                        <MetricCard title="Total Assets" value={formatINR(totalAssets, isPrivacyMode)} icon={ArrowDownRight} type="income" isDark={isDarkMode} />
-                    </div>
-                    <div className="md:col-span-1">
-                        <MetricCard title="Total Liabilities" value={formatINR(totalLiabilities, isPrivacyMode)} icon={ArrowUpRight} type="expense" isDark={isDarkMode} />
-                    </div>
-                    <div className="md:col-span-1">
-                        <MetricCard title="Net Worth" value={formatINR(netWorthValue, isPrivacyMode)} icon={Landmark} type="balance" isDark={isDarkMode} />
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-                    <div className="xl:col-span-1 modern-card p-6 flex flex-col items-center">
-                        <h3 className="text-sm font-extrabold flex items-center gap-2 mb-6 w-full"><PieChart c="w-4 h-4 text-brand-teal"/> Asset Allocation</h3>
-                        {assetSplit.length === 0 ? <p className="text-xs text-slate-500 font-bold py-10">No assets configured.</p> : (
-                            <div className="w-full flex flex-col items-center gap-6">
-                                <DonutChart data={assetSplit} total={totalAssets} isPrivacy={isPrivacyMode} />
-                                <div className="w-full space-y-3">
-                                    {assetSplit.map(cat => (
-                                        <div key={cat.name} className="flex items-center justify-between">
-                                            <div className="flex items-center gap-2"><div className="w-2.5 h-2.5 rounded-full" style={{backgroundColor: cat.color}}></div><span className="text-xs font-bold text-slate-700 dark:text-slate-300">{cat.name}</span></div>
-                                            <div className="text-right"><span className="text-xs font-black blur-money">{formatINR(cat.value, isPrivacyMode)}</span><span className="text-[9px] font-bold text-slate-400 ml-1 blur-money">({totalAssets > 0 ? ((cat.value/totalAssets)*100).toFixed(1) : 0}%)</span></div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    <div className="xl:col-span-2 space-y-6">
-                        <div className="modern-card p-6 border border-slate-200 dark:border-slate-800">
-                            <h3 className="text-sm font-black text-brand-income mb-4 flex items-center gap-2"><ArrowDownRight c="w-4 h-4"/> Your Assets</h3>
-                            <div className="divide-y divide-slate-100 dark:divide-slate-800">
-                                {assets.length === 0 ? <p className="text-xs text-slate-500 font-medium py-2">No assets added yet.</p> : assets.map((item, i) => (
-                                    <div key={i} className="py-3.5 flex flex-col sm:flex-row justify-between sm:items-center gap-3 group">
-                                        <div className="min-w-0 pr-4">
-                                            <p className="text-sm font-extrabold text-slate-800 dark:text-slate-100 truncate flex items-center gap-2">
-                                                {item.name}
-                                                {item.ticker && <span className="bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-1.5 py-0.5 rounded text-[9px] font-black tracking-widest border border-blue-200 dark:border-blue-800">LIVE</span>}
-                                            </p>
-                                            <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
-                                                <span>{item.category}</span><span className="w-1 h-1 rounded-full bg-slate-300"></span><span>{item.subCategory}</span>
-                                                {item.ticker && <><span className="w-1 h-1 rounded-full bg-slate-300"></span><span className="text-brand-teal">{item.ticker} ({item.quantity})</span></>}
-                                            </div>
-                                            {item.notes && <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate mt-1">{item.notes}</p>}
-                                        </div>
-                                        <div className="flex items-center gap-4 shrink-0 justify-between sm:justify-end">
-                                            <p className="text-base font-black text-slate-900 dark:text-white blur-money">{formatINR(item.value, isPrivacyMode)}</p>
-                                            <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                                                <button onClick={() => onEdit(item)} className="p-1.5 text-slate-400 hover:text-brand-teal bg-slate-100 dark:bg-slate-800 rounded-lg"><EditPencil c="w-3.5 h-3.5" /></button>
-                                                <button onClick={() => onDeleteTrigger(item.row_index)} className="p-1.5 text-slate-400 hover:text-brand-expense bg-slate-100 dark:bg-slate-800 rounded-lg"><Trash2 c="w-3.5 h-3.5" /></button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="modern-card p-6 border border-slate-200 dark:border-slate-800">
-                            <h3 className="text-sm font-black text-brand-expense mb-4 flex items-center gap-2"><ArrowUpRight c="w-4 h-4"/> Your Liabilities</h3>
-                            <div className="divide-y divide-slate-100 dark:divide-slate-800">
-                                {liabilities.length === 0 ? <p className="text-xs text-slate-500 font-medium py-2">No liabilities configured.</p> : liabilities.map((item, i) => (
-                                    <div key={i} className="py-3.5 flex flex-col sm:flex-row justify-between sm:items-center gap-3 group">
-                                        <div className="min-w-0 pr-4">
-                                            <p className="text-sm font-extrabold text-slate-800 dark:text-slate-100 truncate">{item.name}</p>
-                                            <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1"><span>{item.category}</span><span className="w-1 h-1 rounded-full bg-slate-300"></span><span>{item.subCategory}</span></div>
-                                            {item.notes && <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium truncate mt-1">{item.notes}</p>}
-                                        </div>
-                                        <div className="flex items-center gap-4 shrink-0 justify-between sm:justify-end">
-                                            <p className="text-base font-black text-brand-expense blur-money">-{formatINR(item.value, isPrivacyMode)}</p>
-                                            <div className="flex items-center gap-1 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
-                                                <button onClick={() => onEdit(item)} className="p-1.5 text-slate-400 hover:text-brand-teal bg-slate-100 dark:bg-slate-800 rounded-lg"><EditPencil c="w-3.5 h-3.5" /></button>
-                                                <button onClick={() => onDeleteTrigger(item.row_index)} className="p-1.5 text-slate-400 hover:text-brand-expense bg-slate-100 dark:bg-slate-800 rounded-lg"><Trash2 c="w-3.5 h-3.5" /></button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
-    // ---------- END NEW COMPONENTS ----------
-
     function InsightsView({ analyticsFiltered = [], allUniqueCategories = [], isPrivacy, isDarkMode, chartData = [] }) {
         const [analyticsCategory, setAnalyticsCategory] = useState('All Categories');
         
@@ -1160,9 +937,7 @@
     function SettingsView({ appData, onSave, appPin, autoLockTime, setIsBackgroundSyncing }) {
       const safeIncomeCats = appData?.settings?.incomeCats||[]; const safeExpenseCats = appData?.settings?.expenseCats||[]; const safeAccounts = appData?.settings?.accounts||[];
       const [exCats, setExCats] = useState(appData.excludedCats||[]); const [bals, setBals] = useState(appData.balances||[]);
-      const [incCats, setIncCats] = useState([]); 
-      const [expCats, setExpCats] = useState([]);
-      const [accList, setAccList] = useState([]);
+      const [incCats, setIncCats] = useState([]); const [expCats, setExpCats] = useState([]);
       const [pin, setPin] = useState(appPin||''); const [showPin, setShowPin] = useState(false); const [lockTime, setLockTime] = useState(autoLockTime||'0');
       const [saving, setSaving] = useState(false); const [saveError, setSaveError] = useState('');
 
@@ -1172,16 +947,11 @@
       });
 
       useEffect(() => {
-        setIncCats(safeIncomeCats.map((c, i) => ({ id: `inc_${i}`, orig: c, val: c }))); 
-        setExpCats(safeExpenseCats.map((c, i) => ({ id: `exp_${i}`, orig: c, val: c }))); 
-        setAccList(safeAccounts.map((c, i) => ({ id: `acc_${i}`, orig: c, val: c })));
-        setExCats(appData.excludedCats||[]); 
-        setBals(appData.balances||[]);
+        setIncCats(safeIncomeCats.map((c, i) => ({ id: `inc_${i}`, orig: c, val: c }))); setExpCats(safeExpenseCats.map((c, i) => ({ id: `exp_${i}`, orig: c, val: c }))); setExCats(appData.excludedCats||[]); setBals(appData.balances||[]);
       }, [appData]);
 
       const moveCat = (idx, dir, type) => {
-          const list = type === 'INC' ? [...incCats] : type === 'EXP' ? [...expCats] : [...accList]; 
-          const setter = type === 'INC' ? setIncCats : type === 'EXP' ? setExpCats : setAccList;
+          const list = type === 'INC' ? [...incCats] : [...expCats]; const setter = type === 'INC' ? setIncCats : setExpCats;
           if (dir === 'UP' && idx > 0) { [list[idx-1], list[idx]] = [list[idx], list[idx-1]]; setter(list); } 
           else if (dir === 'DOWN' && idx < list.length - 1) { [list[idx+1], list[idx]] = [list[idx], list[idx+1]]; setter(list); }
       };
@@ -1194,16 +964,13 @@
          incCats.forEach(c => { const cleanVal = normalizeCategory(c.val); if (cleanVal !== '') finalIncCats.push(cleanVal); if (c.orig && c.orig !== cleanVal && cleanVal !== '') renames.push({ old: c.orig, new: cleanVal }); });
          expCats.forEach(c => { const cleanVal = normalizeCategory(c.val); if (cleanVal !== '') finalExpCats.push(cleanVal); if (c.orig && c.orig !== cleanVal && cleanVal !== '') renames.push({ old: c.orig, new: cleanVal }); });
          
-         const finalAccounts = []; 
-         accList.forEach(c => { const cleanVal = String(c.val).trim(); if (cleanVal !== '') finalAccounts.push(cleanVal); });
-         
          const cleanBals = bals.map(b => ({...b, balance: b.balance === '' ? 0 : parseFloat(b.balance)}));
-         const payload = { excludedCats: exCats, balances: cleanBals, incomeCats: finalIncCats, expenseCats: finalExpCats, accounts: finalAccounts, categoryRenames: renames, appPin: pin, autoLockTime: lockTime };
+         const payload = { excludedCats: exCats, balances: cleanBals, incomeCats: finalIncCats, expenseCats: finalExpCats, categoryRenames: renames, appPin: pin, autoLockTime: lockTime };
          
          onSave(prev => {
              let updatedTxns = [...(prev.transactions || [])];
              renames.forEach(r => { updatedTxns = updatedTxns.map(t => t.category === r.old ? { ...t, category: r.new } : t); });
-             return { ...prev, transactions: updatedTxns, settings: { ...prev.settings, incomeCats: payload.incomeCats, expenseCats: payload.expenseCats, accounts: payload.accounts }, balances: payload.balances, excludedCats: payload.excludedCats, appPin: payload.appPin, autoLockTime: payload.autoLockTime };
+             return { ...prev, transactions: updatedTxns, settings: { ...prev.settings, incomeCats: payload.incomeCats, expenseCats: payload.expenseCats }, balances: payload.balances, excludedCats: payload.excludedCats, appPin: payload.appPin, autoLockTime: payload.autoLockTime };
          });
          apiCall('SAVE_SETTINGS', { payload }).then(() => { setSaving(false); setIsBackgroundSyncing(false); }).catch(e => { console.error(e); setSaving(false); setIsBackgroundSyncing(false); alert("Settings save failed. Please check your connection."); });
       };
@@ -1229,12 +996,12 @@
                    <h3 className="text-xl font-extrabold mb-4">Security</h3>
                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
                        <div className="bg-slate-50 dark:bg-brand-bgDark rounded-3xl p-5 border border-slate-100 dark:border-slate-800"><label className="block text-[11px] font-bold mb-2">App Access PIN</label><div className="flex gap-3"><input type="text" inputMode="numeric" pattern="[0-9]*" maxLength="8" placeholder="Leave blank to disable" value={pin} onChange={(e)=>setPin(e.target.value.replace(/[^0-9]/g,''))} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className={`flex-1 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full px-4 py-2.5 text-sm font-bold tracking-widest outline-none ${!showPin && pin ? 'pin-input' : ''}`}/><button onClick={()=>setShowPin(!showPin)} className="p-3 bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full aspect-square flex items-center justify-center">{showPin ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/>}</button></div></div>
-                       <div className="bg-slate-50 dark:bg-brand-bgDark rounded-3xl p-5 border border-slate-100 dark:border-slate-800"><label className="block text-[11px] font-bold mb-2">Auto-Lock Timer</label><div className="relative flex items-center w-full bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full"><select value={lockTime} onChange={(e)=>setLockTime(e.target.value)} className="w-full bg-transparent pl-4 pr-10 py-3 text-sm font-bold outline-none native-select relative z-10"><option value="0">Never</option><option value="1">1 minute</option><option value="5">5 minutes</option><option value="15">15 minutes</option><option value="30">30 minutes</option></select><ChevronDown c="w-4 h-4 text-slate-400 absolute right-4 z-0 pointer-events-none" /></div></div>                   </div>
+<div className="bg-slate-50 dark:bg-brand-bgDark rounded-3xl p-5 border border-slate-100 dark:border-slate-800"><label className="block text-[11px] font-bold mb-2">Auto-Lock Timer</label><div className="relative flex items-center w-full bg-white dark:bg-brand-cardDark border border-slate-200 dark:border-slate-700 rounded-full"><select value={lockTime} onChange={(e)=>setLockTime(e.target.value)} className="w-full bg-transparent pl-4 pr-10 py-3 text-sm font-bold outline-none native-select relative z-10"><option value="0">Never</option><option value="1">1 minute</option><option value="5">5 minutes</option><option value="15">15 minutes</option><option value="30">30 minutes</option></select><ChevronDown c="w-4 h-4 text-slate-400 absolute right-4 z-0 pointer-events-none" /></div></div>                   </div>
                </div>
 
                <div className="border-t border-slate-100 dark:border-slate-800 pt-6">
-                   <h3 className="text-xl font-extrabold mb-4">Categories & Accounts</h3>
-                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                   <h3 className="text-xl font-extrabold mb-4">Categories</h3>
+                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       <div className="bg-slate-50 dark:bg-brand-bgDark rounded-3xl p-5 border border-slate-100 dark:border-slate-800">
                           <h4 className="text-xs font-bold mb-4 uppercase tracking-widest">Income Categories</h4>
                           <div className="space-y-2">
@@ -1251,7 +1018,6 @@
                           </div>
                           <button onClick={()=>setIncCats([...incCats, {id: 'inc_'+Date.now(), orig: '', val: 'New Income'}])} className="w-full mt-4 text-brand-teal font-bold py-2.5 rounded-full text-xs uppercase border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark hover:bg-slate-50">Add Income Category</button>
                       </div>
-
                       <div className="bg-slate-50 dark:bg-brand-bgDark rounded-3xl p-5 border border-slate-100 dark:border-slate-800">
                           <h4 className="text-xs font-bold mb-4 uppercase tracking-widest">Expense Categories</h4>
                           <div className="space-y-2">
@@ -1268,22 +1034,6 @@
                           </div>
                           <button onClick={()=>setExpCats([...expCats, {id: 'exp_'+Date.now(), orig: '', val: 'New Expense'}])} className="w-full mt-4 text-brand-teal font-bold py-2.5 rounded-full text-xs uppercase border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark hover:bg-slate-50">Add Expense Category</button>
                       </div>
-
-                      <div className="bg-slate-50 dark:bg-brand-bgDark rounded-3xl p-5 border border-slate-100 dark:border-slate-800 md:col-span-2 lg:col-span-1">
-                          <h4 className="text-xs font-bold mb-4 uppercase tracking-widest">Bank Accounts</h4>
-                          <div className="space-y-2">
-                             {accList.map((item, i) => { 
-                                 return (
-                                     <div key={item.id} className="flex justify-between items-center p-1 bg-white dark:bg-brand-cardDark rounded-full shadow-sm border border-slate-100 dark:border-slate-700">
-                                         <div className="flex flex-col mx-1 shrink-0"><button type="button" onClick={()=>moveCat(i, 'UP', 'ACC')} disabled={i===0} className={`p-0.5 rounded ${i===0?'text-slate-200 dark:text-slate-800':'text-slate-400 hover:text-brand-teal'}`}><ChevronUp c="w-3 h-3"/></button><button type="button" onClick={()=>moveCat(i, 'DOWN', 'ACC')} disabled={i===accList.length-1} className={`p-0.5 rounded ${i===accList.length-1?'text-slate-200 dark:text-slate-800':'text-slate-400 hover:text-brand-teal'}`}><ChevronDown c="w-3 h-3"/></button></div>
-                                         <input value={item.val} onChange={(e)=>{const n=[...accList];n[i]={...n[i], val:e.target.value};setAccList(n);}} autoComplete="nope" autoCapitalize="none" spellCheck="false" autoCorrect="off" data-lpignore="true" data-form-type="other" role="presentation" className="flex-1 min-w-0 bg-transparent outline-none text-sm font-bold px-2" />
-                                         <div className="flex gap-2 pr-2 shrink-0 items-center"><button type="button" onClick={()=>setAccList(accList.filter((_,x)=>x!==i))} className="text-slate-300 hover:text-brand-expense p-1"><Trash2 c="w-4 h-4"/></button></div>
-                                     </div>
-                                 ) 
-                             })}
-                          </div>
-                          <button onClick={()=>setAccList([...accList, {id: 'acc_'+Date.now(), orig: '', val: 'New Account'}])} className="w-full mt-4 text-brand-teal font-bold py-2.5 rounded-full text-xs uppercase border border-slate-200 dark:border-slate-700 bg-white dark:bg-brand-cardDark hover:bg-slate-50">Add Bank Account</button>
-                      </div>
                    </div>
                </div>
 
@@ -1293,6 +1043,7 @@
          </div>
       );
     }
+
     function BulkActionModal({ isOpen, action, count, onClose, onConfirm, bulkCategoryOptions, excludedCats }) {
       const [val, setVal] = useState('');
       useEffect(() => { if (!isOpen) setVal(''); }, [isOpen]);
@@ -1337,7 +1088,7 @@
     }
 
     function App() {
-      const [appData, setAppData] = useState({ transactions: [], settings: { incomeCats: [], expenseCats: [], accounts: [] }, balances: [], excludedCats: [], appPin: '', autoLockTime: '0', netWorth: [] });
+      const [appData, setAppData] = useState({ transactions: [], settings: { incomeCats: [], expenseCats: [], accounts: [] }, balances: [], excludedCats: [], appPin: '', autoLockTime: '0' });
       const [isLoading, setIsLoading] = useState(true);
       const [isBackgroundSyncing, setIsBackgroundSyncing] = useState(false);
       const [activeTab, setActiveTab] = useState('overview');
@@ -1363,9 +1114,6 @@
       const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'desc' });
       const [isSetupComplete, setIsSetupComplete] = useState(!!(GLOBAL_API_URL && GLOBAL_API_KEY));
       
-      const [nwModal, setNwModal] = useState({ isOpen: false, editData: null });
-      const [deleteNwId, setDeleteNwId] = useState(null);
-
       const [isDarkMode, setIsDarkMode] = useState(() => { try { return localStorage.getItem('theme') === 'dark'; } catch(e) { return false; } });
       const [isPrivacyMode, setIsPrivacyMode] = useState(() => { try { const s = localStorage.getItem('privacyMode'); return s !== null ? s === 'true' : true; } catch(e) { return true; } });
 
@@ -1518,24 +1266,22 @@
       const totalBalance = Object.values(accountBalances).reduce((s, a) => s + a.current, 0);
       const chartData = useMemo(() => monthlyAggsForAllTime.filter(r => filterByPeriod(new Date(r.year, r.monthIdx, 1), r.year, r.monthIdx)), [monthlyAggsForAllTime, period, latestInfo, customFrom, customTo]);
 
-const categorySplitData = useMemo(() => {
+      const topMerchants = useMemo(() => {
+        const m = {};
+        analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { const raw = String(r.description || 'Unknown').trim(); const key = raw.toLowerCase(); if (!m[key]) m[key] = { name: raw, cat: r.category, total: 0 }; m[key].total += r.amount; });
+        return Object.values(m).sort((a,b) => b.total - a.total).slice(0, 10);
+      }, [analyticsFiltered]);
+
+      const categorySplitData = useMemo(() => {
         const map = {};
-        analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { 
-            const cat = String(r.category || 'Uncategorized'); 
-            if (!map[cat]) map[cat] = 0; 
-            map[cat] += r.amount; 
-        });
+        analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { const cat = String(r.category || 'Uncategorized'); if (!map[cat]) map[cat] = 0; map[cat] += r.amount; });
         const colors = ['#e06c53', '#cb5a42', '#1d8b4e', '#f59e0b', '#2563eb', '#ec4899', '#8b5cf6', '#14b8a6'];
         return Object.entries(map).map(([name, value], idx) => ({ name, value, color: colors[idx % colors.length] })).sort((a, b) => b.value - a.value);
       }, [analyticsFiltered]);
 
       const accountSplitData = useMemo(() => {
         const map = {};
-        analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { 
-            const acc = String(r.account || 'Cash/Other'); 
-            if (!map[acc]) map[acc] = 0; 
-            map[acc] += r.amount; 
-        });
+        analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { const acc = String(r.account || 'Cash/Other'); if (!map[acc]) map[acc] = 0; map[acc] += r.amount; });
         return Object.entries(map).map(([acc, total]) => ({ acc, total })).sort((a, b) => b.total - a.total);
       }, [analyticsFiltered]);
 
@@ -1551,32 +1297,7 @@ const categorySplitData = useMemo(() => {
         let maxVal = 0; topCategories.forEach(cat => { monthCols.forEach(m => { const val = (catMonthMatrix[cat] && catMonthMatrix[cat][m.key]) || 0; if (val > maxVal) maxVal = val; }); });
         return { topCategories, monthCols, matrix: catMonthMatrix, maxVal };
       }, [analyticsFiltered, analyticsCategory]);
-const topMerchants = useMemo(() => {
-        const m = {};
-        analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { const raw = String(r.description || 'Unknown').trim(); const key = raw.toLowerCase(); if (!m[key]) m[key] = { name: raw, cat: r.category, total: 0 }; m[key].total += r.amount; });
-        return Object.values(m).sort((a,b) => b.total - a.total).slice(0, 10);
-      }, [analyticsFiltered]);
 
-      const categorySplitData = useMemo(() => {
-        const map = {};
-        analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { 
-            const cat = String(r.category || 'Uncategorized'); 
-            if (!map[cat]) map[cat] = 0; 
-            map[cat] += r.amount; 
-        });
-        const colors = ['#e06c53', '#cb5a42', '#1d8b4e', '#f59e0b', '#2563eb', '#ec4899', '#8b5cf6', '#14b8a6'];
-        return Object.entries(map).map(([name, value], idx) => ({ name, value, color: colors[idx % colors.length] })).sort((a, b) => b.value - a.value);
-      }, [analyticsFiltered]);
-
-      const accountSplitData = useMemo(() => {
-        const map = {};
-        analyticsFiltered.filter(r => r.rawType === 'EXPENSE' && (!r.category || String(r.category).toLowerCase() !== 'investment')).forEach(r => { 
-            const acc = String(r.account || 'Cash/Other'); 
-            if (!map[acc]) map[acc] = 0; 
-            map[acc] += r.amount; 
-        });
-        return Object.entries(map).map(([acc, total]) => ({ acc, total })).sort((a, b) => b.total - a.total);
-      }, [analyticsFiltered]);
       const handleOpenNewTxn = () => { setEditTxn(null); setIsModalOpen(true); };
       const handleOpenEditTxn = (txn) => { setEditTxn(txn); setIsModalOpen(true); };
       const handleSelectRow = (rI) => setSelectedRows(p => p.includes(rI) ? p.filter(r=>r!==rI) : [...p, rI]);
@@ -1596,13 +1317,6 @@ const topMerchants = useMemo(() => {
          apiCall('BULK_ACTION', { actionType: 'DELETE', rowIndices: [id], updates: {} }).then(res => { setAppData(res); setIsBackgroundSyncing(false); }).catch(e => setIsBackgroundSyncing(false));
       };
 
-      const executeDeleteNwSingle = () => {
-         if (!deleteNwId) return; setIsBackgroundSyncing(true); const id = deleteNwId;
-         setAppData(p => ({ ...p, netWorth: (p.netWorth || []).filter(t => t.row_index !== id) }));
-         setDeleteNwId(null);
-         apiCall('SAVE_NET_WORTH', { data: { isDelete: true, row_index: id } }).then(res => { setAppData(res); setIsBackgroundSyncing(false); }).catch(e => setIsBackgroundSyncing(false));
-      };
-
       const selectedTxns = useMemo(() => ledgerFiltered.filter(t => selectedRows.includes(t.row_index)), [selectedRows, ledgerFiltered]);
       const selectedTypes = useMemo(() => new Set(selectedTxns.map(t => t.rawType)), [selectedTxns]);
       const canRecategorize = !selectedTypes.has('TRANSFER') && selectedTypes.size === 1;
@@ -1620,9 +1334,8 @@ const topMerchants = useMemo(() => {
           <nav className="shrink-0 w-full md:w-[76px] md:h-full bg-white dark:bg-brand-cardDark md:bg-white md:dark:bg-brand-sidebar z-40 flex flex-row md:flex-col items-center shadow-[0_-10px_40px_rgba(0,0,0,0.03)] dark:shadow-[0_-10px_40px_rgba(0,0,0,0.4)] md:shadow-none transition-colors border-t border-slate-200 dark:border-slate-800 md:border-t-0 md:border-r py-2 md:py-6 pb-safe justify-around md:justify-start gap-0 md:gap-4 overflow-visible fixed md:relative bottom-0 left-0">
             <div className="hidden md:flex mb-8 w-full justify-center"><div className="w-10 h-10 bg-brand-teal rounded-xl flex items-center justify-center text-white font-black text-xl shadow-sm"><IndianRupee c="w-5 h-5"/></div></div>
             <button onClick={() => setActiveTab('overview')} onTouchStart={(e) => handleTouchStart('Dashboard', e, 'top')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'overview' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-teal/10 md:text-brand-teal dark:md:bg-brand-sidebarHover dark:md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:text-slate-400 md:hover:text-slate-800 md:hover:bg-slate-100 dark:md:hover:text-white dark:md:hover:bg-brand-sidebarHover/50'}`}><Activity c="w-6 h-6 sm:w-5 sm:h-5"/><span className="nav-tooltip">Dashboard</span></button>
-            <button onClick={() => setActiveTab('networth')} onTouchStart={(e) => handleTouchStart('Net Worth', e, 'top')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'networth' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-teal/10 md:text-brand-teal dark:md:bg-brand-sidebarHover dark:md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:text-slate-400 md:hover:text-slate-800 md:hover:bg-slate-100 dark:md:hover:text-white dark:md:hover:bg-brand-sidebarHover/50'}`}><Landmark c="w-6 h-6 sm:w-5 sm:h-5"/><span className="nav-tooltip">Net Worth</span></button>
             <button onClick={() => setActiveTab('analytics')} onTouchStart={(e) => handleTouchStart('Analytics', e, 'top')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'analytics' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-teal/10 md:text-brand-teal dark:md:bg-brand-sidebarHover dark:md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:text-slate-400 md:hover:text-slate-800 md:hover:bg-slate-100 dark:md:hover:text-white dark:md:hover:bg-brand-sidebarHover/50'}`}><PieChart c="w-6 h-6 sm:w-5 sm:h-5"/><span className="nav-tooltip">Analytics</span></button>
-            <div className="md:hidden relative w-16 h-12 flex justify-center items-center nav-item"><button onClick={() => activeTab === 'networth' ? setNwModal({isOpen: true, editData: null}) : handleOpenNewTxn()} className="absolute -top-6 w-14 h-14 bg-brand-teal text-white rounded-full flex items-center justify-center shadow-[0_8px_16px_rgba(224,108,83,0.3)] transition-transform active:scale-95 border-4 border-brand-bgLight dark:border-brand-bgDark z-50"><Plus c="w-6 h-6"/></button></div>
+            <div className="md:hidden relative w-16 h-12 flex justify-center items-center nav-item"><button onClick={handleOpenNewTxn} className="absolute -top-6 w-14 h-14 bg-brand-teal text-white rounded-full flex items-center justify-center shadow-[0_8px_16px_rgba(224,108,83,0.3)] transition-transform active:scale-95 border-4 border-brand-bgLight dark:border-brand-bgDark z-50"><Plus c="w-6 h-6"/></button></div>
             <button onClick={() => setActiveTab('ledger')} onTouchStart={(e) => handleTouchStart('Transactions', e, 'top')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'ledger' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-teal/10 md:text-brand-teal dark:md:bg-brand-sidebarHover dark:md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:text-slate-400 md:hover:text-slate-800 md:hover:bg-slate-100 dark:md:hover:text-white dark:md:hover:bg-brand-sidebarHover/50'}`}><List c="w-6 h-6 sm:w-5 sm:h-5"/><span className="nav-tooltip">Transactions</span></button>
             <button onClick={() => setActiveTab('insights')} onTouchStart={(e) => handleTouchStart('Insights', e, 'top')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className={`nav-item focus:outline-none relative flex items-center justify-center w-12 h-12 rounded-xl transition-all ${activeTab === 'insights' ? 'text-brand-teal bg-brand-teal/10 md:bg-brand-teal/10 md:text-brand-teal dark:md:bg-brand-sidebarHover dark:md:text-white' : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 md:text-slate-400 md:hover:text-slate-800 md:hover:bg-slate-100 dark:md:hover:text-white dark:md:hover:bg-brand-sidebarHover/50'}`}><Sparkles c="w-6 h-6 sm:w-5 sm:h-5"/><span className="nav-tooltip">Insights</span></button>
           </nav>
@@ -1630,7 +1343,7 @@ const topMerchants = useMemo(() => {
           <main className="flex-1 h-full overflow-y-auto hide-scrollbar relative pb-24 md:pb-0">
             <header className="sticky top-0 z-30 bg-brand-bgLight/90 dark:bg-brand-bgDark/90 backdrop-blur-md px-4 py-3 sm:px-8 sm:py-5 flex flex-col xl:flex-row xl:items-center justify-between border-b border-slate-200/50 dark:border-slate-800/50 gap-3 xl:gap-6">
               <div className="flex items-center justify-between w-full xl:w-auto">
-                 <div className="flex items-center gap-3"><div className="w-8 h-8 rounded-lg bg-brand-teal text-white flex items-center justify-center shrink-0 md:hidden"><IndianRupee c="w-4 h-4"/></div><h2 className="text-xl font-black text-slate-800 dark:text-white capitalize tracking-tight truncate">{activeTab === 'overview' ? 'Dashboard' : activeTab === 'networth' ? 'Net Worth' : activeTab === 'ledger' ? 'Transactions' : activeTab === 'analytics' ? 'Analytics' : activeTab === 'insights' ? 'Insights' : 'Settings'}</h2></div>
+                 <div className="flex items-center gap-3"><div className="w-8 h-8 rounded-lg bg-brand-teal text-white flex items-center justify-center shrink-0 md:hidden"><IndianRupee c="w-4 h-4"/></div><h2 className="text-xl font-black text-slate-800 dark:text-white capitalize tracking-tight truncate">{activeTab === 'overview' ? 'Dashboard' : activeTab === 'ledger' ? 'Transactions' : activeTab === 'analytics' ? 'Analytics' : activeTab === 'insights' ? 'Insights' : 'Settings'}</h2></div>
                  <div className="flex xl:hidden items-center gap-1.5 shrink-0">
                     <button onClick={handleManualRefresh} onTouchStart={(e) => handleTouchStart('Refresh', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><RefreshCw c={`w-4 h-4 ${isBackgroundSyncing ? 'animate-spin text-brand-teal' : ''}`}/><span className="nav-tooltip-bottom">Refresh</span></button>
                     {appData.appPin && <button onClick={() => setIsAuthenticated(false)} onTouchStart={(e) => handleTouchStart('Lock App', e, 'bottom')} onTouchEnd={handleTouchEnd} onTouchCancel={handleTouchEnd} className="nav-item focus:outline-none relative p-2.5 rounded-full transition-colors bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800"><LockIcon c="w-4 h-4"/><span className="nav-tooltip-bottom">Lock App</span></button>}
@@ -1640,7 +1353,7 @@ const topMerchants = useMemo(() => {
                  </div>
               </div>
 
-              {activeTab !== 'settings' && activeTab !== 'networth' && (
+              {activeTab !== 'settings' && (
                 <div className="flex gap-1.5 overflow-x-auto hide-scrollbar w-full xl:flex-1 xl:justify-center">
                   {['This Month', 'Last Month', '3M', '6M', 'YTD', '12M', 'All', 'Custom'].map(p => <button key={p} onClick={() => setPeriod(p)} className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors shadow-sm border ${period === p ? 'bg-slate-800 dark:bg-slate-200 text-white dark:text-slate-900 border-slate-800 dark:border-slate-200' : 'bg-white dark:bg-brand-cardDark text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800'}`}>{p}</button>)}
                   {period === 'Custom' && (
@@ -1659,13 +1372,11 @@ const topMerchants = useMemo(() => {
                  <button onClick={() => setIsPrivacyMode(!isPrivacyMode)} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${isPrivacyMode ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50'}`}>{isPrivacyMode ? <EyeOff c="w-4 h-4"/> : <Eye c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Privacy Mode</span></button>
                  <button onClick={() => setIsDarkMode(p=>!p)} className="nav-item focus:outline-none relative p-2.5 rounded-full bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800">{isDarkMode ? <Sun c="w-4 h-4"/> : <Moon c="w-4 h-4"/>}<span className="nav-tooltip-bottom">Theme</span></button>
                  <button onClick={() => setActiveTab('settings')} className={`nav-item focus:outline-none relative p-2.5 rounded-full transition-colors ${activeTab === 'settings' ? 'bg-brand-teal/10 text-brand-teal' : 'bg-white dark:bg-brand-cardDark text-slate-500 shadow-sm border border-slate-200 dark:border-slate-800 hover:bg-slate-50'}`}><SettingsIcon c="w-4 h-4"/><span className="nav-tooltip-bottom-right">Settings</span></button>
-                 
-                 <button onClick={() => activeTab === 'networth' ? setNwModal({isOpen: true, editData: null}) : handleOpenNewTxn()} className="nav-item focus:outline-none relative ml-2 bg-brand-teal hover:bg-brand-tealHover text-white font-bold py-2 px-4 rounded-full flex items-center justify-center gap-2 transition-colors text-sm shadow-sm h-[38px]"><Plus c="w-4 h-4"/> Add entry <span className="nav-tooltip-bottom-right">New entry</span></button>
+                 <button onClick={handleOpenNewTxn} className="nav-item focus:outline-none relative ml-2 bg-brand-teal hover:bg-brand-tealHover text-white font-bold py-2 px-4 rounded-full flex items-center justify-center gap-2 transition-colors text-sm shadow-sm h-[38px]"><Plus c="w-4 h-4"/> Add entry <span className="nav-tooltip-bottom-right">New transaction</span></button>
               </div>
             </header>
 
             <div className="p-4 sm:p-8 max-w-7xl mx-auto space-y-4 sm:space-y-6">
-              
               {activeTab === 'overview' && (
                 <div className="animate-fade-in space-y-4 sm:space-y-6">
                   <div className="flex items-center justify-between cursor-pointer group" onClick={() => setBalancesExpanded(!balancesExpanded)}><div><h3 className="text-xl font-extrabold tracking-wide mb-1">Financial overview</h3><p className="text-xs font-medium text-slate-500">Income, expenses and transfers based on your saved transactions.</p></div><ChevronDown c={`w-5 h-5 text-slate-400 transition-transform ${balancesExpanded ? 'rotate-180' : ''}`} /></div>
@@ -1682,8 +1393,6 @@ const topMerchants = useMemo(() => {
                   <div className="modern-card p-5 sm:p-8"><h3 className="text-sm font-extrabold mb-6 tracking-wide">Top Spending Destinations</h3><TopExpensesList data={topMerchants} totalExpense={mOUT} isPrivacy={isPrivacyMode} /></div>
                 </div>
               )}
-
-              {activeTab === 'networth' && <NetWorthView appData={appData} isPrivacyMode={isPrivacyMode} isDarkMode={isDarkMode} onEdit={(item) => setNwModal({isOpen: true, editData: item})} onDeleteTrigger={(id) => setDeleteNwId(id)} />}
 
               {activeTab === 'insights' && <InsightsView analyticsFiltered={analyticsFiltered} allUniqueCategories={globalCategories} isPrivacy={isPrivacyMode} isDarkMode={isDarkMode} chartData={chartData} />}
 
@@ -1752,6 +1461,7 @@ const topMerchants = useMemo(() => {
             </div>
           </main>
 
+          {/* Centered Bulk Edit Bar */}
           {selectedRows.length > 0 && activeTab === 'ledger' && (
              <div className="fixed bottom-[88px] md:bottom-8 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-max z-50 animate-slide-up mx-auto">
                 <div className="bg-white dark:bg-brand-sidebar shadow-[0_8px_30px_rgba(0,0,0,0.2)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.5)] rounded-2xl border border-slate-200 dark:border-slate-700/50 flex flex-row items-center p-2 relative">
@@ -1770,12 +1480,8 @@ const topMerchants = useMemo(() => {
           )}
 
           <TransactionModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} onSave={setAppData} settings={appData.settings} editData={editTxn} allAvailableTags={allAvailableTags} excludedCats={appData.excludedCats || []} setIsBackgroundSyncing={setIsBackgroundSyncing} />
-          
-          <NetWorthModal isOpen={nwModal.isOpen} onClose={() => setNwModal({isOpen: false, editData: null})} onSave={setAppData} editData={nwModal.editData} setIsBackgroundSyncing={setIsBackgroundSyncing} />
-          
           <BulkActionModal isOpen={bulkModal.isOpen} action={bulkModal.action} count={selectedRows.length} onClose={() => setBulkModal({isOpen: false, action: null})} onConfirm={executeBulkAction} bulkCategoryOptions={bulkCategoryOptions} excludedCats={appData.excludedCats || []} />
           <ConfirmDialog isOpen={deleteModalId !== null} onCancel={() => setDeleteModalId(null)} onConfirm={executeDeleteSingle} title="Delete Transaction" message="Are you sure you want to delete this transaction permanently? This cannot be undone." />
-          <ConfirmDialog isOpen={deleteNwId !== null} onCancel={() => setDeleteNwId(null)} onConfirm={executeDeleteNwSingle} title="Delete Asset/Liability" message="Are you sure you want to delete this item? This cannot be undone." />
         </div>
       );
     }
